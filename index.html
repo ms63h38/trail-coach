@@ -1,0 +1,1249 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0d0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Trail Coach">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Trail Coach 2026/27 v1.0</title>
+<style>
+:root{
+  --bg:#0b0d0f;--panel:#12161a;--panel2:#171c21;--panel3:#0f1317;
+  --text:#f2f5f7;--muted:#8e9aa5;--line:#27313a;--good:#73e2a7;
+  --bad:#ff7b7b;--accent:#8fc7ff;--warn:#f4c95d;--purple:#c5a3ff
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 15% -20%,rgba(96,154,214,.15),transparent 32%),var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}
+.app{max-width:1240px;margin:auto;padding:calc(20px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(64px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
+header{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:14px}
+h1{font-size:clamp(28px,5vw,44px);letter-spacing:-.04em;margin:0 0 6px}
+h2{font-size:18px;margin:0 0 14px}
+h3{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin:0}
+p,.small{color:var(--muted)}
+.eyebrow{color:var(--accent);font-size:12px;font-weight:760;letter-spacing:.12em;text-transform:uppercase;margin-bottom:9px}
+.status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px;white-space:nowrap}
+.dot{width:9px;height:9px;border-radius:50%;background:#59636c}.dot.ok{background:var(--good)}
+
+.tabs{display:flex;gap:7px;margin:0 0 14px;overflow:auto;padding-bottom:2px}
+.tabbtn{background:#151a1f;color:var(--muted);border:1px solid var(--line);padding:9px 13px;border-radius:999px;font-weight:700;cursor:pointer;white-space:nowrap}
+.tabbtn.active{background:var(--text);color:#0b0d0f;border-color:var(--text)}
+.tab{display:none}.tab.active{display:block}
+
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+.panel{background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.006)),var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px}
+.connect{grid-column:span 12}.metric{grid-column:span 3;min-height:128px}.wide8{grid-column:span 8}.wide7{grid-column:span 7}.wide6{grid-column:span 6}.wide5{grid-column:span 5}.wide4{grid-column:span 4}.full{grid-column:span 12}
+.metric .value{font-size:37px;font-weight:760;letter-spacing:-.04em;margin-top:12px}
+.metric .sub{color:var(--muted);font-size:12px;margin-top:4px}
+
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
+.field{flex:1 1 175px}
+label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
+input,select,textarea{width:100%;background:#0d1115;color:var(--text);border:1px solid var(--line);border-radius:11px;padding:11px 12px;min-height:44px;outline:none;font-size:16px}
+input:focus,select:focus,textarea:focus{border-color:#5c7c9c;box-shadow:0 0 0 3px rgba(111,166,220,.11)}
+textarea{min-height:115px;resize:vertical}
+button{border:0;border-radius:11px;padding:11px 14px;min-height:44px;cursor:pointer;font-weight:740;background:var(--text);color:#0b0d0f;-webkit-tap-highlight-color:transparent}
+button.secondary{background:#202831;color:var(--text);border:1px solid var(--line)}
+button.good{background:#bff3d4;color:#102317}
+button.danger{background:#3b2020;color:#ffd0d0;border:1px solid #613535}
+button:disabled{opacity:.42;cursor:not-allowed}
+
+.notice{margin-top:10px;border:1px solid var(--line);border-radius:11px;padding:10px 12px;color:var(--muted);font-size:13px;white-space:pre-wrap;line-height:1.42}
+.notice.ok{color:#bff3d4;border-color:#315745}.notice.err{color:#ffc0c0;border-color:#6c3434}.notice.warn{color:#ffe5a3;border-color:#69572c}
+code{background:#0d1115;padding:2px 5px;border-radius:6px;color:#cfe6ff}
+
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.kpis.four{grid-template-columns:repeat(4,1fr)}
+.mini{background:var(--panel2);padding:12px;border-radius:13px;border:1px solid var(--line)}
+.mini .v{font-size:23px;font-weight:750;letter-spacing:-.02em}.mini .l{font-size:11px;color:var(--muted);margin-top:3px}
+.mini .delta{font-size:11px;margin-top:5px}.positive{color:var(--good)}.negative{color:var(--bad)}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 8px;border-bottom:1px solid rgba(39,49,58,.75);text-align:left;vertical-align:top}
+th{color:var(--muted);font-weight:650;position:sticky;top:0;background:var(--panel);z-index:1}
+.num{text-align:right}.scroll{overflow:auto;max-height:480px}
+.badge{display:inline-flex;background:#202831;border-radius:99px;padding:4px 7px;font-size:11px;color:#cbd4dd}
+.badge.run{color:#cfe6ff}.badge.strength{color:#e5d4ff}.badge.ski{color:#c8f4ee}.badge.recovery{color:#d4ecd4}
+.planrow input{padding:7px 8px;min-width:86px}
+.planrow .dateinput{min-width:132px}
+.planrow .minsinput{width:75px;min-width:75px}
+
+.chartwrap{height:230px;position:relative}
+svg{width:100%;height:100%;overflow:visible}
+.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:7px}
+.legend span:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:6px}
+.zonebar{height:26px;border-radius:9px;overflow:hidden;display:flex;background:#0d1115;border:1px solid var(--line)}
+.zonebar span{height:100%;min-width:0}
+.zonelegend{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;font-size:11px;color:var(--muted)}
+.zonelegend b{color:var(--text);font-weight:700}
+
+.weekcards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.weekcard{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px}
+.weekcard .weektitle{font-weight:760;margin-bottom:7px}
+.weekcard .weekstat{font-size:12px;color:var(--muted);line-height:1.5}
+
+.coachbox{border-left:3px solid var(--accent);padding-left:12px;color:#d7e0e7;line-height:1.5}
+.plancontrols{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.plancontrols .field{min-width:0}
+.plan-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.plan-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.plan-summary .mini{padding:10px}
+hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
+
+
+.installbox{display:none}
+.installbox.show{display:block}
+.switchrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.switchrow input[type="checkbox"]{width:20px;min-height:20px;height:20px;flex:0 0 auto}
+.keyhint{font-size:12px;color:var(--muted);margin-top:6px}
+@media(display-mode:standalone){.installbox{display:none!important}}
+
+@media(max-width:960px){
+  .metric{grid-column:span 6}.wide8,.wide7,.wide6,.wide5,.wide4{grid-column:span 12}
+  .kpis.four,.weekcards,.plancontrols,.plan-summary{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:560px){
+  header{flex-direction:column}.app{padding:14px 10px 42px}.metric{grid-column:span 12}
+  .kpis,.kpis.four,.weekcards,.plancontrols,.plan-summary,.zonelegend{grid-template-columns:1fr}
+  .panel{padding:15px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div>
+    <div class="eyebrow">TRAIL COACH · 2026/27 · IDRE FJÄLLMARATON 2027</div>
+    <h1>Trail Coach 2026/27</h1>
+    <p style="margin:0">Garmin → Intervals.icu → analys → 4-veckorsplan → Garmin Enduro 3</p>
+  </div>
+  <div class="status"><span id="dot" class="dot"></span><span id="status">Inte ansluten</span></div>
+</header>
+
+<div class="tabs">
+  <button class="tabbtn active" data-tab="dashboard">Översikt</button>
+  <button class="tabbtn" data-tab="trends">Trender</button>
+  <button class="tabbtn" data-tab="planning">Planering · 4 veckor</button>
+  <button class="tabbtn" data-tab="coachreview">Coach Review</button>
+  <button class="tabbtn" data-tab="data">Data</button>
+</div>
+
+<section id="dashboard" class="tab active">
+<div class="grid">
+  <section class="panel connect">
+    <h2>Anslut till Intervals.icu</h2>
+    <div class="row">
+      <div class="field"><label>Personlig API-nyckel</label><input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="API-nyckel från Developer Settings"><div class="keyhint" id="savedKeyHint">Ingen nyckel sparad på denna enhet.</div></div>
+      <div class="field"><label>Historik</label><select id="days"><option value="90">90 dagar</option><option value="180">180 dagar</option><option value="365" selected>365 dagar</option></select></div>
+      <div><button id="connect">Anslut & hämta</button></div>
+      <div><button id="disconnect" class="secondary">Koppla från</button></div>
+      <div><button id="forgetKey" class="secondary">Glöm sparad nyckel</button></div>
+    </div>
+    <div class="small" style="margin-top:9px">Basic Auth: användarnamn <code>API_KEY</code>. Nyckeln hårdkodas aldrig i appfilen.
+    <div class="switchrow">
+      <input id="rememberKey" type="checkbox" checked>
+      <label for="rememberKey" style="margin:0">Kom ihåg API-nyckeln på denna enhet och anslut automatiskt nästa gång</label>
+    </div>
+    <div class="keyhint">Nyckeln sparas i webbläsarens lokala lagring på denna enhet. Rensa webbplatsdata eller tryck “Glöm sparad nyckel” för att ta bort den.</div></div>
+    <div id="msg" class="notice">Redo. v1.0 hämtar aktiviteter, wellness och kan läsa/skriva planerade pass.</div>
+    <div id="diag" class="notice" style="display:none"></div>
+    <div id="installBox" class="notice installbox">
+      <b>Installera på iPhone:</b> öppna den här sidan i Safari → Dela → Lägg till på hemskärmen → slå på “Öppna som webbapp”.
+    </div>
+  </section>
+
+  <section class="panel metric"><h3>Fitness</h3><div id="fitness" class="value">—</div><div class="sub">CTL · HRSS efter omräkning</div></section>
+  <section class="panel metric"><h3>Fatigue</h3><div id="fatigue" class="value">—</div><div class="sub">ATL</div></section>
+  <section class="panel metric"><h3>Form</h3><div id="form" class="value">—</div><div class="sub">CTL − ATL</div></section>
+  <section class="panel metric"><h3>VO₂max</h3><div id="vo2" class="value">—</div><div id="vo2Sub" class="sub">senaste registrerade</div></section>
+
+  <section class="panel wide8">
+    <h2>Fitness / Fatigue / Form · 8 veckor</h2>
+    <div class="chartwrap"><svg id="fitnessChart" viewBox="0 0 900 230" preserveAspectRatio="none"></svg></div>
+    <div class="legend"><span style="--c:#8fc7ff">Fitness</span><span style="--c:#f4c95d">Fatigue</span><span style="--c:#73e2a7">Form</span></div>
+  </section>
+
+  <section class="panel wide4">
+    <h2>Återhämtning idag</h2>
+    <div class="kpis">
+      <div class="mini"><div id="readiness" class="v">—</div><div class="l">Readiness</div></div>
+      <div class="mini"><div id="hrv" class="v">—</div><div class="l">HRV ms</div></div>
+      <div class="mini"><div id="rhr" class="v">—</div><div class="l">Vilopuls bpm</div></div>
+      <div class="mini"><div id="sleep" class="v">—</div><div class="l">Sömn timmar</div></div>
+    </div>
+    <div id="coachToday" class="notice">Anslut för coachbedömning.</div>
+  </section>
+
+  <section class="panel full">
+    <h2>Senaste 28 dagarna</h2>
+    <div class="kpis four">
+      <div class="mini"><div id="runKm28" class="v">—</div><div class="l">Löpning · km</div></div>
+      <div class="mini"><div id="runHours28" class="v">—</div><div class="l">Löpning · timmar</div></div>
+      <div class="mini"><div id="elev28" class="v">—</div><div class="l">Löphöjdmeter</div></div>
+      <div class="mini"><div id="longest28" class="v">—</div><div class="l">Längsta löppass</div></div>
+      <div class="mini"><div id="sessions28" class="v">—</div><div class="l">Alla aktiviteter</div></div>
+      <div class="mini"><div id="totalHours28" class="v">—</div><div class="l">Total träning · timmar</div></div>
+      <div class="mini"><div id="strength28" class="v">—</div><div class="l">Styrkepass</div></div>
+      <div class="mini"><div id="yoga28" class="v">—</div><div class="l">Yoga · pass</div></div>
+      <div class="mini"><div id="load28" class="v">—</div><div class="l">Training Load</div></div>
+    </div>
+  </section>
+</div>
+</section>
+
+<section id="trends" class="tab">
+<div class="grid">
+  <section class="panel wide7">
+    <h2>Löpning · 8 veckor</h2>
+    <div class="chartwrap"><svg id="weeklyChart" viewBox="0 0 900 230" preserveAspectRatio="none"></svg></div>
+    <div class="legend"><span style="--c:#8fc7ff">Km/vecka</span><span style="--c:#73e2a7">Längsta pass km</span></div>
+  </section>
+  <section class="panel wide5">
+    <h2>Veckosammanställning</h2>
+    <div id="weekCards" class="weekcards"></div>
+  </section>
+
+  <section class="panel wide6">
+    <h2>HRV och vilopuls · 28 dagar</h2>
+    <div class="chartwrap"><svg id="recoveryChart" viewBox="0 0 900 230" preserveAspectRatio="none"></svg></div>
+    <div class="legend"><span style="--c:#8fc7ff">HRV</span><span style="--c:#f4c95d">Vilopuls</span></div>
+  </section>
+
+  <section class="panel wide6">
+    <h2>Pulszoner vid löpning · 28 dagar</h2>
+    <div id="zoneBar" class="zonebar"></div>
+    <div id="zoneLegend" class="zonelegend"></div>
+    <div class="notice">Zonfördelningen bygger på <code>icu_hr_zone_times</code> från Garmin/Intervals och använder dina aktuella löpzoner.</div>
+  </section>
+
+  <section class="panel wide6">
+    <h2>VO₂max · 90 dagar</h2>
+    <div class="chartwrap"><svg id="vo2Chart" viewBox="0 0 900 230" preserveAspectRatio="none"></svg></div>
+    <div class="kpis" style="margin-top:10px">
+      <div class="mini"><div id="vo2CurrentTrend" class="v">—</div><div class="l">Senaste värde</div></div>
+      <div class="mini"><div id="vo2Delta28" class="v">—</div><div class="l">Förändring 28 dagar</div></div>
+      <div class="mini"><div id="vo2Delta90" class="v">—</div><div class="l">Förändring 90 dagar</div></div>
+      <div class="mini"><div id="vo2Samples90" class="v">—</div><div class="l">Registrerade värden</div></div>
+    </div>
+  </section>
+
+  <section class="panel wide6">
+    <h2>Sportmix · 28 dagar</h2>
+    <div class="scroll" style="max-height:330px">
+      <table><thead><tr><th>Typ</th><th class="num">Pass</th><th class="num">Tid</th><th class="num">Load</th></tr></thead><tbody id="sportRows"></tbody></table>
+    </div>
+  </section>
+
+  <section class="panel wide6">
+    <h2>Coachens utvecklingsfokus</h2>
+    <div id="focusBox" class="coachbox">Anslut för analys.</div>
+  </section>
+</div>
+</section>
+
+<section id="planning" class="tab">
+<div class="grid">
+  <section class="panel full">
+    <h2>Garmin-synk · testpass</h2>
+    <div class="row">
+      <div class="field"><label>Testdatum</label><input id="garminTestDate" type="date"></div>
+      <div class="field"><label>Testpass</label><input value="Garmin Sync Test · Lugn HR" disabled></div>
+      <div><button id="sendGarminTest" class="good" disabled>Skapa testpass i Intervals</button></div>
+      <div><button id="verifyGarminTest" class="secondary" disabled>Kontrollera i Intervals</button></div>
+    </div>
+    <div id="garminTestMsg" class="notice">Testet skapar ett enda strukturerat Run-pass: 10 min Z1 HR + 20 min Z2 HR + 5 min Z1 HR. Efter att Intervals har tagit emot det synkas det vidare till Garmin om “Upload planned workouts” är aktiverat i din Garmin-anslutning.</div>
+  </section>
+
+  <section class="panel full">
+    <h2>4-veckors träningsplan</h2>
+    <div class="plancontrols">
+      <div class="field"><label>Startvecka</label><input id="planStart" type="date"></div>
+      <div class="field"><label>Träningsläge</label>
+        <select id="planMode"><option value="trail">Barmark · trail</option><option value="winter">Vinter · längdskidor</option></select>
+      </div>
+      <div class="field"><label>Fas</label>
+        <select id="planPhase"><option value="base">Bas / robusthet</option><option value="build">Build / mer volym</option><option value="recovery">Återhämtningsblock</option></select>
+      </div>
+      <div class="field"><label>Långpassdag</label>
+        <select id="longDay"><option value="6">Lördag</option><option value="0">Söndag</option></select>
+      </div>
+    </div>
+    <div class="plan-actions">
+      <button id="generatePlan" disabled>Bygg 4 veckor från min data</button>
+      <button id="fetchPlan" class="secondary" disabled>Hämta 4 veckor från Intervals</button>
+      <button id="pushWeek1" class="good" disabled>Skicka nästa vecka</button>
+      <button id="pushAll4" class="secondary" disabled>Skicka alla 4 veckor</button>
+      <button id="clearPlan" class="secondary">Rensa lokal plan</button>
+    </div>
+    <div id="planMsg" class="notice">Anslut först. Vecka 1 är publicerbar plan. Vecka 2–4 är roadmap/prognos och bör omvärderas efter faktisk respons. Yoga ligger kvar som permanent del.</div>
+  </section>
+
+  <section class="panel wide4">
+    <h2>Baseline för planering</h2>
+    <div class="kpis">
+      <div class="mini"><div id="baseWeeklyKm" class="v">—</div><div class="l">km/vecka · 28d</div></div>
+      <div class="mini"><div id="baseWeeklyMin" class="v">—</div><div class="l">löpmin/vecka</div></div>
+      <div class="mini"><div id="baseLongMin" class="v">—</div><div class="l">längsta pass min</div></div>
+      <div class="mini"><div id="baseStrength" class="v">—</div><div class="l">styrka/vecka</div></div>
+      <div class="mini"><div id="baseYoga" class="v">—</div><div class="l">yoga/vecka</div></div>
+    </div>
+    <div id="planCoachNote" class="notice">Ingen baseline ännu.</div>
+  </section>
+
+  <section class="panel wide8">
+    <h2>Planöversikt</h2>
+    <div id="planSummary" class="plan-summary"></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Datum</th><th>Status</th><th>Typ</th><th>Pass</th><th class="num">Min</th><th>Mål</th><th>Källa</th><th></th></tr></thead>
+        <tbody id="planRows"><tr><td colspan="8" class="small">Ingen plan ännu.</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel full">
+    <h2>Lägg till eget pass</h2>
+    <div class="row">
+      <div class="field"><label>Datum</label><input id="customDate" type="date"></div>
+      <div class="field"><label>Typ</label><select id="customType"><option value="Run">Löpning</option><option value="TrailRun">Trail</option><option value="WeightTraining">Styrka</option><option value="NordicSki">Längdskidor</option><option value="Yoga">Yoga</option><option value="Hike">Vandring</option></select></div>
+      <div class="field"><label>Namn</label><input id="customName" placeholder="Eget pass"></div>
+      <div class="field"><label>Minuter</label><input id="customMins" type="number" min="5" max="360" value="45"></div>
+      <div><button id="addCustom" class="secondary">Lägg till</button></div>
+    </div>
+  </section>
+</div>
+</section>
+
+
+<section id="coachreview" class="tab">
+<div class="grid">
+  <section class="panel wide6">
+    <h2>1. Skapa Coach Snapshot</h2>
+    <p class="small">Skapar en kompakt fil för ChatGPT med det som behövs för veckovis analys: 7/28/90 dagar, CTL/ATL/Form, HRV, vilopuls, sömn, zoner, långpass, höjdmeter, plan och genomförande.</p>
+    <div class="row">
+      <button id="exportSnapshot" disabled>Exportera Coach Snapshot</button>
+      <button id="copyCoachPrompt" class="secondary" disabled>Kopiera instruktion</button>
+    </div>
+    <div id="snapshotMsg" class="notice">Anslut först.</div>
+  </section>
+
+  <section class="panel wide6">
+    <h2>2. Importera Coach Plan</h2>
+    <p class="small">Efter analys i ChatGPT kan du importera en <code>CoachPlan.json</code>. Appen validerar filen och lägger in coachens beslut i roadmapen.</p>
+    <div class="row">
+      <input id="coachPlanFile" type="file" accept=".json,application/json" style="max-width:360px">
+      <button id="importCoachPlan" class="good">Importera Coach Plan</button>
+    </div>
+    <div id="coachImportMsg" class="notice">Ingen Coach Plan importerad.</div>
+  </section>
+
+  <section class="panel full">
+    <h2>Coachbeslut</h2>
+    <div class="kpis four">
+      <div class="mini"><div id="coachDecision" class="v">—</div><div class="l">Beslut</div></div>
+      <div class="mini"><div id="coachWeek" class="v">—</div><div class="l">Gäller vecka</div></div>
+      <div class="mini"><div id="coachCompliance" class="v">—</div><div class="l">Genomförande</div></div>
+      <div class="mini"><div id="coachRisk" class="v">—</div><div class="l">Belastningssignal</div></div>
+    </div>
+    <div id="coachReason" class="notice">Ingen coachanalys importerad.</div>
+  </section>
+
+  <section class="panel full">
+    <h2>Veckovis adaptiv loop</h2>
+    <div class="coachbox">
+      <b>Roadmap 4 veckor</b> → genomför vecka 1 → <b>exportera snapshot</b> → analysera i ChatGPT →
+      <b>importera Coach Plan</b> → justera nästa vecka → skicka till Intervals/Garmin.
+      Vecka 2–4 är alltid preliminära tills de passerat Coach Review.
+    </div>
+  </section>
+</div>
+</section>
+
+<section id="data" class="tab">
+<div class="grid">
+  <section class="panel full">
+    <h2>Export och diagnostik</h2>
+    <div class="row">
+      <button id="exportData" disabled>Exportera full data</button>
+      <button id="refresh" class="secondary" disabled>Uppdatera all data</button>
+    </div>
+    <div class="notice">Exporten innehåller aktiviteter, wellness, aktuell lokal plan och hämtade kalenderhändelser. API-nyckeln inkluderas aldrig.</div>
+  </section>
+  <section class="panel full">
+    <h2>Senaste aktiviteter</h2>
+    <div class="scroll">
+      <table><thead><tr><th>Datum</th><th>Pass</th><th>Typ</th><th class="num">Tid</th><th class="num">Distans</th><th class="num">Höjd</th><th class="num">Load</th></tr></thead>
+      <tbody id="activityRows"><tr><td colspan="7" class="small">Ingen data.</td></tr></tbody></table>
+    </div>
+  </section>
+</div>
+</section>
+</div>
+
+<script>
+(()=>{"use strict";
+const BASE="https://intervals.icu/api/v1";
+const KEY_STORE="trailcoach_2026_27_intervals_api_key_v1";
+const REMEMBER_STORE="trailcoach_2026_27_remember_key_v1";
+let apiKey="",activities=[],wellness=[],calendarEvents=[],localPlan=[],importedCoachPlan=null;
+const $=id=>document.getElementById(id);
+const fmt=new Intl.NumberFormat("sv-SE",{maximumFractionDigits:1});
+
+function iso(d){
+  const z=new Date(d),y=z.getFullYear(),m=String(z.getMonth()+1).padStart(2,"0"),day=String(z.getDate()).padStart(2,"0");
+  return `${y}-${m}-${day}`;
+}
+function parseDate(s){const d=new Date((s||"").slice(0,10)+"T12:00:00");return isNaN(d)?null:d}
+function addDays(date,n){const d=new Date(date);d.setDate(d.getDate()+n);return d}
+function ago(n){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-n);return iso(d)}
+function nextMonday(){
+  const d=new Date();d.setHours(12,0,0,0);
+  const dow=d.getDay(),add=(8-dow)%7 || 7;
+  d.setDate(d.getDate()+add);return d;
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function authHeader(){return "Basic "+btoa("API_KEY:"+apiKey)}
+function setStatus(ok,text){$("dot").classList.toggle("ok",!!ok);$("status").textContent=text}
+function msg(text,kind=""){$("msg").textContent=text;$("msg").className="notice"+(kind?" "+kind:"")}
+function planMsg(text,kind=""){$("planMsg").textContent=text;$("planMsg").className="notice"+(kind?" "+kind:"")}
+function diag(text,kind=""){$("diag").style.display="block";$("diag").textContent=text;$("diag").className="notice"+(kind?" "+kind:"")}
+function hideDiag(){$("diag").style.display="none";$("diag").textContent=""}
+
+async function icu(path,options={}){
+  const method=options.method||"GET",url=BASE+path;
+  const headers={"Authorization":authHeader(),"Accept":"application/json"};
+  let body;
+  if(options.body!==undefined){headers["Content-Type"]="application/json";body=JSON.stringify(options.body)}
+  let res;
+  try{
+    res=await fetch(url,{method,headers,body,cache:"no-store",mode:"cors"});
+  }catch(err){throw{kind:"network",message:err?.message||String(err),url}}
+  let raw="";try{raw=await res.text()}catch{}
+  if(!res.ok)throw{kind:"http",status:res.status,statusText:res.statusText,body:raw.slice(0,900),url}
+  if(!raw)return{data:null,status:res.status,url};
+  try{return{data:JSON.parse(raw),status:res.status,url}}
+  catch{return{data:raw,status:res.status,url}}
+}
+
+function n(o,keys){for(const k of keys){const v=o?.[k];if(v!==null&&v!==undefined&&v!==""&&Number.isFinite(Number(v)))return Number(v)}return null}
+function s(o,keys,f=""){for(const k of keys){const v=o?.[k];if(v!==null&&v!==undefined&&v!=="")return String(v)}return f}
+function dateOf(a){return s(a,["start_date_local","start_date","date","id"],"").slice(0,10)}
+function secs(a){return n(a,["moving_time","elapsed_time","duration","icu_duration"])||0}
+function km(a){const d=n(a,["distance","icu_distance"]);return d==null?0:d/1000}
+function elevation(a){return n(a,["total_elevation_gain","icu_elevation_gain","elevation_gain"])||0}
+function load(a){return n(a,["icu_training_load","training_load","load"])||0}
+function typeOf(a){return s(a,["type","activity_type","sport"],"")}
+function isRun(a){const t=typeOf(a).toLowerCase();return t.includes("run")}
+function isStrength(a){const t=(typeOf(a)+" "+s(a,["name"],"")).toLowerCase();return t.includes("weight")||t.includes("strength")}
+function isSki(a){const t=typeOf(a).toLowerCase();return t.includes("ski")}
+function isYoga(a){const t=(typeOf(a)+" "+s(a,["name"],"")).toLowerCase();return t.includes("yoga")}
+function duration(sec){if(!sec)return"—";const h=Math.floor(sec/3600),m=Math.round((sec%3600)/60);return h?`${h}:${String(m).padStart(2,"0")}`:`${m} min`}
+function latestWellness(){return [...wellness].sort((a,b)=>dateOf(a).localeCompare(dateOf(b))).at(-1)||null}
+
+function latestWellnessValue(keys){
+  const arr=[...wellness].sort((a,b)=>dateOf(b).localeCompare(dateOf(a)));
+  for(const w of arr){
+    const v=n(w,keys);
+    if(v!=null)return{value:v,date:dateOf(w),row:w};
+  }
+  return null;
+}
+function datedWellnessValues(keys,days){
+  const cutoff=ago(days-1);
+  return [...wellness]
+    .filter(w=>dateOf(w)>=cutoff)
+    .map(w=>({date:dateOf(w),value:n(w,keys)}))
+    .filter(x=>x.value!=null)
+    .sort((a,b)=>a.date.localeCompare(b.date));
+}
+function trendDelta(keys,days){
+  const vals=datedWellnessValues(keys,days);
+  if(vals.length<2)return null;
+  return vals.at(-1).value-vals[0].value;
+}
+
+function recentActivities(days){const cutoff=ago(days-1);return activities.filter(a=>dateOf(a)>=cutoff)}
+function runRecent(days){return recentActivities(days).filter(isRun)}
+
+function sumActivities(list){
+  const runs=list.filter(isRun),yoga=list.filter(isYoga),strength=list.filter(isStrength);
+  return{
+    sessions:list.length,
+    total_hours:list.reduce((q,a)=>q+secs(a),0)/3600,
+    training_load:list.reduce((q,a)=>q+load(a),0),
+    run_sessions:runs.length,
+    run_km:runs.reduce((q,a)=>q+km(a),0),
+    run_hours:runs.reduce((q,a)=>q+secs(a),0)/3600,
+    run_elevation_m:runs.reduce((q,a)=>q+elevation(a),0),
+    longest_run_min:runs.length?Math.max(...runs.map(a=>secs(a)/60)):0,
+    longest_run_km:runs.length?Math.max(...runs.map(km)):0,
+    yoga_sessions:yoga.length,
+    strength_sessions:strength.length
+  };
+}
+function wellnessSummary(days){
+  const cutoff=ago(days-1);
+  const arr=wellness.filter(w=>dateOf(w)>=cutoff);
+  const avg=(keys)=>{
+    const vals=arr.map(w=>n(w,keys)).filter(v=>v!=null);
+    return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+  };
+  return{
+    days:arr.length,
+    avg_hrv:avg(["hrv"]),
+    avg_resting_hr:avg(["restingHR"]),
+    avg_sleep_hours:(()=>{const v=avg(["sleepSecs"]);return v==null?null:v/3600})(),
+    avg_readiness:avg(["readiness"]),
+    avg_sleep_score:avg(["sleepScore"]),
+    avg_vo2max:avg(["vo2max"])
+  };
+}
+function hrZoneSummary(days){
+  const runs=runRecent(days),z=[];
+  runs.forEach(a=>(a.icu_hr_zone_times||[]).forEach((v,i)=>z[i]=(z[i]||0)+(Number(v)||0)));
+  const total=z.reduce((a,b)=>a+b,0);
+  return z.map((secs,i)=>({zone:i+1,minutes:secs/60,percent:total?100*secs/total:0}));
+}
+function currentLoadState(){
+  const w=latestWellness();
+  if(!w)return{};
+  const ctl=n(w,["ctl","fitness"]),atl=n(w,["atl","fatigue"]);
+  const vo2Latest=latestWellnessValue(["vo2max"]);
+  return{
+    date:dateOf(w),ctl,atl,form:(ctl!=null&&atl!=null)?ctl-atl:null,
+    ramp_rate:n(w,["rampRate"]),readiness:n(w,["readiness"]),
+    hrv:n(w,["hrv"]),resting_hr:n(w,["restingHR"]),sleep_hours:(n(w,["sleepSecs"])||0)/3600,
+    sleep_score:n(w,["sleepScore"]),
+    vo2max:vo2Latest?vo2Latest.value:null,
+    vo2max_date:vo2Latest?vo2Latest.date:null
+  };
+}
+function planWeekNumber(p){
+  if(p.week)return Number(p.week);
+  if(!localPlan.length)return 0;
+  const first=parseDate([...localPlan].sort((a,b)=>a.date.localeCompare(b.date))[0].date);
+  const d=parseDate(p.date);
+  return Math.floor((weekStart(d)-weekStart(first))/(7*86400000))+1;
+}
+
+
+
+function storageAvailable(){
+  try{
+    const x="__idre_test__";localStorage.setItem(x,"1");localStorage.removeItem(x);return true;
+  }catch{return false}
+}
+function updateSavedKeyHint(){
+  const saved=storageAvailable()?localStorage.getItem(KEY_STORE):null;
+  $("savedKeyHint").textContent=saved?"API-nyckel sparad på denna enhet.":"Ingen nyckel sparad på denna enhet.";
+}
+function saveKeyIfRequested(){
+  if(!storageAvailable())return;
+  if($("rememberKey").checked && apiKey){
+    localStorage.setItem(KEY_STORE,apiKey);
+    localStorage.setItem(REMEMBER_STORE,"1");
+  }else{
+    localStorage.removeItem(KEY_STORE);
+    localStorage.setItem(REMEMBER_STORE,"0");
+  }
+  updateSavedKeyHint();
+}
+function forgetSavedKey(){
+  if(storageAvailable()){
+    localStorage.removeItem(KEY_STORE);
+    localStorage.removeItem(REMEMBER_STORE);
+  }
+  apiKey="";
+  $("key").value="";
+  $("rememberKey").checked=false;
+  updateSavedKeyHint();
+  msg("Sparad API-nyckel har tagits bort från denna enhet.","ok");
+}
+
+function migrateLegacySavedKey(){
+  if(!storageAvailable())return;
+  if(!localStorage.getItem(KEY_STORE)){
+    const old=localStorage.getItem("idre2027_intervals_api_key_v1");
+    if(old){
+      localStorage.setItem(KEY_STORE,old);
+      localStorage.setItem(REMEMBER_STORE,localStorage.getItem("idre2027_remember_key_v1")||"1");
+    }
+  }
+}
+
+function restoreSavedKey(){
+  if(!storageAvailable()){updateSavedKeyHint();return false}
+  const remember=localStorage.getItem(REMEMBER_STORE)!=="0";
+  const saved=localStorage.getItem(KEY_STORE);
+  $("rememberKey").checked=remember;
+  if(remember && saved){
+    $("key").value=saved;
+    updateSavedKeyHint();
+    return true;
+  }
+  updateSavedKeyHint();
+  return false;
+}
+function showInstallHint(){
+  const standalone=window.matchMedia && window.matchMedia("(display-mode: standalone)").matches;
+  const ios=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+  $("installBox").classList.toggle("show",ios && !standalone);
+}
+
+async function connect(){
+  apiKey=$("key").value.trim();
+  if(!apiKey){msg("Klistra in API-nyckeln först.","err");return}
+  $("connect").disabled=true;hideDiag();setStatus(false,"Ansluter …");msg("Testar autentisering …");
+  try{
+    const newest=iso(new Date()),testOld=ago(2);
+    const test=await icu(`/athlete/0/activities?oldest=${testOld}&newest=${newest}&limit=1`);
+    setStatus(true,"API godkänd");
+    saveKeyIfRequested();
+    const days=Number($("days").value),oldest=ago(days);
+    msg("Hämtar aktiviteter och wellness …","ok");
+    const [a,w]=await Promise.all([
+      icu(`/athlete/0/activities?oldest=${oldest}&newest=${newest}`),
+      icu(`/athlete/0/wellness?oldest=${oldest}&newest=${newest}`)
+    ]);
+    activities=Array.isArray(a.data)?a.data:[];
+    wellness=Array.isArray(w.data)?w.data:[];
+    enableConnected(true);renderAll();
+    setStatus(true,"Ansluten");
+    msg(`Ansluten. ${activities.length} aktiviteter och ${wellness.length} wellness-dagar hämtade.`,"ok");
+    diag(`API OK · aktiviteter HTTP ${a.status} · wellness HTTP ${w.status}\nTraining Load visas enligt de värden Intervals.icu nu returnerar.`,"ok");
+  }catch(e){
+    activities=[];wellness=[];calendarEvents=[];enableConnected(false);setStatus(false,"Inte ansluten");
+    if(e?.kind==="http")msg(`Intervals.icu returnerade HTTP ${e.status}.\n${e.body||""}`,"err");
+    else msg(`Anslutningen misslyckades: ${e?.message||JSON.stringify(e)}`,"err");
+  }finally{$("connect").disabled=false}
+}
+async function refreshAll(){
+  if(!apiKey)return;
+  $("refresh").disabled=true;
+  try{await connect();planMsg("Data uppdaterad.","ok")}finally{$("refresh").disabled=false}
+}
+function disconnect(){
+  apiKey="";activities=[];wellness=[];calendarEvents=[];localPlan=[];
+  $("key").value="";enableConnected(false);setStatus(false,"Inte ansluten");msg("Frånkopplad. Nyckeln är borttagen ur minnet.");renderAll();renderPlan();renderCoachImport();
+}
+function enableConnected(on){
+  ["exportData","refresh","generatePlan","fetchPlan","sendGarminTest","exportSnapshot","copyCoachPrompt"].forEach(id=>$(id).disabled=!on);
+  if(!on){$("pushWeek1").disabled=true;$("pushAll4").disabled=true;$("verifyGarminTest").disabled=true;}
+}
+
+function renderAll(){
+  renderDashboard();renderTrends();renderActivities();renderBaseline();
+}
+function renderDashboard(){
+  const w=latestWellness();
+  const ctl=w?n(w,["ctl","fitness"]):null,atl=w?n(w,["atl","fatigue"]):null;
+  const form=(ctl!=null&&atl!=null)?ctl-atl:(w?n(w,["form","tsb"]):null);
+  $("fitness").textContent=ctl==null?"—":fmt.format(ctl);
+  $("fatigue").textContent=atl==null?"—":fmt.format(atl);
+  $("form").textContent=form==null?"—":fmt.format(form);
+  const vo2Latest=latestWellnessValue(["vo2max"]);
+  $("vo2").textContent=vo2Latest?fmt.format(vo2Latest.value):"—";
+  $("vo2Sub").textContent=vo2Latest?`senast registrerad ${vo2Latest.date}`:"inget VO₂max-värde i vald historik";
+  $("readiness").textContent=w&&n(w,["readiness"])!=null?fmt.format(n(w,["readiness"])):"—";
+  $("hrv").textContent=w&&n(w,["hrv","hrvRMSSD"])!=null?fmt.format(n(w,["hrv","hrvRMSSD"])):"—";
+  $("rhr").textContent=w&&n(w,["restingHR","resting_hr"])!=null?fmt.format(n(w,["restingHR","resting_hr"])):"—";
+  const sl=w?n(w,["sleepSecs","sleep_secs"]):null;
+  $("sleep").textContent=sl!=null?fmt.format(sl/3600):"—";
+
+  const a28=recentActivities(28),r28=a28.filter(isRun);
+  const rkm=r28.reduce((q,a)=>q+km(a),0),rhrs=r28.reduce((q,a)=>q+secs(a),0)/3600;
+  const re=r28.reduce((q,a)=>q+elevation(a),0),longest=[...r28].sort((a,b)=>secs(b)-secs(a))[0];
+  $("runKm28").textContent=fmt.format(rkm);
+  $("runHours28").textContent=fmt.format(rhrs);
+  $("elev28").textContent=Math.round(re).toLocaleString("sv-SE");
+  $("longest28").textContent=longest?`${Math.round(secs(longest)/60)} min`:"—";
+  $("sessions28").textContent=a28.length;
+  $("totalHours28").textContent=fmt.format(a28.reduce((q,a)=>q+secs(a),0)/3600);
+  $("strength28").textContent=a28.filter(isStrength).length;
+  $("yoga28").textContent=a28.filter(isYoga).length;
+  $("load28").textContent=Math.round(a28.reduce((q,a)=>q+load(a),0)).toLocaleString("sv-SE");
+
+  const readiness=w?n(w,["readiness"]):null,hrv=w?n(w,["hrv"]):null,rhr=w?n(w,["restingHR"]):null;
+  let advice="Träningsstatus saknas.";
+  if(w){
+    if(readiness!=null&&readiness<50)advice="Låg readiness idag. Prioritera återhämtning eller mycket lätt aktivitet.";
+    else if(readiness!=null&&readiness<65)advice="Måttlig readiness. Aerob lätt träning är rimlig; undvik att stapla två hårda pass.";
+    else advice="Återhämtningssignalerna ser tillräckliga ut för planerad träning, förutsatt att kroppen känns bra.";
+    if(hrv!=null&&rhr!=null)advice+=` HRV ${fmt.format(hrv)} ms och vilopuls ${fmt.format(rhr)} bpm.`;
+  }
+  $("coachToday").textContent=advice;
+  drawFitnessChart();
+}
+function renderTrends(){
+  drawWeeklyChart();drawRecoveryChart();drawVO2Chart();renderZones();renderSportMix();renderFocus();
+}
+function weekStart(d){
+  const x=new Date(d);x.setHours(12,0,0,0);const day=x.getDay(),diff=(day+6)%7;x.setDate(x.getDate()-diff);return x;
+}
+function weeklyData(count=8){
+  const start=weekStart(new Date()),weeks=[];
+  for(let i=count-1;i>=0;i--){
+    const ws=addDays(start,-7*i),we=addDays(ws,6);
+    const list=activities.filter(a=>{const d=parseDate(dateOf(a));return d&&d>=ws&&d<=addDays(we,1)});
+    const runs=list.filter(isRun);
+    weeks.push({
+      start:iso(ws),label:`${String(ws.getDate()).padStart(2,"0")}/${String(ws.getMonth()+1).padStart(2,"0")}`,
+      runKm:runs.reduce((q,a)=>q+km(a),0),
+      runMin:runs.reduce((q,a)=>q+secs(a),0)/60,
+      elev:runs.reduce((q,a)=>q+elevation(a),0),
+      longKm:runs.length?Math.max(...runs.map(km)):0,
+      longMin:runs.length?Math.max(...runs.map(a=>secs(a)/60)):0,
+      totalHours:list.reduce((q,a)=>q+secs(a),0)/3600,
+      load:list.reduce((q,a)=>q+load(a),0)
+    });
+  }
+  return weeks;
+}
+function drawFitnessChart(){
+  const svg=$("fitnessChart");
+  const data=[...wellness].sort((a,b)=>dateOf(a).localeCompare(dateOf(b))).slice(-56).map(w=>{
+    const c=n(w,["ctl","fitness"]),a=n(w,["atl","fatigue"]);return{c,a,f:c!=null&&a!=null?c-a:n(w,["form","tsb"])};
+  });
+  drawLines(svg,data,[["c","#8fc7ff",3],["a","#f4c95d",2.5],["f","#73e2a7",2]]);
+}
+function drawWeeklyChart(){
+  const svg=$("weeklyChart"),wd=weeklyData(8).map(w=>({km:w.runKm,long:w.longKm}));
+  drawLines(svg,wd,[["km","#8fc7ff",3],["long","#73e2a7",2.5]],true);
+  const cards=weeklyData(4).map((w,i)=>`<div class="weekcard"><div class="weektitle">Vecka ${i+1} · ${esc(w.label)}</div><div class="weekstat">${fmt.format(w.runKm)} km löpning<br>${Math.round(w.runMin)} min löpning<br>${Math.round(w.elev)} hm<br>Längsta ${Math.round(w.longMin)} min</div></div>`).join("");
+  $("weekCards").innerHTML=cards;
+}
+function drawRecoveryChart(){
+  const svg=$("recoveryChart");
+  const d=[...wellness].sort((a,b)=>dateOf(a).localeCompare(dateOf(b))).slice(-28).map(w=>({hrv:n(w,["hrv"]),rhr:n(w,["restingHR"])}));
+  drawLines(svg,d,[["hrv","#8fc7ff",3],["rhr","#f4c95d",2.5]],true);
+}
+function drawLines(svg,data,series,zeroFloor=false){
+  const vals=data.flatMap(d=>series.map(x=>d[x[0]])).filter(v=>v!=null&&Number.isFinite(v));
+  if(data.length<2||!vals.length){svg.innerHTML='<text x="20" y="115" fill="#8e9aa5" font-size="14">Ingen data att rita.</text>';return}
+  const W=900,H=230,P=20;let mn=zeroFloor?0:Math.min(...vals),mx=Math.max(...vals);
+  if(mn===mx){mn-=1;mx+=1}
+  const X=i=>P+i*(W-2*P)/(data.length-1),Y=v=>H-P-(v-mn)*(H-2*P)/(mx-mn);
+  const grid=[0,.25,.5,.75,1].map(t=>{const y=P+t*(H-2*P),v=mx-t*(mx-mn);return `<line x1="${P}" y1="${y}" x2="${W-P}" y2="${y}" stroke="#27313a" stroke-width="1"/><text x="${P+3}" y="${y-4}" fill="#65717c" font-size="10">${Math.round(v)}</text>`}).join("");
+  svg.innerHTML=grid+series.map(([k,c,w])=>{const pts=data.map((d,i)=>d[k]==null?null:[X(i),Y(d[k])]).filter(Boolean).map(p=>p.join(",")).join(" ");return `<polyline fill="none" stroke="${c}" stroke-width="${w}" points="${pts}" vector-effect="non-scaling-stroke"/>`}).join("");
+}
+
+function drawVO2Chart(){
+  const svg=$("vo2Chart");
+  const vals=datedWellnessValues(["vo2max"],90);
+  if(vals.length<2){
+    svg.innerHTML='<text x="20" y="115" fill="#8e9aa5" font-size="14">För få VO₂max-värden för trend.</text>';
+    $("vo2CurrentTrend").textContent=vals.length?fmt.format(vals.at(-1).value):"—";
+    $("vo2Delta28").textContent="—";
+    $("vo2Delta90").textContent="—";
+    $("vo2Samples90").textContent=vals.length;
+    return;
+  }
+  drawLines(svg,vals.map(x=>({vo2:x.value})),[["vo2","#8fc7ff",3]],false);
+  const d28=trendDelta(["vo2max"],28),d90=trendDelta(["vo2max"],90);
+  $("vo2CurrentTrend").textContent=fmt.format(vals.at(-1).value);
+  $("vo2Delta28").textContent=d28==null?"—":`${d28>=0?"+":""}${fmt.format(d28)}`;
+  $("vo2Delta90").textContent=d90==null?"—":`${d90>=0?"+":""}${fmt.format(d90)}`;
+  $("vo2Samples90").textContent=vals.length;
+}
+
+function renderZones(){
+  const runs=runRecent(28);let zones=[];
+  runs.forEach(a=>(a.icu_hr_zone_times||[]).forEach((v,i)=>zones[i]=(zones[i]||0)+(Number(v)||0)));
+  const total=zones.reduce((q,v)=>q+v,0),colors=["#315f87","#477ea9","#63a4c8","#73e2a7","#f4c95d","#ee9a62","#ff7b7b"];
+  $("zoneBar").innerHTML=zones.map((v,i)=>`<span title="Z${i+1}" style="width:${total?100*v/total:0}%;background:${colors[i%colors.length]}"></span>`).join("");
+  $("zoneLegend").innerHTML=zones.map((v,i)=>`<div><b>Z${i+1}</b> ${total?fmt.format(100*v/total):0}% · ${Math.round(v/60)} min</div>`).join("")||'<div>Ingen zondata.</div>';
+}
+function renderSportMix(){
+  const map={};recentActivities(28).forEach(a=>{const t=typeOf(a)||"Other";map[t]??={n:0,sec:0,load:0};map[t].n++;map[t].sec+=secs(a);map[t].load+=load(a)});
+  $("sportRows").innerHTML=Object.entries(map).sort((a,b)=>b[1].sec-a[1].sec).map(([t,v])=>`<tr><td>${esc(t)}</td><td class="num">${v.n}</td><td class="num">${duration(v.sec)}</td><td class="num">${Math.round(v.load)}</td></tr>`).join("")||'<tr><td colspan="4">Ingen data.</td></tr>';
+}
+function renderFocus(){
+  const r28=runRecent(28),km28=r28.reduce((q,a)=>q+km(a),0),long=r28.length?Math.max(...r28.map(a=>secs(a)/60)):0,str=recentActivities(28).filter(isStrength).length,yog=recentActivities(28).filter(isYoga).length;
+  let bullets=[];
+  if(long<90)bullets.push(`Långpasskapacitet är huvudprioritet: längsta löppasset senaste 28 dagar är ${Math.round(long)} min.`);
+  else bullets.push(`Långpasskapaciteten är på väg upp: längsta löppasset senaste 28 dagar är ${Math.round(long)} min.`);
+  bullets.push(`Nuvarande löpvolym motsvarar cirka ${fmt.format(km28/4)} km/vecka.`);
+  bullets.push(`Yoga: ${yog} pass/28 dagar. Yoga behålls som permanent rörlighet, balans och bål/robusthet.`);
+  if(str<4)bullets.push(`Separat progressiv styrka är låg (${str} pass/28 dagar). Målet i basfasen blir två korta hemstyrkepass per vecka.`);
+  bullets.push("Ökning sker främst via lätt Z1–Z2-volym och längre tid på benen, inte genom fler hårda pass.");
+  $("focusBox").innerHTML=bullets.map(x=>`• ${esc(x)}`).join("<br>");
+}
+function renderActivities(){
+  $("activityRows").innerHTML=[...activities].sort((a,b)=>dateOf(b).localeCompare(dateOf(a))).slice(0,80).map(a=>`<tr><td>${esc(dateOf(a))}</td><td>${esc(s(a,["name"],"Pass"))}</td><td><span class="badge">${esc(typeOf(a)||"—")}</span></td><td class="num">${duration(secs(a))}</td><td class="num">${km(a)?fmt.format(km(a))+" km":"—"}</td><td class="num">${elevation(a)?Math.round(elevation(a))+" m":"—"}</td><td class="num">${load(a)?fmt.format(load(a)):"—"}</td></tr>`).join("")||'<tr><td colspan="7">Ingen data.</td></tr>';
+}
+
+function baseline(){
+  const r28=runRecent(28),a28=recentActivities(28);
+  return{
+    weeklyKm:r28.reduce((q,a)=>q+km(a),0)/4,
+    weeklyMin:r28.reduce((q,a)=>q+secs(a),0)/60/4,
+    longMin:r28.length?Math.max(...r28.map(a=>secs(a)/60)):60,
+    strengthPerWeek:a28.filter(isStrength).length/4,
+    yogaPerWeek:a28.filter(isYoga).length/4,
+    readiness:latestWellness()?n(latestWellness(),["readiness"]):null
+  };
+}
+function renderBaseline(){
+  const b=baseline();
+  $("baseWeeklyKm").textContent=activities.length?fmt.format(b.weeklyKm):"—";
+  $("baseWeeklyMin").textContent=activities.length?Math.round(b.weeklyMin):"—";
+  $("baseLongMin").textContent=activities.length?Math.round(b.longMin):"—";
+  $("baseStrength").textContent=activities.length?fmt.format(b.strengthPerWeek):"—";
+  $("baseYoga").textContent=activities.length?fmt.format(b.yogaPerWeek):"—";
+  if(activities.length)$("planCoachNote").textContent=`Planmotorn utgår från cirka ${Math.round(b.weeklyMin)} löpmin/vecka och ett längsta pass på ${Math.round(b.longMin)} min. Yoga planeras 3 gånger/vecka och hemstyrka 2 gånger/vecka. Vecka 4 blir återhämtningsvecka.`;
+  else $("planCoachNote").textContent="Ingen baseline ännu.";
+}
+
+function makeDescription(kind,mins,mode){
+  const m=Math.round(mins);
+  if(kind==="easy")return `Lugn trail · Z2-dominant\n- 10m Z1 HR intensity=warmup\n- ${Math.max(10,m-15)}m Z2 HR intensity=active\n- 5m Z1 HR intensity=cooldown\n\nKorta inslag i nedre Z3 är okej i backar. Power hike i branta partier.`;
+  if(kind==="hills")return `Kontrollerad backuthållighet\n- 15m Z1-Z2 HR\n6x\n- 2m Z3 HR\n- 2m Z1 HR\n- ${Math.max(5,m-39)}m Z1-Z2 HR`;
+  if(kind==="long")return `Långpass i terräng\n- ${m}m Z1-Z2 HR intensity=active\n\nZ2-dominant. Kort nedre Z3 i backar är okej. Power hike i branta partier. Fokus: tid på benen, inte fart.`;
+  if(kind==="recovery")return `Återhämtning\n- ${m}m Z1 HR`;
+  if(kind==="ski_easy")return `${m} min lugn längdskidåkning. Håll huvuddelen i Z1-Z2, teknik och avslappnad åkning.`;
+  if(kind==="ski_quality")return `${m} min längd. 15 min lugnt, därefter 6 x 3 min kontrollerat Z3 med 2 min lätt mellan, lugn avslutning.`;
+  if(kind==="ski_long")return `${m} min lugn längdskidåkning Z1-Z2. Fokus på jämn aerob belastning och energiintag.`;
+  if(kind==="yoga")return `Yoga · ${m} min\nRörlighet, balans, bålstabilitet och kontrollerad styrka. Behåll ditt vanliga yogaupplägg.`;
+  if(kind==="strengthA")return `Hemstyrka A · ${m} min\nUtrustning: 6 kg kettlebell + 10 kg skivstång/kroppsvikt.\nSplit squat 3x8/ben · enbens RDL 3x8/ben · enbens tåhävning 3x12-15 · soleus 3x15 · sidoplanka 2x30-45s/sida. 3 sekunder excentriskt där det passar.`;
+  if(kind==="strengthB")return `Hemstyrka B · ${m} min\nUtrustning: 6 kg kettlebell + 10 kg skivstång/kroppsvikt.\nStep-up 3x10/ben · bakåtutfall 3x8/ben · höftlyft 3x12-15 · långsam step-down 3x8/ben · rodd/armhävning 2-3 set.`;
+  return `${m} min planerat pass.`;
+}
+function eventType(kind,mode){
+  if(kind.startsWith("strength"))return "WeightTraining";
+  if(kind==="yoga")return "Yoga";
+  if(kind.startsWith("ski"))return "NordicSki";
+  return "Run";
+}
+function eventBadge(type){
+  const t=type.toLowerCase();if(t.includes("run"))return"run";if(t.includes("weight")||t.includes("strength"))return"strength";if(t.includes("ski"))return"ski";if(t.includes("yoga"))return"recovery";return"recovery";
+}
+function targetLabel(kind){
+  if(kind==="easy")return"Z2-dominant HR";if(kind==="hills")return"6×2 min Z3 HR";if(kind==="long")return"Z1–Z2 HR";
+  if(kind==="recovery")return"Z1 HR";if(kind==="yoga")return"Rörlighet/robusthet";if(kind.startsWith("strength"))return"Teknik/RPE 6–7";if(kind.startsWith("ski"))return kind==="ski_quality"?"Z3-block":"Z1–Z2";return"—";
+}
+function buildPlan(){
+  if(!activities.length)return planMsg("Ingen träningsdata är laddad.","err");
+  const start=parseDate($("planStart").value);if(!start)return planMsg("Välj startdatum.","err");
+  const mode=$("planMode").value,phase=$("planPhase").value,longDow=Number($("longDay").value),b=baseline();
+  const baseLong=Math.max(60,Math.min(80,Math.round(b.longMin/5)*5));
+  let longProg=[baseLong+5,baseLong+15,baseLong+25,baseLong];
+  let easyProg=[40,45,45,35],qualityProg=[40,45,50,35],recProg=[25,30,30,25];
+  if(phase==="build"){longProg=longProg.map((x,i)=>x+(i<3?10:0));easyProg=[45,50,50,40];qualityProg=[45,50,55,40]}
+  if(phase==="recovery"){longProg=[baseLong,baseLong,baseLong+5,Math.max(55,baseLong-10)];easyProg=[35,40,40,30];qualityProg=[35,40,40,30];recProg=[20,25,25,20]}
+
+  const startMonday=weekStart(start);localPlan=[];
+  for(let w=0;w<4;w++){
+    const ws=addDays(startMonday,w*7);
+    const longOffset=(longDow+6)%7; // Mon=0
+    const longDate=addDays(ws,longOffset);
+    const sunday=addDays(ws,6);
+    const recoveryDate=(iso(sunday)===iso(longDate))?addDays(ws,5):sunday;
+    const common=[
+      {offset:0,kind:"yoga",mins:30,name:"Idre 2027 · Yoga"},
+      {offset:0,kind:"strengthA",mins:25,name:"Idre 2027 · Hemstyrka A"},
+      {offset:1,kind:mode==="winter"?"ski_easy":"easy",mins:easyProg[w],name:mode==="winter"?"Idre 2027 · Lugn längd":"Idre 2027 · Lugn trail"},
+      {offset:2,kind:"yoga",mins:30,name:"Idre 2027 · Yoga"},
+      {offset:3,kind:mode==="winter"?"ski_quality":"hills",mins:qualityProg[w],name:mode==="winter"?"Idre 2027 · Längd Z3-block":"Idre 2027 · Backuthållighet"},
+      {offset:4,kind:"yoga",mins:30,name:"Idre 2027 · Yoga"},
+      {offset:4,kind:"strengthB",mins:25,name:"Idre 2027 · Hemstyrka B"}
+    ];
+    common.forEach(x=>localPlan.push(makePlanEvent(addDays(ws,x.offset),x.kind,x.mins,x.name,mode,w+1,"Coach")));
+    const longKind=mode==="winter"?"ski_long":"long";
+    localPlan.push(makePlanEvent(longDate,longKind,longProg[w],mode==="winter"?"Idre 2027 · Långpass längd":"Idre 2027 · Lång trail",mode,w+1,"Coach"));
+    localPlan.push(makePlanEvent(recoveryDate,mode==="winter"?"recovery":"recovery",recProg[w],mode==="winter"?"Idre 2027 · Kort återhämtningslöpning":"Idre 2027 · Återhämtningslöpning",mode,w+1,"Coach"));
+  }
+  localPlan.sort((a,b)=>a.date.localeCompare(b.date));
+  renderPlan();$("pushWeek1").disabled=false;$("pushAll4").disabled=false;
+  planMsg(`4 veckor byggda från din baseline. ${localPlan.length} pass lokalt. Inget har skrivits till Intervals.icu ännu.`,"ok");
+}
+function makePlanEvent(date,kind,mins,name,mode,week,source){
+  return{
+    date:iso(date),kind,mins:Math.round(mins),name,type:eventType(kind,mode),target:targetLabel(kind),
+    description:makeDescription(kind,mins,mode),week,source,status:week===1?"READY":"ROADMAP",
+    external_id:`trailcoach-v10-${iso(date)}-${kind}`
+  };
+}
+async function fetchPlan(){
+  if(!apiKey)return;
+  const start=parseDate($("planStart").value)||new Date(),oldest=iso(start),newest=iso(addDays(start,27));
+  $("fetchPlan").disabled=true;planMsg("Hämtar kalenderhändelser från Intervals.icu …");
+  try{
+    const r=await icu(`/athlete/0/events?oldest=${oldest}&newest=${newest}`);
+    calendarEvents=Array.isArray(r.data)?r.data:[];
+    const planned=calendarEvents.filter(e=>s(e,["category"],"")==="WORKOUT").map(e=>({
+      id:e.id,date:dateOf(e),kind:"external",mins:Math.round((n(e,["moving_time"])||0)/60),
+      name:s(e,["name"],"Planerat pass"),type:s(e,["type"],"Other"),target:"Intervals.icu",
+      description:s(e,["description"],""),week:0,source:"Intervals",status:"PUBLISHED",external_id:s(e,["external_id"],"")
+    }));
+    localPlan=planned;renderPlan();$("pushWeek1").disabled=true;$("pushAll4").disabled=true;
+    planMsg(`${planned.length} planerade WORKOUT-händelser hämtade för perioden ${oldest}–${newest}.`,"ok");
+  }catch(e){planMsg(`Kunde inte hämta planen: HTTP ${e?.status||"?"} ${e?.body||e?.message||""}`,"err")}
+  finally{$("fetchPlan").disabled=false}
+}
+async function pushPlanScope(scope="week1"){
+  if(!apiKey||!localPlan.length)return;
+  if(localPlan.every(x=>x.source==="Intervals"))return planMsg("Detta är redan en hämtad Intervals-plan.","warn");
+
+  const selected=scope==="all"
+    ? localPlan
+    : localPlan.filter(p=>planWeekNumber(p)===1 || p.status==="READY");
+
+  if(!selected.length)return planMsg("Det finns inga pass i nästa vecka att publicera.","warn");
+
+  const button=scope==="all"?$("pushAll4"):$("pushWeek1");
+  button.disabled=true;
+  planMsg(scope==="all"?"Publicerar hela 4-veckorsroadmapen …":"Publicerar endast nästa vecka …");
+
+  try{
+    const dates=selected.map(x=>x.date).sort(),oldest=dates[0],newest=dates.at(-1);
+    const existingR=await icu(`/athlete/0/events?oldest=${oldest}&newest=${newest}`);
+    const existing=Array.isArray(existingR.data)?existingR.data:[];
+    const pending=selected.filter(p=>!existing.some(e=>
+      (s(e,["external_id"],"")&&s(e,["external_id"],"")===p.external_id) ||
+      (dateOf(e)===p.date&&s(e,["name"],"")===p.name)
+    ));
+    const skipped=selected.length-pending.length;
+
+    if(!pending.length){
+      planMsg(`Inga nya pass att skapa. ${skipped} finns redan i Intervals.icu.`,"ok");
+      return;
+    }
+
+    const payload=pending.map(p=>({
+      start_date_local:p.date+"T00:00:00",
+      category:"WORKOUT",
+      type:p.type,
+      name:p.name,
+      description:p.description,
+      external_id:p.external_id
+    }));
+
+    const r=await icu("/athlete/0/events/bulk?upsert=true",{method:"POST",body:payload});
+    const created=Array.isArray(r.data)?r.data:[];
+    const structured=created.filter(e=>e.workout_doc&&Array.isArray(e.workout_doc.steps)&&e.workout_doc.steps.length).length;
+
+    pending.forEach(p=>p.status="PUBLISHED");
+    renderPlan();
+
+    planMsg(`Klart. ${created.length} pass publicerade (${structured} strukturerade), ${skipped} dubbletter hoppades över. ${scope==="week1"?"Vecka 2–4 ligger kvar som roadmap.":"Alla fyra veckor är publicerade."}`,"ok");
+  }catch(e){
+    planMsg(`Publicering misslyckades: HTTP ${e?.status||"?"} ${e?.body||e?.message||""}`,"err");
+  }finally{
+    button.disabled=false;
+  }
+}
+
+function garminTestMsg(text,kind=""){
+  $("garminTestMsg").textContent=text;
+  $("garminTestMsg").className="notice"+(kind?" "+kind:"");
+}
+
+async function sendGarminTest(){
+  if(!apiKey)return garminTestMsg("Anslut till Intervals.icu först.","err");
+  const d=$("garminTestDate").value;
+  if(!d)return garminTestMsg("Välj ett testdatum.","err");
+
+  const event={
+    start_date_local:d+"T00:00:00",
+    category:"WORKOUT",
+    type:"Run",
+    name:"Garmin Sync Test · Lugn HR",
+    description:"Garmin sync test\n- Uppvärmning 10m Z1 HR intensity=warmup\n- Lugn löpning 20m Z2 HR intensity=active\n- Nedvarvning 5m Z1 HR intensity=cooldown",
+    external_id:`trailcoach-v10-garmin-test-${d}`
+  };
+
+  $("sendGarminTest").disabled=true;
+  garminTestMsg("Skapar testpasset i Intervals.icu …");
+  try{
+    const r=await icu("/athlete/0/events/bulk?upsert=true",{method:"POST",body:[event]});
+    const e=Array.isArray(r.data)?r.data[0]:null;
+    if(!e)throw new Error("Intervals returnerade inget event.");
+    const structured=!!(e.workout_doc&&Array.isArray(e.workout_doc.steps)&&e.workout_doc.steps.length);
+    const steps=structured?e.workout_doc.steps.length:0;
+    const pushErrors=e.push_errors;
+    garminTestMsg(
+      `Intervals.icu tog emot testpasset. Event ID ${e.id||"—"}. `+
+      `${structured?`Workout Builder tolkade det som strukturerat (${steps} steg).`:"VARNING: workout_doc saknar strukturerade steg."}`+
+      `${pushErrors?`\nPush errors: ${JSON.stringify(pushErrors)}`:"\nInga push_errors rapporterades i API-svaret."}`+
+      `\n\nNästa kontroll: öppna Garmin Connect → Kalender på ${d}. Om “Upload planned workouts” är aktiverat ska passet synas där och därefter på Enduro 3 efter synk.`,
+      structured?"ok":"warn"
+    );
+    $("verifyGarminTest").disabled=false;
+  }catch(e){
+    garminTestMsg(`Testet misslyckades: HTTP ${e?.status||"?"} ${e?.body||e?.message||String(e)}`,"err");
+  }finally{
+    $("sendGarminTest").disabled=false;
+  }
+}
+
+async function verifyGarminTest(){
+  if(!apiKey)return;
+  const d=$("garminTestDate").value;
+  $("verifyGarminTest").disabled=true;
+  garminTestMsg("Läser tillbaka testpasset från Intervals.icu …");
+  try{
+    const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
+    const ev=Array.isArray(r.data)?r.data:[];
+    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v10-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
+    if(!e){
+      garminTestMsg("Testpasset hittades inte i Intervals.icu-kalendern på valt datum.","err");
+      return;
+    }
+    const structured=!!(e.workout_doc&&Array.isArray(e.workout_doc.steps)&&e.workout_doc.steps.length);
+    const pushErrors=e.push_errors;
+    garminTestMsg(
+      `Testpasset finns kvar i Intervals.icu. Event ID ${e.id||"—"}. `+
+      `${structured?`Strukturerat workout_doc: ${e.workout_doc.steps.length} steg.`:"Workout_doc är inte strukturerat."}`+
+      `${pushErrors?`\nPush errors: ${JSON.stringify(pushErrors)}`:"\nInga push_errors rapporteras av Intervals."}`+
+      `\n\nAppen kan verifiera Intervals-sidan av kedjan men har inte direkt åtkomst till ditt Garmin Connect-konto. Kontrollera därför Garmin Connect-kalendern och Enduro 3.`,
+      structured&&!pushErrors?"ok":"warn"
+    );
+  }catch(e){
+    garminTestMsg(`Kontrollen misslyckades: HTTP ${e?.status||"?"} ${e?.body||e?.message||""}`,"err");
+  }finally{
+    $("verifyGarminTest").disabled=false;
+  }
+}
+
+function addCustom(){
+  const d=$("customDate").value,name=$("customName").value.trim(),mins=Number($("customMins").value),type=$("customType").value;
+  if(!d||!name||!mins)return planMsg("Fyll i datum, namn och minuter för eget pass.","warn");
+  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`trailcoach-v10-${d}-custom-${Date.now()}`});
+  localPlan.sort((a,b)=>a.date.localeCompare(b.date));renderPlan();$("pushWeek1").disabled=!apiKey;$("pushAll4").disabled=!apiKey;planMsg("Eget pass tillagt i den lokala planen.","ok");
+}
+function renderPlan(){
+  const tbody=$("planRows");
+  if(!localPlan.length){tbody.innerHTML='<tr><td colspan="8" class="small">Ingen plan ännu.</td></tr>';$("planSummary").innerHTML="";return}
+  tbody.innerHTML=localPlan.map((p,i)=>{
+    const st=p.status||((planWeekNumber(p)===1)?"READY":"ROADMAP");
+    const stClass=st==="PUBLISHED"?"positive":st==="READY"?"":"small";
+    const stLabel=st==="PUBLISHED"?"Publicerad":st==="READY"?"Nästa vecka":"Roadmap";
+    return `<tr class="planrow">
+    <td><input class="dateinput" type="date" value="${esc(p.date)}" data-i="${i}" data-field="date"></td>
+    <td class="${stClass}">${stLabel}</td>
+    <td><span class="badge ${eventBadge(p.type)}">${esc(p.type)}</span></td>
+    <td><input value="${esc(p.name)}" data-i="${i}" data-field="name"></td>
+    <td class="num"><input class="minsinput" type="number" min="5" max="360" value="${p.mins||0}" data-i="${i}" data-field="mins"></td>
+    <td>${esc(p.target)}</td><td>${esc(p.source)}</td>
+    <td><button class="danger" data-remove="${i}">×</button></td></tr>`;
+  }).join("");
+  tbody.querySelectorAll("input[data-field]").forEach(el=>el.addEventListener("change",e=>{
+    const i=Number(e.target.dataset.i),f=e.target.dataset.field,v=f==="mins"?Number(e.target.value):e.target.value;
+    localPlan[i][f]=v;if(f==="mins")localPlan[i].description=makeDescription(localPlan[i].kind,v,$("planMode").value);
+    localPlan.sort((a,b)=>a.date.localeCompare(b.date));renderPlan();
+  }));
+  tbody.querySelectorAll("button[data-remove]").forEach(el=>el.addEventListener("click",e=>{localPlan.splice(Number(e.target.dataset.remove),1);renderPlan();$("pushWeek1").disabled=!localPlan.length||!apiKey;$("pushAll4").disabled=!localPlan.length||!apiKey}));
+  const start=localPlan.map(x=>x.date).sort()[0],ws=weekStart(parseDate(start));
+  const sums=[1,2,3,4].map(w=>{
+    const list=localPlan.filter(p=>{const d=parseDate(p.date),wStart=addDays(ws,(w-1)*7),wEnd=addDays(wStart,7);return d>=wStart&&d<wEnd});
+    return{w,n:list.length,mins:list.reduce((q,p)=>q+(Number(p.mins)||0),0),long:list.filter(p=>p.kind==="long"||p.kind==="ski_long").reduce((m,p)=>Math.max(m,p.mins||0),0)}
+  });
+  $("planSummary").innerHTML=sums.map(x=>`<div class="mini"><div class="v">${Math.round(x.mins)} min</div><div class="l">Vecka ${x.w} · ${x.n} pass${x.long?` · lång ${x.long}m`:""} · ${x.w===1?"PUBLICERBAR":"ROADMAP"}</div></div>`).join("");
+}
+function clearPlan(){localPlan=[];importedCoachPlan=null;renderPlan();renderCoachImport();$("pushWeek1").disabled=true;$("pushAll4").disabled=true;planMsg("Lokal plan rensad.")}
+
+
+function snapshotMessage(text,kind=""){
+  $("snapshotMsg").textContent=text;
+  $("snapshotMsg").className="notice"+(kind?" "+kind:"");
+}
+function importMessage(text,kind=""){
+  $("coachImportMsg").textContent=text;
+  $("coachImportMsg").className="notice"+(kind?" "+kind:"");
+}
+
+function complianceSummary(){
+  if(!calendarEvents.length)return{planned:0,completed_matches:0,percent:null};
+  const planned=calendarEvents.filter(e=>s(e,["category"],"")==="WORKOUT" && dateOf(e)<=iso(new Date()));
+  let matched=0;
+  for(const p of planned){
+    const pd=dateOf(p),pt=s(p,["type"],"").toLowerCase();
+    const found=activities.some(a=>{
+      const ad=dateOf(a),at=typeOf(a).toLowerCase();
+      const closeDate=Math.abs((parseDate(ad)-parseDate(pd))/86400000)<=1;
+      return closeDate && (!pt || at.includes(pt.replace("trailrun","run")) || pt.includes(at.replace("trailrun","run")));
+    });
+    if(found)matched++;
+  }
+  return{planned:planned.length,completed_matches:matched,percent:planned.length?100*matched/planned.length:null};
+}
+
+function coachSnapshot(){
+  const sorted=[...activities].sort((a,b)=>dateOf(b).localeCompare(dateOf(a)));
+  return{
+    schema:"trailcoach-2026-27-coach-snapshot-v1",
+    generated_at:new Date().toISOString(),
+    goal:{
+      event:"Idre Fjällmaraton · halv",
+      target_period:"last weekend of August 2027",
+      planning_model:"adaptive weekly review with 4-week roadmap"
+    },
+    current_state:currentLoadState(),
+    periods:{
+      days_7:sumActivities(recentActivities(7)),
+      days_28:sumActivities(recentActivities(28)),
+      days_90:sumActivities(recentActivities(90))
+    },
+    wellness:{
+      days_7:wellnessSummary(7),
+      days_28:wellnessSummary(28),
+      days_90:wellnessSummary(90)
+    },
+    run_hr_zones_28d:hrZoneSummary(28),
+    weekly_8w:weeklyData(8),
+    compliance:complianceSummary(),
+    recent_activities:sorted.slice(0,40).map(a=>({
+      date:dateOf(a),name:s(a,["name"],""),type:typeOf(a),minutes:secs(a)/60,
+      distance_km:km(a),elevation_m:elevation(a),training_load:load(a),
+      avg_hr:n(a,["average_heartrate"]),max_hr:n(a,["max_heartrate"]),
+      hr_zones_minutes:(a.icu_hr_zone_times||[]).map(x=>(Number(x)||0)/60),
+      rpe:n(a,["icu_rpe","session_rpe","perceived_exertion"])
+    })),
+    roadmap_4_weeks:localPlan,
+    calendar_events:calendarEvents.filter(e=>dateOf(e)>=ago(14)).map(e=>({
+      id:e.id,date:dateOf(e),category:s(e,["category"],""),type:s(e,["type"],""),
+      name:s(e,["name"],""),description:s(e,["description"],""),external_id:s(e,["external_id"],"")
+    })),
+    requested_coach_output_schema:{
+      schema:"trailcoach-2026-27-coach-plan-v1",
+      week_start:"YYYY-MM-DD",
+      decision:"progress | maintain | deload | modify",
+      reason:"short explanation",
+      compliance_percent:"number or null",
+      load_signal:"green | amber | red",
+      notes:["string"],
+      workouts:[{
+        date:"YYYY-MM-DD",type:"Run | TrailRun | WeightTraining | NordicSki | Yoga | Hike",
+        name:"string",minutes:"number",target:"string",description:"Intervals workout text"
+      }]
+    }
+  };
+}
+
+function exportSnapshot(){
+  if(!activities.length)return snapshotMessage("Ingen data laddad.","err");
+  const payload=coachSnapshot();
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=`Idre2027_CoachSnapshot_${iso(new Date())}.json`;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  snapshotMessage("Coach Snapshot skapad. Ladda upp filen i ChatGPT för adaptiv analys.","ok");
+}
+
+async function copyCoachPrompt(){
+  const text="Analysera bifogad Idre2027 Coach Snapshot. Bedöm genomförande, CTL/ATL/Form, HRV/vilopuls/sömn, löpvolym, höjdmeter, zonfördelning, långpass, yoga och styrka. Justera nästa vecka men behåll vecka 2–4 som roadmap. Skapa en CoachPlan.json enligt requested_coach_output_schema.";
+  try{
+    await navigator.clipboard.writeText(text);
+    snapshotMessage("Instruktionen är kopierad. Ladda upp snapshot-filen i ChatGPT och klistra in instruktionen.","ok");
+  }catch{
+    snapshotMessage(text,"warn");
+  }
+}
+
+function renderCoachImport(){
+  if(!importedCoachPlan){
+    $("coachDecision").textContent="—";$("coachWeek").textContent="—";$("coachCompliance").textContent="—";$("coachRisk").textContent="—";
+    $("coachReason").textContent="Ingen coachanalys importerad.";return;
+  }
+  $("coachDecision").textContent=s(importedCoachPlan,["decision"],"—");
+  $("coachWeek").textContent=s(importedCoachPlan,["week_start"],"—");
+  const cp=n(importedCoachPlan,["compliance_percent"]);
+  $("coachCompliance").textContent=cp==null?"—":`${Math.round(cp)}%`;
+  $("coachRisk").textContent=s(importedCoachPlan,["load_signal"],"—");
+  $("coachReason").textContent=s(importedCoachPlan,["reason"],"Ingen motivering.");
+}
+
+async function importCoachPlan(){
+  const file=$("coachPlanFile").files?.[0];
+  if(!file)return importMessage("Välj en CoachPlan.json först.","warn");
+  let obj;
+  try{obj=JSON.parse(await file.text())}catch{return importMessage("Filen är inte giltig JSON.","err")}
+  if(obj.schema!=="trailcoach-2026-27-coach-plan-v1")return importMessage(`Fel schema: ${obj.schema||"saknas"}. Förväntar trailcoach-2026-27-coach-plan-v1.`,"err");
+  if(!Array.isArray(obj.workouts))return importMessage("CoachPlan saknar workouts-array.","err");
+
+  const normalized=[];
+  for(const w of obj.workouts){
+    if(!w.date||!w.type||!w.name||!Number(w.minutes))continue;
+    normalized.push({
+      date:String(w.date).slice(0,10),
+      kind:"coach",
+      mins:Number(w.minutes),
+      name:String(w.name),
+      type:String(w.type),
+      target:String(w.target||"Coach"),
+      description:String(w.description||`${w.minutes} min ${w.name}`),
+      week:1,source:"ChatGPT Coach",status:"READY",
+      external_id:`trailcoach-v10-coach-${String(w.date).slice(0,10)}-${normalized.length+1}`
+    });
+  }
+  if(!normalized.length)return importMessage("Inga giltiga workouts hittades i CoachPlan.","err");
+
+  importedCoachPlan=obj;
+
+  // Replace only week 1 / READY items, keep week 2–4 roadmap.
+  const futureRoadmap=localPlan.filter(p=>planWeekNumber(p)>1 && p.status!=="READY");
+  localPlan=[...normalized,...futureRoadmap].sort((a,b)=>a.date.localeCompare(b.date));
+  renderPlan();renderCoachImport();
+  $("pushWeek1").disabled=!apiKey;
+  $("pushAll4").disabled=!apiKey;
+  importMessage(`CoachPlan importerad: ${normalized.length} pass för nästa vecka. Roadmap vecka 2–4 behölls.`,"ok");
+}
+
+function exportData(){
+  const payload={
+    schema:"trailcoach-2026-27-export-v1",
+    generated_at:new Date().toISOString(),
+    source:"Intervals.icu",
+    loaded_range_days:Number($("days").value),
+    activities_count:activities.length,
+    wellness_count:wellness.length,
+    activities,wellness,
+    calendar_events:calendarEvents,
+    local_4_week_plan:localPlan,
+    imported_coach_plan:importedCoachPlan,
+    baseline:baseline()
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=`TrailCoach_2026_27_Export_${iso(new Date())}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  msg("Export skapad. API-nyckeln är inte med i filen.","ok");
+}
+
+document.querySelectorAll(".tabbtn").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll(".tabbtn").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active");$(b.dataset.tab).classList.add("active");
+}));
+$("connect").onclick=connect;$("disconnect").onclick=disconnect;$("refresh").onclick=refreshAll;$("forgetKey").onclick=forgetSavedKey;
+$("generatePlan").onclick=buildPlan;$("fetchPlan").onclick=fetchPlan;$("pushWeek1").onclick=()=>pushPlanScope("week1");$("pushAll4").onclick=()=>pushPlanScope("all");
+$("clearPlan").onclick=clearPlan;$("addCustom").onclick=addCustom;$("exportData").onclick=exportData;
+$("sendGarminTest").onclick=sendGarminTest;$("verifyGarminTest").onclick=verifyGarminTest;
+$("exportSnapshot").onclick=exportSnapshot;$("copyCoachPrompt").onclick=copyCoachPrompt;$("importCoachPlan").onclick=importCoachPlan;
+$("key").addEventListener("keydown",e=>{if(e.key==="Enter")connect()});
+$("rememberKey").addEventListener("change",()=>{
+  if(!$("rememberKey").checked && storageAvailable()){
+    localStorage.removeItem(KEY_STORE);localStorage.setItem(REMEMBER_STORE,"0");updateSavedKeyHint();
+  }
+});
+
+const nm=nextMonday();$("planStart").value=iso(nm);$("customDate").value=iso(nm);$("garminTestDate").value=iso(addDays(new Date(),1));
+renderAll();renderPlan();renderCoachImport();showInstallHint();
+
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  navigator.serviceWorker.register("./sw.js").catch(()=>{});
+}
+
+migrateLegacySavedKey();
+const restored=restoreSavedKey();
+if(restored){
+  setTimeout(()=>connect(),250);
+}
+})();
+</script>
+</body>
+</html>
