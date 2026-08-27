@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Trail Coach 2026/27 v1.0</title>
+<title>Trail Coach 2026/27 v1.1</title>
 <style>
 :root{
   --bg:#0b0d0f;--panel:#12161a;--panel2:#171c21;--panel3:#0f1317;
@@ -112,6 +112,141 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
   .kpis,.kpis.four,.weekcards,.plancontrols,.plan-summary,.zonelegend{grid-template-columns:1fr}
   .panel{padding:15px}
 }
+
+/* v1.1 mobile-first app shell */
+.navicon{display:none}
+.settings-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.settings-head h2{margin:0 0 3px}
+.settings-details{border:0}
+.settings-details summary{cursor:pointer;font-weight:750;list-style:none;min-height:44px;display:flex;align-items:center;justify-content:space-between}
+.settings-details summary::-webkit-details-marker{display:none}
+.settings-details summary:after{content:"›";font-size:24px;color:var(--muted);transform:rotate(90deg);transition:.15s ease}
+.settings-details[open] summary:after{transform:rotate(-90deg)}
+.settings-detail-body{padding-top:12px;border-top:1px solid var(--line)}
+.plan-cards{display:none}
+.mobile-only{display:none}
+
+@media(max-width:560px){
+  body{background:var(--bg)}
+  .app{
+    padding:calc(10px + env(safe-area-inset-top)) 10px calc(86px + env(safe-area-inset-bottom));
+  }
+  header{
+    flex-direction:row;
+    align-items:center;
+    margin-bottom:10px;
+    gap:8px;
+  }
+  header .eyebrow{display:none}
+  header p{display:none}
+  h1{font-size:25px;line-height:1.05;margin:0;letter-spacing:-.035em}
+  h2{font-size:17px;margin-bottom:12px}
+  .status{font-size:11px;margin-left:auto}
+  .dot{width:8px;height:8px}
+
+  /* Garmin/Bevel-inspired bottom navigation */
+  .tabs{
+    position:fixed;
+    z-index:100;
+    left:0;right:0;bottom:0;
+    margin:0;
+    height:calc(64px + env(safe-area-inset-bottom));
+    padding:6px 5px env(safe-area-inset-bottom);
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:0;
+    overflow:visible;
+    background:rgba(15,19,23,.94);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    border-top:1px solid rgba(255,255,255,.09);
+  }
+  .tabbtn{
+    min-width:0;
+    min-height:52px;
+    border:0;
+    background:transparent;
+    border-radius:12px;
+    padding:4px 1px;
+    color:var(--muted);
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    gap:2px;
+    font-size:10px;
+    font-weight:650;
+  }
+  .tabbtn.active{background:transparent;color:var(--text);border:0}
+  .navicon{display:block;font-size:20px;line-height:20px;font-weight:500}
+  .navlabel{display:block;max-width:72px;overflow:hidden;text-overflow:ellipsis}
+
+  .grid{gap:10px}
+  .panel{padding:13px;border-radius:16px}
+  .metric{
+    grid-column:span 6;
+    min-height:104px;
+    padding:13px;
+  }
+  .metric .value{font-size:31px;margin-top:9px}
+  .metric .sub{font-size:10px;line-height:1.25}
+  .wide8,.wide7,.wide6,.wide5,.wide4,.full{grid-column:span 12}
+
+  /* Keep useful summaries dense instead of one card per row */
+  .kpis,.kpis.four{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .mini{padding:10px;border-radius:12px;min-width:0}
+  .mini .v{font-size:21px}
+  .mini .l{font-size:10px;line-height:1.25}
+  .weekcards,.plan-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .plancontrols{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .zonelegend{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .chartwrap{height:185px}
+  .legend{font-size:10px;gap:10px}
+  .notice{font-size:12px;padding:9px 10px}
+  .coachbox{font-size:13px}
+
+  /* Mobile plan: cards, not a desktop-width table */
+  .plan-table-wrap{display:none}
+  .plan-cards{display:grid;gap:9px;margin-top:10px}
+  .plan-mobile-card{
+    background:var(--panel2);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:11px;
+  }
+  .plan-mobile-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+  .plan-mobile-date{font-size:12px;color:var(--muted)}
+  .plan-mobile-status{font-size:10px;font-weight:760;text-transform:uppercase;letter-spacing:.06em}
+  .plan-mobile-name{font-size:15px;font-weight:750;margin:2px 0 7px}
+  .plan-mobile-meta{display:flex;gap:7px;flex-wrap:wrap;font-size:11px;color:var(--muted)}
+  .plan-mobile-actions{display:flex;justify-content:flex-end;margin-top:9px}
+  .plan-mobile-actions button{min-height:34px;padding:5px 10px;font-size:12px}
+
+  .plan-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .plan-actions button{width:100%}
+  #generatePlan,#pushWeek1{grid-column:span 2}
+
+  /* Settings should feel separate and quieter */
+  .settings-grid{gap:10px}
+  #settings .settings-card{padding:14px}
+  #settings .row{display:grid;grid-template-columns:1fr;gap:9px;align-items:stretch}
+  #settings .row > div,#settings .row > .field{width:100%;flex:auto}
+  #settings .row button{width:100%}
+  .settings-head{align-items:flex-start}
+  .settings-status{margin-top:2px}
+
+  /* Avoid giant activity tables on phone */
+  #settings .scroll{max-height:330px}
+  #settings table{font-size:11px;min-width:650px}
+
+  /* Coach review remains readable */
+  #coachreview .row{align-items:stretch}
+  #coachreview .row button{flex:1 1 150px}
+
+  /* Inputs */
+  input,select,textarea{font-size:16px}
+}
+
 </style>
 </head>
 <body>
@@ -125,37 +260,16 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
   <div class="status"><span id="dot" class="dot"></span><span id="status">Inte ansluten</span></div>
 </header>
 
-<div class="tabs">
-  <button class="tabbtn active" data-tab="dashboard">Översikt</button>
-  <button class="tabbtn" data-tab="trends">Trender</button>
-  <button class="tabbtn" data-tab="planning">Planering · 4 veckor</button>
-  <button class="tabbtn" data-tab="coachreview">Coach Review</button>
-  <button class="tabbtn" data-tab="data">Data</button>
+<div class="tabs" aria-label="Huvudnavigation">
+  <button class="tabbtn active" data-tab="dashboard"><span class="navicon">⌂</span><span class="navlabel">Idag</span></button>
+  <button class="tabbtn" data-tab="trends"><span class="navicon">↗</span><span class="navlabel">Trender</span></button>
+  <button class="tabbtn" data-tab="planning"><span class="navicon">▦</span><span class="navlabel">Plan</span></button>
+  <button class="tabbtn" data-tab="coachreview"><span class="navicon">✦</span><span class="navlabel">Coach</span></button>
+  <button class="tabbtn" data-tab="settings"><span class="navicon">⚙</span><span class="navlabel">Inställningar</span></button>
 </div>
 
 <section id="dashboard" class="tab active">
 <div class="grid">
-  <section class="panel connect">
-    <h2>Anslut till Intervals.icu</h2>
-    <div class="row">
-      <div class="field"><label>Personlig API-nyckel</label><input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="API-nyckel från Developer Settings"><div class="keyhint" id="savedKeyHint">Ingen nyckel sparad på denna enhet.</div></div>
-      <div class="field"><label>Historik</label><select id="days"><option value="90">90 dagar</option><option value="180">180 dagar</option><option value="365" selected>365 dagar</option></select></div>
-      <div><button id="connect">Anslut & hämta</button></div>
-      <div><button id="disconnect" class="secondary">Koppla från</button></div>
-      <div><button id="forgetKey" class="secondary">Glöm sparad nyckel</button></div>
-    </div>
-    <div class="small" style="margin-top:9px">Basic Auth: användarnamn <code>API_KEY</code>. Nyckeln hårdkodas aldrig i appfilen.
-    <div class="switchrow">
-      <input id="rememberKey" type="checkbox" checked>
-      <label for="rememberKey" style="margin:0">Kom ihåg API-nyckeln på denna enhet och anslut automatiskt nästa gång</label>
-    </div>
-    <div class="keyhint">Nyckeln sparas i webbläsarens lokala lagring på denna enhet. Rensa webbplatsdata eller tryck “Glöm sparad nyckel” för att ta bort den.</div></div>
-    <div id="msg" class="notice">Redo. v1.0 hämtar aktiviteter, wellness och kan läsa/skriva planerade pass.</div>
-    <div id="diag" class="notice" style="display:none"></div>
-    <div id="installBox" class="notice installbox">
-      <b>Installera på iPhone:</b> öppna den här sidan i Safari → Dela → Lägg till på hemskärmen → slå på “Öppna som webbapp”.
-    </div>
-  </section>
 
   <section class="panel metric"><h3>Fitness</h3><div id="fitness" class="value">—</div><div class="sub">CTL · HRSS efter omräkning</div></section>
   <section class="panel metric"><h3>Fatigue</h3><div id="fatigue" class="value">—</div><div class="sub">ATL</div></section>
@@ -248,16 +362,6 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
 
 <section id="planning" class="tab">
 <div class="grid">
-  <section class="panel full">
-    <h2>Garmin-synk · testpass</h2>
-    <div class="row">
-      <div class="field"><label>Testdatum</label><input id="garminTestDate" type="date"></div>
-      <div class="field"><label>Testpass</label><input value="Garmin Sync Test · Lugn HR" disabled></div>
-      <div><button id="sendGarminTest" class="good" disabled>Skapa testpass i Intervals</button></div>
-      <div><button id="verifyGarminTest" class="secondary" disabled>Kontrollera i Intervals</button></div>
-    </div>
-    <div id="garminTestMsg" class="notice">Testet skapar ett enda strukturerat Run-pass: 10 min Z1 HR + 20 min Z2 HR + 5 min Z1 HR. Efter att Intervals har tagit emot det synkas det vidare till Garmin om “Upload planned workouts” är aktiverat i din Garmin-anslutning.</div>
-  </section>
 
   <section class="panel full">
     <h2>4-veckors träningsplan</h2>
@@ -298,7 +402,8 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
   <section class="panel wide8">
     <h2>Planöversikt</h2>
     <div id="planSummary" class="plan-summary"></div>
-    <div class="scroll">
+    <div id="planCards" class="plan-cards"><div class="small">Ingen plan ännu.</div></div>
+    <div class="scroll plan-table-wrap">
       <table>
         <thead><tr><th>Datum</th><th>Status</th><th>Typ</th><th>Pass</th><th class="num">Min</th><th>Mål</th><th>Källa</th><th></th></tr></thead>
         <tbody id="planRows"><tr><td colspan="8" class="small">Ingen plan ännu.</td></tr></tbody>
@@ -364,23 +469,61 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
 </div>
 </section>
 
-<section id="data" class="tab">
+<section id="settings" class="tab">
+<div class="grid settings-grid">
+
+  <section class="panel full settings-card">
+    <div class="settings-head"><div><h2>Intervals.icu</h2><div class="small">Datakälla och automatisk synk</div></div><div class="status settings-status"><span class="dot" id="settingsDot"></span><span id="settingsStatus">Inte ansluten</span></div></div>
+    <div class="row">
+      <div class="field"><label>Personlig API-nyckel</label><input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="API-nyckel från Developer Settings"><div class="keyhint" id="savedKeyHint">Ingen nyckel sparad på denna enhet.</div></div>
+      <div class="field"><label>Historik</label><select id="days"><option value="90">90 dagar</option><option value="180">180 dagar</option><option value="365" selected>365 dagar</option></select></div>
+      <div><button id="connect">Anslut & hämta</button></div>
+      <div><button id="disconnect" class="secondary">Koppla från</button></div>
+      <div><button id="forgetKey" class="secondary">Glöm sparad nyckel</button></div>
+    </div>
+    <div class="small" style="margin-top:9px">Basic Auth: användarnamn <code>API_KEY</code>. Nyckeln hårdkodas aldrig i appfilen.
+    <div class="switchrow">
+      <input id="rememberKey" type="checkbox" checked>
+      <label for="rememberKey" style="margin:0">Kom ihåg API-nyckeln på denna enhet och anslut automatiskt nästa gång</label>
+    </div>
+    <div class="keyhint">Nyckeln sparas i webbläsarens lokala lagring på denna enhet. Rensa webbplatsdata eller tryck “Glöm sparad nyckel” för att ta bort den.</div></div>
+    <div id="msg" class="notice">Redo. v1.1 hämtar aktiviteter, wellness och kan läsa/skriva planerade pass.</div>
+    <div id="diag" class="notice" style="display:none"></div>
+    <div id="installBox" class="notice installbox">
+      <b>Installera på iPhone:</b> öppna den här sidan i Safari → Dela → Lägg till på hemskärmen → slå på “Öppna som webbapp”.
+    </div>
+  </section>
+
+  <section class="panel full settings-card">
+    <details class="settings-details"><summary>Garmin-synk · test och verifiering</summary><div class="settings-detail-body">
+    <div class="row">
+      <div class="field"><label>Testdatum</label><input id="garminTestDate" type="date"></div>
+      <div class="field"><label>Testpass</label><input value="Garmin Sync Test · Lugn HR" disabled></div>
+      <div><button id="sendGarminTest" class="good" disabled>Skapa testpass i Intervals</button></div>
+      <div><button id="verifyGarminTest" class="secondary" disabled>Kontrollera i Intervals</button></div>
+    </div>
+    <div id="garminTestMsg" class="notice">Testet skapar ett enda strukturerat Run-pass: 10 min Z1 HR + 20 min Z2 HR + 5 min Z1 HR. Efter att Intervals har tagit emot det synkas det vidare till Garmin om “Upload planned workouts” är aktiverat i din Garmin-anslutning.</div>
+  </div></details></section>
+
 <div class="grid">
-  <section class="panel full">
-    <h2>Export och diagnostik</h2>
+  <section class="panel full settings-card">
+    <h2>Data & uppdatering</h2>
     <div class="row">
       <button id="exportData" disabled>Exportera full data</button>
       <button id="refresh" class="secondary" disabled>Uppdatera all data</button>
     </div>
     <div class="notice">Exporten innehåller aktiviteter, wellness, aktuell lokal plan och hämtade kalenderhändelser. API-nyckeln inkluderas aldrig.</div>
   </section>
-  <section class="panel full">
-    <h2>Senaste aktiviteter</h2>
+  <section class="panel full settings-card">
+    <details class="settings-details"><summary>Senaste aktiviteter</summary><div class="settings-detail-body">
     <div class="scroll">
       <table><thead><tr><th>Datum</th><th>Pass</th><th>Typ</th><th class="num">Tid</th><th class="num">Distans</th><th class="num">Höjd</th><th class="num">Load</th></tr></thead>
       <tbody id="activityRows"><tr><td colspan="7" class="small">Ingen data.</td></tr></tbody></table>
     </div>
+    </div></details>
   </section>
+</div>
+
 </div>
 </section>
 </div>
@@ -408,7 +551,11 @@ function nextMonday(){
 }
 function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
 function authHeader(){return "Basic "+btoa("API_KEY:"+apiKey)}
-function setStatus(ok,text){$("dot").classList.toggle("ok",!!ok);$("status").textContent=text}
+function setStatus(ok,text){
+  $("dot").classList.toggle("ok",!!ok);$("status").textContent=text;
+  if($("settingsDot"))$("settingsDot").classList.toggle("ok",!!ok);
+  if($("settingsStatus"))$("settingsStatus").textContent=text;
+}
 function msg(text,kind=""){$("msg").textContent=text;$("msg").className="notice"+(kind?" "+kind:"")}
 function planMsg(text,kind=""){$("planMsg").textContent=text;$("planMsg").className="notice"+(kind?" "+kind:"")}
 function diag(text,kind=""){$("diag").style.display="block";$("diag").textContent=text;$("diag").className="notice"+(kind?" "+kind:"")}
@@ -1017,8 +1164,13 @@ function addCustom(){
   localPlan.sort((a,b)=>a.date.localeCompare(b.date));renderPlan();$("pushWeek1").disabled=!apiKey;$("pushAll4").disabled=!apiKey;planMsg("Eget pass tillagt i den lokala planen.","ok");
 }
 function renderPlan(){
-  const tbody=$("planRows");
-  if(!localPlan.length){tbody.innerHTML='<tr><td colspan="8" class="small">Ingen plan ännu.</td></tr>';$("planSummary").innerHTML="";return}
+  const tbody=$("planRows"),cards=$("planCards");
+  if(!localPlan.length){
+    tbody.innerHTML='<tr><td colspan="8" class="small">Ingen plan ännu.</td></tr>';
+    if(cards)cards.innerHTML='<div class="small">Ingen plan ännu.</div>';
+    $("planSummary").innerHTML="";
+    return
+  }
   tbody.innerHTML=localPlan.map((p,i)=>{
     const st=p.status||((planWeekNumber(p)===1)?"READY":"ROADMAP");
     const stClass=st==="PUBLISHED"?"positive":st==="READY"?"":"small";
@@ -1032,6 +1184,35 @@ function renderPlan(){
     <td>${esc(p.target)}</td><td>${esc(p.source)}</td>
     <td><button class="danger" data-remove="${i}">×</button></td></tr>`;
   }).join("");
+
+  if(cards){
+    cards.innerHTML=localPlan.map((p,i)=>{
+      const st=p.status||((planWeekNumber(p)===1)?"READY":"ROADMAP");
+      const stLabel=st==="PUBLISHED"?"Publicerad":st==="READY"?"Nästa vecka":"Roadmap";
+      const stClass=st==="PUBLISHED"?"positive":st==="READY"?"":"small";
+      return `<div class="plan-mobile-card">
+        <div class="plan-mobile-top">
+          <div class="plan-mobile-date">${esc(p.date)}</div>
+          <div class="plan-mobile-status ${stClass}">${stLabel}</div>
+        </div>
+        <div class="plan-mobile-name">${esc(p.name)}</div>
+        <div class="plan-mobile-meta">
+          <span class="badge ${eventBadge(p.type)}">${esc(p.type)}</span>
+          <span>${Math.round(p.mins||0)} min</span>
+          <span>${esc(p.target)}</span>
+          <span>${esc(p.source)}</span>
+        </div>
+        <div class="plan-mobile-actions"><button class="danger" data-mobile-remove="${i}">Ta bort</button></div>
+      </div>`;
+    }).join("");
+    cards.querySelectorAll("button[data-mobile-remove]").forEach(el=>el.addEventListener("click",e=>{
+      localPlan.splice(Number(e.currentTarget.dataset.mobileRemove),1);
+      renderPlan();
+      $("pushWeek1").disabled=!localPlan.length||!apiKey;
+      $("pushAll4").disabled=!localPlan.length||!apiKey;
+    }));
+  }
+
   tbody.querySelectorAll("input[data-field]").forEach(el=>el.addEventListener("change",e=>{
     const i=Number(e.target.dataset.i),f=e.target.dataset.field,v=f==="mins"?Number(e.target.value):e.target.value;
     localPlan[i][f]=v;if(f==="mins")localPlan[i].description=makeDescription(localPlan[i].kind,v,$("planMode").value);
@@ -1218,6 +1399,8 @@ document.querySelectorAll(".tabbtn").forEach(b=>b.addEventListener("click",()=>{
   document.querySelectorAll(".tabbtn").forEach(x=>x.classList.remove("active"));
   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
   b.classList.add("active");$(b.dataset.tab).classList.add("active");
+  try{localStorage.setItem("trailcoach_active_tab",b.dataset.tab)}catch{}
+  window.scrollTo({top:0,behavior:"instant"});
 }));
 $("connect").onclick=connect;$("disconnect").onclick=disconnect;$("refresh").onclick=refreshAll;$("forgetKey").onclick=forgetSavedKey;
 $("generatePlan").onclick=buildPlan;$("fetchPlan").onclick=fetchPlan;$("pushWeek1").onclick=()=>pushPlanScope("week1");$("pushAll4").onclick=()=>pushPlanScope("all");
@@ -1233,6 +1416,13 @@ $("rememberKey").addEventListener("change",()=>{
 
 const nm=nextMonday();$("planStart").value=iso(nm);$("customDate").value=iso(nm);$("garminTestDate").value=iso(addDays(new Date(),1));
 renderAll();renderPlan();renderCoachImport();showInstallHint();
+try{
+  const savedTab=localStorage.getItem("trailcoach_active_tab");
+  if(savedTab && $(savedTab)){
+    const btn=document.querySelector(`.tabbtn[data-tab="${savedTab}"]`);
+    if(btn){document.querySelectorAll(".tabbtn").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active");$(savedTab).classList.add("active");}
+  }
+}catch{}
 
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
   navigator.serviceWorker.register("./sw.js").catch(()=>{});

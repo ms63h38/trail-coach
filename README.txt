@@ -1,14 +1,18 @@
-TRAIL COACH 2026/27 v1.0
+TRAIL COACH 2026/27 v1.1 — iPhone UI update
 
-Nyheter:
-- Nytt namn: Trail Coach 2026/27.
-- VO2max söker bakåt till senaste registrerade giltiga värde.
-- Datum för senaste VO2max visas.
-- 28- och 90-dagars VO2max-trend i fliken Trender.
-- 4-veckors roadmap, Coach Review och Garmin-synk är kvar.
-- iPhone/PWA-stöd är kvar.
-- Sparad Intervals.icu-nyckel kan återanvändas automatiskt.
-- Om v0.8 körs på samma webbplats migreras den gamla sparade API-nyckeln automatiskt.
+Mobilförändringar:
+- Fast bottennavigation: Idag, Trender, Plan, Coach, Inställningar.
+- API-nyckel/anslutning flyttad från Översikt till Inställningar.
+- Garmin-synktest flyttat till Inställningar och är hopfällbart.
+- Data/diagnostik ligger under Inställningar.
+- 2-kolumnskort för Fitness, Fatigue, Form, VO2max och återhämtning.
+- Tätare 28-dagarssammanställning.
+- 4-veckorsplan visas som mobilkort på iPhone; desktop behåller tabellen.
+- Mindre rubrik, mindre paneler och kortare grafer på iPhone.
+- Senast vald flik återställs.
+- Service Worker-cache uppdaterad till v1.1.
 
-iPhone/PWA:
-Publicera filerna via HTTPS, öppna i Safari, välj Dela → Lägg till på hemskärmen → Öppna som webbapp.
+Uppdatering på GitHub Pages:
+Ersätt index.html, manifest.json och sw.js i ditt befintliga repository.
+Behåll gärna samma ikonfiler. GitHub Pages-adressen ska vara oförändrad.
+Den sparade Intervals.icu-nyckeln ligger kvar eftersom webbplatsens origin inte ändras.
