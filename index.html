@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Trail Coach 2026/27 v1.3</title>
+<title>Trail Coach 2026/27 v1.3.1</title>
 <style>
 :root{
   --bg:#0b0d0f;--panel:#12161a;--panel2:#171c21;--panel3:#0f1317;
@@ -481,6 +481,88 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
   .activity-zone-row{grid-template-columns:30px 1fr 58px}
 }
 
+
+/* v1.3.1 — iOS activity modal fix */
+.activity-dialog-head{
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:var(--panel);
+}
+.dialog-close{
+  position:sticky;
+  top:0;
+  z-index:7;
+  align-self:flex-start;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  white-space:nowrap;
+}
+.dialog-close-x{
+  display:none;
+  font-size:24px;
+  line-height:1;
+  font-weight:500;
+}
+
+@media(max-width:560px){
+  .activity-dialog{
+    position:fixed;
+    inset:max(8px,env(safe-area-inset-top))
+          8px
+          max(8px,env(safe-area-inset-bottom))
+          8px;
+    width:auto;
+    height:auto;
+    max-width:none;
+    max-height:none;
+    margin:0;
+    border-radius:18px;
+    overflow:hidden;
+  }
+  .activity-dialog-shell{
+    height:100%;
+    max-height:none;
+    min-height:0;
+  }
+  .activity-dialog-head{
+    flex:0 0 auto;
+    padding:
+      12px
+      12px
+      10px
+      13px;
+    min-height:58px;
+    box-sizing:border-box;
+  }
+  .activity-dialog-title-wrap{
+    padding-right:4px;
+  }
+  .activity-dialog-body{
+    flex:1 1 auto;
+    min-height:0;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+    padding:12px 13px calc(18px + env(safe-area-inset-bottom));
+  }
+  .dialog-close{
+    position:sticky;
+    top:0;
+    flex:0 0 44px;
+    width:44px;
+    height:44px;
+    min-height:44px;
+    padding:0;
+    border-radius:50%;
+    margin:0;
+  }
+  .dialog-close-x{display:block}
+  .dialog-close-text{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -792,7 +874,7 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
         <h2 id="activityDetailTitle">Aktivitet</h2>
         <div id="activityDetailType" class="small">—</div>
       </div>
-      <button id="activityDetailClose" class="dialog-close secondary" aria-label="Stäng aktivitetsdetaljer">Stäng</button>
+      <button id="activityDetailClose" class="dialog-close secondary" type="button" aria-label="Stäng aktivitetsdetaljer"><span class="dialog-close-x" aria-hidden="true">×</span><span class="dialog-close-text">Stäng</span></button>
     </div>
     <div id="activityDetailBody" class="activity-dialog-body"></div>
   </div>
@@ -1476,7 +1558,7 @@ function makePlanEvent(date,kind,mins,name,mode,week,source){
   return{
     date:iso(date),kind,mins:Math.round(mins),name,type:eventType(kind,mode),target:targetLabel(kind),
     description:makeDescription(kind,mins,mode),week,source,status:week===1?"READY":"ROADMAP",
-    external_id:`trailcoach-v13-${iso(date)}-${kind}`
+    external_id:`trailcoach-v131-${iso(date)}-${kind}`
   };
 }
 async function fetchPlan(){
@@ -1565,7 +1647,7 @@ async function sendGarminTest(){
     type:"Run",
     name:"Garmin Sync Test · Lugn HR",
     description:"Garmin sync test\n- Uppvärmning 10m Z1 HR intensity=warmup\n- Lugn löpning 20m Z2 HR intensity=active\n- Nedvarvning 5m Z1 HR intensity=cooldown",
-    external_id:`trailcoach-v13-garmin-test-${d}`
+    external_id:`trailcoach-v131-garmin-test-${d}`
   };
 
   $("sendGarminTest").disabled=true;
@@ -1618,7 +1700,7 @@ async function sendGarminStrengthTest(){
 - Sidoplanka 30s per sida 60s press lap
 
 Tryck LAP när varje arbetssteg är klart.`,
-    external_id:`trailcoach-v13-garmin-strength-test-${d}`
+    external_id:`trailcoach-v131-garmin-strength-test-${d}`
   };
 
   $("sendGarminStrengthTest").disabled=true;
@@ -1652,7 +1734,7 @@ async function verifyGarminStrengthTest(){
   try{
     const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
     const ev=Array.isArray(r.data)?r.data:[];
-    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v13-garmin-strength-test-${d}` || s(x,["name"],"")==="Trail Coach · Garmin Styrketest");
+    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v131-garmin-strength-test-${d}` || s(x,["name"],"")==="Trail Coach · Garmin Styrketest");
     if(!e)return garminStrengthTestMsg("Styrketestet hittades inte i Intervals.icu.","err");
     const structured=!!(e.workout_doc&&Array.isArray(e.workout_doc.steps)&&e.workout_doc.steps.length);
     garminStrengthTestMsg(
@@ -1675,7 +1757,7 @@ async function verifyGarminTest(){
   try{
     const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
     const ev=Array.isArray(r.data)?r.data:[];
-    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v13-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
+    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v131-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
     if(!e){
       garminTestMsg("Testpasset hittades inte i Intervals.icu-kalendern på valt datum.","err");
       return;
@@ -1699,7 +1781,7 @@ async function verifyGarminTest(){
 function addCustom(){
   const d=$("customDate").value,name=$("customName").value.trim(),mins=Number($("customMins").value),type=$("customType").value;
   if(!d||!name||!mins)return planMsg("Fyll i datum, namn och minuter för eget pass.","warn");
-  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`trailcoach-v13-${d}-custom-${Date.now()}`});
+  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`trailcoach-v131-${d}-custom-${Date.now()}`});
   localPlan.sort((a,b)=>a.date.localeCompare(b.date));renderPlan();$("pushWeek1").disabled=!apiKey;$("pushAll4").disabled=!apiKey;planMsg("Eget pass tillagt i den lokala planen.","ok");
 }
 function renderPlan(){
@@ -1922,7 +2004,7 @@ async function importCoachPlan(){
           : String(w.description||`${w.minutes} min ${w.name}`)
       ),
       week:1,source:"ChatGPT Coach",status:"READY",
-      external_id:`trailcoach-v13-coach-${String(w.date).slice(0,10)}-${normalized.length+1}`
+      external_id:`trailcoach-v131-coach-${String(w.date).slice(0,10)}-${normalized.length+1}`
     });
   }
   if(!normalized.length)return importMessage("Inga giltiga workouts hittades i CoachPlan.","err");
