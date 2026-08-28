@@ -1,18 +1,18 @@
-TRAIL COACH 2026/27 v1.1 — iPhone UI update
+TRAIL COACH 2026/27 v1.3
 
-Mobilförändringar:
-- Fast bottennavigation: Idag, Trender, Plan, Coach, Inställningar.
-- API-nyckel/anslutning flyttad från Översikt till Inställningar.
-- Garmin-synktest flyttat till Inställningar och är hopfällbart.
-- Data/diagnostik ligger under Inställningar.
-- 2-kolumnskort för Fitness, Fatigue, Form, VO2max och återhämtning.
-- Tätare 28-dagarssammanställning.
-- 4-veckorsplan visas som mobilkort på iPhone; desktop behåller tabellen.
-- Mindre rubrik, mindre paneler och kortare grafer på iPhone.
-- Senast vald flik återställs.
-- Service Worker-cache uppdaterad till v1.1.
+Ändringar:
+1. Inställningar:
+   - Fixad nästlad grid som gjorde Data & uppdatering extremt smal på desktop.
+   - Data & uppdatering och Senaste aktiviteter skalar nu över hela sidbredden.
+   - På mindre skärmar staplas panelerna automatiskt.
 
-Uppdatering på GitHub Pages:
-Ersätt index.html, manifest.json och sw.js i ditt befintliga repository.
-Behåll gärna samma ikonfiler. GitHub Pages-adressen ska vara oförändrad.
-Den sparade Intervals.icu-nyckeln ligger kvar eftersom webbplatsens origin inte ändras.
+2. Idag:
+   - Alla aktiviteter från senaste 28 dagarna listas.
+   - Aktiviteternas listkort visar datum, typ, tid, distans/höjdmeter och Training Load.
+   - Klick/tap öppnar en aktivitetsdetalj.
+   - Detaljen visar, när Intervals har värden: tid, distans, höjdmeter, load, puls, tempo/hastighet,
+     effekt, normalized power, kadens, kalorier, RPE, intensity, efficiency factor, FTP och pulszoner.
+
+GitHub Pages:
+Ersätt index.html, manifest.json och sw.js i befintligt repository.
+Ikonfilerna kan lämnas oförändrade.
