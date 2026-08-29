@@ -1,12 +1,16 @@
-TRAIL COACH 2026/27 v1.3.1
+TRAIL COACH 2026/27 v1.4.1 — Auto Sync
 
-Bugfix för iPhone aktivitetsdetalj:
-- Dialogen hålls nu inom iPhone safe area.
-- Rubrikraden ligger fast när innehållet scrollas.
-- Stängknappen är på iPhone en rund ×-knapp uppe till höger.
-- Knappen är alltid synlig och har 44x44 px touchyta.
-- Själva statistiken scrollas separat under rubrikraden.
+Automatisk uppdatering:
+- När appen öppnas och en API-nyckel är sparad hämtas färska data automatiskt.
+- När appen återgår från bakgrunden hämtas nya data om senaste hämtningen är äldre än 5 minuter.
+- När webben/PWA:n är öppen kontrolleras data periodiskt var 15:e minut.
+- Återanslutning till nätet triggar också en kontroll.
+- 'Senast uppdaterad' visas i apphuvudet.
+- Inställningar har en toggle för automatisk uppdatering.
+
+Viktigt på iPhone:
+En PWA kan inte tillförlitligt fortsätta hämta Intervals-data när appen är helt stängd eller suspenderad.
+Trail Coach uppdaterar därför så snart den öppnas/återgår till förgrunden.
 
 GitHub Pages:
-Ersätt index.html och sw.js i ditt befintliga repository.
-manifest.json kan också ersättas men är funktionellt oförändrad.
+Ersätt index.html, manifest.json och sw.js.
