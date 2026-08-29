@@ -6,7 +6,7 @@
   "display": "standalone",
   "background_color": "#0b0d0f",
   "theme_color": "#0b0d0f",
-  "description": "Adaptiv trailcoach med Garmin-feedback, mål, automatisk träningsfas och Race Readiness.",
+  "description": "Adaptiv trailcoach med Garmin, mål, automatisk träningsfas, Race Readiness och responsiv aktivitetsanalys.",
   "icons": [
     {
       "src": "icon-192.png",

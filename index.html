@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Trail Coach 2026/27 v1.5</title>
+<title>Trail Coach 2026/27 v1.5.1</title>
 <style>
 :root{
   --bg:#0b0d0f;--panel:#12161a;--panel2:#171c21;--panel3:#0f1317;
@@ -318,12 +318,12 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
 .activity-feed-name{
   grid-area:name;
   font-size:14px;
-  line-height:1.25;
+  line-height:1.28;
   font-weight:780;
   min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
+  overflow:visible;
+  white-space:normal;
+  overflow-wrap:anywhere;
 }
 .activity-feed-meta{
   grid-area:meta;
@@ -333,8 +333,9 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
   min-width:0;
   color:var(--muted);
   font-size:11px;
-  overflow:hidden;
-  white-space:nowrap;
+  overflow:visible;
+  white-space:normal;
+  flex-wrap:wrap;
 }
 .activity-feed-arrow{
   grid-area:arrow;
@@ -690,12 +691,12 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
 }
 .interval-list{display:grid;gap:6px}
 .interval-row{
-  display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:8px;align-items:center;
+  display:grid;grid-template-columns:minmax(78px,auto) minmax(0,1fr) auto;gap:8px;align-items:start;
   padding:8px;border-bottom:1px solid var(--line);font-size:11px
 }
-.interval-type{font-weight:800;color:var(--muted)}
-.interval-main{min-width:0}
-.interval-meta{text-align:right;color:var(--muted);white-space:nowrap}
+.interval-type{font-weight:800;color:var(--muted);white-space:normal;overflow-wrap:anywhere;line-height:1.2}
+.interval-main{min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.3}
+.interval-meta{text-align:right;color:var(--muted);white-space:normal;overflow-wrap:anywhere;line-height:1.25}
 .activity-note-box{padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);font-size:12px;white-space:pre-wrap}
 
 @media(max-width:900px){
@@ -714,6 +715,200 @@ hr.sep{border:0;border-top:1px solid var(--line);margin:16px 0}
   .race-goal-actions{grid-column:1 / -1;justify-content:flex-end}
   .readiness-row{grid-template-columns:105px 1fr 38px;gap:7px}
   .activity-detail-feedback{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+
+/* v1.5.1 — responsive text/layout audit */
+
+/* Never let grid/flex children force their parent wider than the viewport. */
+*,*::before,*::after{box-sizing:border-box}
+.grid>*,
+.row>*,
+.panel>*,
+.kpis>*,
+.weekcards>*,
+.plancontrols>*,
+.plan-summary>*,
+.settings-data-grid>*,
+.checkin-grid>*,
+.goal-form-grid>*,
+.phase-overview>*,
+.phase-stats>*,
+.race-goal>*,
+.activity-list28>*,
+.activity-detail-hero>*,
+.activity-detail-grid>*,
+.activity-detail-feedback>*,
+.wellness-inventory>*{
+  min-width:0;
+}
+
+/* User-facing prose and labels should wrap instead of being clipped. */
+h1,h2,h3,p,label,.small,.notice,.coachbox,
+.metric-base,.health-disclaimer,.wellness-field-name,.wellness-field-meta,
+.race-goal-name,.race-goal-meta,.phase-main,.readiness-label,
+.activity-detail-row span,.activity-detail-row strong,
+.activity-note-box,.activity-raw-note,.plan-mobile-name{
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+
+/* Buttons may wrap on narrow screens instead of overflowing. */
+button{
+  max-width:100%;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  line-height:1.15;
+}
+input,select,textarea{max-width:100%;min-width:0}
+
+/* 28-day activity list: show full names/metadata. */
+.activity-feed-item{
+  grid-template-columns:minmax(0,1fr) auto;
+  grid-template-areas:
+    "date load"
+    "name name"
+    "meta arrow";
+}
+.activity-feed-name{
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  overflow-wrap:anywhere;
+  line-height:1.28;
+}
+.activity-feed-meta{
+  white-space:normal;
+  overflow:visible;
+  flex-wrap:wrap;
+  line-height:1.3;
+}
+.activity-feed-load{align-self:start}
+
+/* Activity detail: never clip metric values. */
+.activity-stat .av{
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+.activity-detail-row strong{
+  min-width:0;
+  max-width:62%;
+}
+.activity-zone-value{
+  white-space:normal;
+  line-height:1.2;
+}
+
+/* Intervals/laps: RECOVERY/WORK must have enough room.
+   Desktop keeps load on the right; mobile moves it under the interval summary. */
+.interval-row{
+  grid-template-columns:minmax(78px,auto) minmax(0,1fr) auto;
+  align-items:start;
+}
+.interval-type{
+  min-width:0;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  line-height:1.2;
+}
+.interval-main{
+  min-width:0;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  line-height:1.3;
+}
+.interval-meta{
+  min-width:0;
+  white-space:normal;
+  overflow-wrap:anywhere;
+  line-height:1.25;
+}
+
+/* Plan cards and goal cards */
+.plan-mobile-meta{white-space:normal;overflow-wrap:anywhere}
+.phase-stats strong,.phase-stats span{overflow-wrap:anywhere}
+.goal-priority{flex-shrink:0}
+
+/* Desktop/table content is allowed to scroll rather than clip. */
+.scroll,.health-table-wrap{
+  max-width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+@media(max-width:560px){
+  .activity-feed-item{
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-areas:
+      "date load"
+      "name name"
+      "meta arrow";
+  }
+
+  .interval-row{
+    grid-template-columns:minmax(76px,auto) minmax(0,1fr);
+    grid-template-areas:
+      "itype imain"
+      "itype imeta";
+    gap:4px 9px;
+    padding:9px 4px;
+  }
+  .interval-type{grid-area:itype}
+  .interval-main{grid-area:imain}
+  .interval-meta{
+    grid-area:imeta;
+    text-align:left;
+    color:var(--muted);
+  }
+
+  .activity-detail-row{
+    align-items:flex-start;
+  }
+  .activity-detail-row strong{
+    max-width:58%;
+  }
+
+  /* Forms become less dense on an iPhone. */
+  .goal-form-grid{grid-template-columns:1fr}
+  .phase-stats{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+  .phase-stats>div{padding:8px 6px}
+  .phase-stats strong{font-size:14px}
+  .phase-stats span{font-size:8px;line-height:1.25}
+
+  .checkin-grid{grid-template-columns:1fr 1fr}
+  .plancontrols{grid-template-columns:1fr 1fr}
+  .settings-data-actions .row{grid-template-columns:1fr 1fr}
+}
+
+/* Very narrow iPhone / zoomed text fallback. */
+@media(max-width:390px){
+  .plancontrols,
+  .settings-data-actions .row,
+  .checkin-grid{
+    grid-template-columns:1fr;
+  }
+  .phase-stats{
+    grid-template-columns:1fr;
+  }
+  .activity-detail-feedback,
+  .activity-detail-hero{
+    grid-template-columns:1fr 1fr;
+  }
+  .recovery-kpis{grid-template-columns:1fr 1fr}
+}
+
+/* Support enlarged iOS accessibility text without clipping. */
+@media(max-width:560px){
+  body{-webkit-text-size-adjust:100%}
+  .activity-dialog-title-wrap,
+  .activity-dialog-body,
+  .settings-card,
+  .goal-phase-panel,
+  .checkin-panel{
+    min-width:0;
+  }
 }
 
 </style>
@@ -2301,7 +2496,13 @@ function activityIntervalHtml(intervals){
     const sp=n(it,["average_speed"]);
     const pace=sp&&sp>0?paceText(1000/sp):null;
     const meta=[sec?duration(sec):null,hr?`${Math.round(hr)} bpm`:null,pace].filter(Boolean).join(" · ");
-    return `<div class="interval-row"><div class="interval-type">${esc(s(it,["type"],`#${i+1}`))}</div><div class="interval-main">${esc(meta||"Intervall")}</div><div class="interval-meta">${n(it,["training_load"])!=null?`Load ${fmt.format(n(it,["training_load"]))}`:""}</div></div>`;
+    const rawType=s(it,["type"],`#${i+1}`);
+    const typeLabel=String(rawType||"").replaceAll("_"," ").replace(/\w/g,c=>c.toUpperCase());
+    return `<div class="interval-row">
+      <div class="interval-type">${esc(typeLabel)}</div>
+      <div class="interval-main">${esc(meta||"Intervall")}</div>
+      <div class="interval-meta">${n(it,["training_load"])!=null?`Load ${fmt.format(n(it,["training_load"]))}`:""}</div>
+    </div>`;
   }).join("");
 }
 function renderActivityDetail(a,{loading=false,messages=null}={}){
@@ -2580,7 +2781,7 @@ function makePlanEvent(date,kind,mins,name,mode,week,source){
   return{
     date:iso(date),kind,mins:Math.round(mins),name,type:eventType(kind,mode),target:targetLabel(kind),
     description:makeDescription(kind,mins,mode),week,source,status:week===1?"READY":"ROADMAP",
-    external_id:`trailcoach-v15-${iso(date)}-${kind}`
+    external_id:`trailcoach-v151-${iso(date)}-${kind}`
   };
 }
 async function fetchPlan(){
@@ -2669,7 +2870,7 @@ async function sendGarminTest(){
     type:"Run",
     name:"Garmin Sync Test · Lugn HR",
     description:"Garmin sync test\n- Uppvärmning 10m Z1 HR intensity=warmup\n- Lugn löpning 20m Z2 HR intensity=active\n- Nedvarvning 5m Z1 HR intensity=cooldown",
-    external_id:`trailcoach-v15-garmin-test-${d}`
+    external_id:`trailcoach-v151-garmin-test-${d}`
   };
 
   $("sendGarminTest").disabled=true;
@@ -2722,7 +2923,7 @@ async function sendGarminStrengthTest(){
 - Sidoplanka 30s per sida 60s press lap
 
 Tryck LAP när varje arbetssteg är klart.`,
-    external_id:`trailcoach-v15-garmin-strength-test-${d}`
+    external_id:`trailcoach-v151-garmin-strength-test-${d}`
   };
 
   $("sendGarminStrengthTest").disabled=true;
@@ -2756,7 +2957,7 @@ async function verifyGarminStrengthTest(){
   try{
     const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
     const ev=Array.isArray(r.data)?r.data:[];
-    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v15-garmin-strength-test-${d}` || s(x,["name"],"")==="Trail Coach · Garmin Styrketest");
+    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v151-garmin-strength-test-${d}` || s(x,["name"],"")==="Trail Coach · Garmin Styrketest");
     if(!e)return garminStrengthTestMsg("Styrketestet hittades inte i Intervals.icu.","err");
     const structured=!!(e.workout_doc&&Array.isArray(e.workout_doc.steps)&&e.workout_doc.steps.length);
     garminStrengthTestMsg(
@@ -2779,7 +2980,7 @@ async function verifyGarminTest(){
   try{
     const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
     const ev=Array.isArray(r.data)?r.data:[];
-    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v15-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
+    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v151-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
     if(!e){
       garminTestMsg("Testpasset hittades inte i Intervals.icu-kalendern på valt datum.","err");
       return;
@@ -2803,7 +3004,7 @@ async function verifyGarminTest(){
 function addCustom(){
   const d=$("customDate").value,name=$("customName").value.trim(),mins=Number($("customMins").value),type=$("customType").value;
   if(!d||!name||!mins)return planMsg("Fyll i datum, namn och minuter för eget pass.","warn");
-  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`trailcoach-v15-${d}-custom-${Date.now()}`});
+  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`trailcoach-v151-${d}-custom-${Date.now()}`});
   localPlan.sort((a,b)=>a.date.localeCompare(b.date));renderPlan();$("pushWeek1").disabled=!apiKey;$("pushAll4").disabled=!apiKey;planMsg("Eget pass tillagt i den lokala planen.","ok");
 }
 function renderPlan(){
@@ -3052,7 +3253,7 @@ async function importCoachPlan(){
           : String(w.description||`${w.minutes} min ${w.name}`)
       ),
       week:1,source:"ChatGPT Coach",status:"READY",
-      external_id:`trailcoach-v15-coach-${String(w.date).slice(0,10)}-${normalized.length+1}`
+      external_id:`trailcoach-v151-coach-${String(w.date).slice(0,10)}-${normalized.length+1}`
     });
   }
   if(!normalized.length)return importMessage("Inga giltiga workouts hittades i CoachPlan.","err");
