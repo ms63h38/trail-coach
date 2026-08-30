@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Trail Coach 2026/27 v1.6.1</title>
+<title>Trail Coach 2026/27 v1.6.3</title>
 <style>
 :root{
   --bg:#0b0d0f;--panel:#12161a;--panel2:#171c21;--panel3:#0f1317;
@@ -953,13 +953,18 @@ input,select,textarea{max-width:100%;min-width:0}
 }
 
 
-/* v1.6.1 wellness freshness */
+/* v1.6.3 wellness freshness + pairing */
 .health-metric.stale{
   border-color:#665727;
 }
 .health-metric.stale .metric-base{
   color:#f4c95d;
 }
+
+
+/* v1.6.3 Intervals pairing */
+.pairing-mode-note{margin:5px 0 2px;color:#a9b6c1;line-height:1.35}
+.pairing-load{font-size:9px;color:var(--good);margin-top:3px;white-space:normal}
 
 </style>
 </head>
@@ -1118,7 +1123,7 @@ input,select,textarea{max-width:100%;min-width:0}
     <div class="kpis four">
       <div class="mini"><div id="feedbackRpe" class="v">—</div><div class="l">Snitt RPE</div><div id="feedbackRpeCount" class="metric-base">—</div></div>
       <div class="mini"><div id="feedbackFeel" class="v">—</div><div class="l">Snitt Feel</div><div id="feedbackFeelCount" class="metric-base">—</div></div>
-      <div class="mini"><div id="feedbackCompliance" class="v">—</div><div class="l">Intervals plan-compliance</div><div id="feedbackComplianceCount" class="metric-base">—</div></div>
+      <div class="mini"><div id="feedbackCompliance" class="v">—</div><div class="l">Garmin Execution Score</div><div id="feedbackComplianceCount" class="metric-base">—</div></div>
       <div class="mini"><div id="feedbackDecoupling" class="v">—</div><div class="l">Snitt decoupling</div><div id="feedbackDecouplingCount" class="metric-base">—</div></div>
     </div>
     <div id="feedbackTrendNote" class="notice">RPE och Feel kommer från Garmin/Intervals. Intervals plan-compliance är inte samma sak som Garmin Execution Score.</div>
@@ -1229,6 +1234,7 @@ input,select,textarea{max-width:100%;min-width:0}
       </div>
     </div>
     <div class="small strength-mode-note">Styrkemiljön påverkar övningar, passlängd och Garmin-textsteg. Du kan byta mellan hemgym och fullt gym inför varje ny plan.</div>
+    <div class="small pairing-mode-note">Intervals-parning: sporttyp + planerad tid + dynamisk load från din senaste träningshistorik skickas med. Detta minskar risken för dubbla planerade/genomförda pass.</div>
     <div class="plan-actions">
       <button id="generatePlan" disabled>Bygg 4 veckor från min data</button>
       <button id="fetchPlan" class="secondary" disabled>Hämta 4 veckor från Intervals</button>
@@ -1672,22 +1678,44 @@ function safeLocalSet(key,val){
   try{localStorage.setItem(key,JSON.stringify(val));return true}catch{return false}
 }
 function defaultGoals(){
-  return [{
-    id:"idre-half-2027",
-    name:"Idre Fjällmaraton · halv",
-    date:"2027-08-28",
-    priority:"A",
-    distance_km:null,
-    elevation_m:null,
-    technical:"high",
-    target_time:"",
-    note:"Preliminärt datum baserat på sista helgen i augusti 2027 – uppdatera när officiellt datum är bekräftat."
-  }];
+  return [
+    {
+      id:"idre-half-2027",name:"Idre Fjällmaraton · halv",date:"2027-08-28",priority:"A",
+      distance_km:18,elevation_m:500,technical:"high",target_time:"3:00",
+      note:"Preliminärt datum baserat på sista helgen i augusti 2027 – uppdatera när officiellt datum är bekräftat."
+    },
+    {
+      id:"hamra-trail-2027",name:"Hamra trail",date:"2027-07-31",priority:"C",
+      distance_km:12,elevation_m:300,technical:"high",target_time:"",note:""
+    },
+    {
+      id:"vemdalen-winter-classics-2027",name:"Vemdalen winter classics",date:"2027-02-20",priority:"C",
+      distance_km:11,elevation_m:null,technical:"medium",target_time:"",note:"Obs längdskidor"
+    }
+  ];
+}
+function goalKey(g){return `${String(g?.name||"").trim().toLowerCase()}|${g?.date||""}`}
+function seedCoreGoalsOnce(stored){
+  let out=Array.isArray(stored)?stored.map(g=>({...g})):[];
+  const done=safeLocalGet("trailcoach_goals_seed_v163",false)===true;
+  if(done && out.length)return out;
+  for(const core of defaultGoals()){
+    const ix=out.findIndex(g=>goalKey(g)===goalKey(core));
+    if(ix<0)out.push({...core});
+    else{
+      // Fill only missing fields so real user edits win over app defaults.
+      for(const [k,v] of Object.entries(core)){
+        if(out[ix][k]==null || out[ix][k]==="")out[ix][k]=v;
+      }
+    }
+  }
+  safeLocalSet("trailcoach_goals_seed_v163",true);
+  return out.length?out:defaultGoals();
 }
 function restoreCoachLocalState(){
   const storedGoals=safeLocalGet(GOALS_STORE,null);
-  raceGoals=(Array.isArray(storedGoals)&&storedGoals.length)?storedGoals:defaultGoals();
-  if(!Array.isArray(storedGoals)||!storedGoals.length)saveGoals();
+  raceGoals=seedCoreGoalsOnce(storedGoals);
+  saveGoals();
   dailyCheckins=safeLocalGet(CHECKIN_STORE,{})||{};
   executionScoreCache=safeLocalGet(EXECUTION_SCORE_CACHE_STORE,{})||{};
 }
@@ -1709,9 +1737,17 @@ function garminExecutionScoreFromActivity(a){
   ];
   for(const k of keys){
     const v=a[k];
-    if(v!=null && Number.isFinite(Number(v)))return Number(v);
+    if(v!=null && Number.isFinite(Number(v)))return normalizeExecutionScore(v);
   }
-  if(a.id && executionScoreCache[a.id]!=null)return Number(executionScoreCache[a.id]);
+  if(a.id && executionScoreCache[a.id]!=null)return normalizeExecutionScore(executionScoreCache[a.id]);
+  return null;
+}
+function normalizeExecutionScore(value){
+  const v=Number(value);
+  if(!Number.isFinite(v)||v<0)return null;
+  // Garmin/FIT decoders can expose percent either as 83 or 8300.
+  if(v<=100)return v;
+  if(v<=10000)return v/100;
   return null;
 }
 function intervalsComplianceDisplay(a){
@@ -1815,7 +1851,8 @@ function parseGarminExecutionScoreFromFit(arrayBuffer){
       if(def.globalNum===18 && field.num===185){
         const dv=new DataView(arrayBuffer);
         const value=fitReadNumber(dv,pos,field.size,field.base,def.little);
-        if(value!=null && Number.isFinite(value) && value>=0 && value<=100)return value;
+        const score=normalizeExecutionScore(value);
+        if(score!=null)return score;
       }
       pos+=field.size;
     }
@@ -1843,21 +1880,45 @@ async function fetchGarminExecutionScore(activity){
   return null;
 }
 
+async function hydrateGarminExecutionScores(days=28){
+  const candidates=recentActivities(days).filter(a=>{
+    if(garminExecutionScoreFromActivity(a)!=null)return false;
+    const name=s(a,["name"],"").toLowerCase();
+    return a?.paired_event_id!=null || n(a,["compliance"])!=null || name.includes("trail coach");
+  }).slice(0,12);
+  if(!candidates.length)return 0;
+  const scores=await Promise.all(candidates.map(async a=>{
+    const score=await fetchGarminExecutionScore(a).catch(()=>null);
+    if(score!=null)a.ExecutionScore=score;
+    return score;
+  }));
+  return scores.filter(v=>v!=null).length;
+}
+
 function complianceValue(a){
   const v=n(a,["compliance"]);
   if(v==null)return null;
   return v>0&&v<=2.5?v*100:v;
 }
+function pairedIntervalsComplianceValue(a){
+  const v=complianceValue(a);
+  if(v==null)return null;
+  // compliance=0 + no paired_event_id means "not paired", not 0% execution.
+  if(v===0 && a?.paired_event_id==null)return null;
+  return v;
+}
 function feedbackSummary(days=28){
   const arr=recentActivities(days);
   const rpe=arr.map(a=>n(a,["icu_rpe"])).filter(v=>v!=null);
   const feel=arr.map(a=>n(a,["feel"])).filter(v=>v!=null);
-  const comp=arr.map(complianceValue).filter(v=>v!=null);
+  const execution=arr.map(garminExecutionScoreFromActivity).filter(v=>v!=null);
+  const comp=arr.map(pairedIntervalsComplianceValue).filter(v=>v!=null);
   const dec=arr.map(a=>n(a,["decoupling"])).filter(v=>v!=null);
   return{
     activities:arr.length,
     rpe_count:rpe.length,avg_rpe:rpe.length?rpe.reduce((a,b)=>a+b,0)/rpe.length:null,
     feel_count:feel.length,avg_feel:feel.length?feel.reduce((a,b)=>a+b,0)/feel.length:null,
+    execution_score_count:execution.length,avg_execution_score:execution.length?execution.reduce((a,b)=>a+b,0)/execution.length:null,
     compliance_count:comp.length,avg_compliance:comp.length?comp.reduce((a,b)=>a+b,0)/comp.length:null,
     decoupling_count:dec.length,avg_decoupling:dec.length?dec.reduce((a,b)=>a+b,0)/dec.length:null
   };
@@ -2335,6 +2396,7 @@ async function refreshData({reason="manual",quiet=false}={}){
     ]);
     activities=Array.isArray(a.data)?a.data:[];
     wellness=Array.isArray(w.data)?w.data:[];
+    await hydrateGarminExecutionScores(28);
     enableConnected(true);renderAll();
     saveRefreshTime();
     setStatus(true,"Ansluten");
@@ -2515,7 +2577,7 @@ function renderRaceReadiness(){
   $("raceReadinessNote").textContent=`Profil ${Math.round(p.overall)}/100 · aktuell fas ${phaseLabel(p.phase)}. Störst utvecklingsbehov just nu: ${weakest}. Långpassmål för fasen ≈ ${p.long_target_min} min; riktvärde vertikal träning ≈ ${Math.round(p.target_weekly_elevation_m)} hm/vecka.`;
 }
 const ACTIVITY_API_FIELDS=[
-  ["icu_rpe","Garmin/Intervals RPE"],["feel","Garmin/Intervals Feel"],["ExecutionScore","Garmin Execution Score (FIT 185)"],["compliance","Intervals plan-compliance"],
+  ["icu_rpe","Garmin/Intervals RPE"],["feel","Garmin/Intervals Feel"],["ExecutionScore","Garmin Execution Score (FIT 185)"],["compliance","Intervals plan-compliance (requires pair)"],
   ["session_rpe","Session RPE"],["decoupling","Decoupling"],["icu_intensity","Intensity"],
   ["icu_variability_index","Variability index"],["average_stride","Stride length"],
   ["icu_efficiency_factor","Efficiency factor"],["hr_load","HR load"],["pace_load","Pace load"],
@@ -2667,15 +2729,16 @@ function renderFeedbackTrends(){
   $("feedbackFeel").textContent=fb.avg_feel==null?"—":fmt.format(fb.avg_feel);
   $("feedbackFeelCount").textContent=fb.feel_count?`${fb.feel_count} pass · 1 bäst / 5 sämst`:"ingen Feel-data";
 
-  $("feedbackCompliance").textContent=fb.avg_compliance==null?"—":`${Math.round(fb.avg_compliance)}%`;
-  $("feedbackComplianceCount").textContent=fb.compliance_count?`${fb.compliance_count} planerade pass`:"ingen compliance-data";
+  $("feedbackCompliance").textContent=fb.avg_execution_score==null?"—":`${Math.round(fb.avg_execution_score)}%`;
+  $("feedbackComplianceCount").textContent=fb.execution_score_count?`${fb.execution_score_count} pass från Garmin FIT`:"inget Execution Score i FIT";
 
   $("feedbackDecoupling").textContent=fb.avg_decoupling==null?"—":`${fmt.format(fb.avg_decoupling)}%`;
   $("feedbackDecouplingCount").textContent=fb.decoupling_count?`${fb.decoupling_count} pass med värde`:"ingen decoupling-data";
 
   const available=[
     fb.rpe_count?"RPE":null,fb.feel_count?"Feel":null,
-    fb.compliance_count?"compliance":null,fb.decoupling_count?"decoupling":null
+    fb.execution_score_count?"Garmin Execution Score":null,
+    fb.compliance_count?"parad Intervals-compliance":null,fb.decoupling_count?"decoupling":null
   ].filter(Boolean);
   $("feedbackTrendNote").textContent=available.length
     ? `Tillgängligt från Intervals senaste 28 dagar: ${available.join(", ")}. Feel: 1 = stark/bäst, 5 = svag/sämst. Plan-compliance är Intervals-måttet, inte Garmin Execution Score.`
@@ -3059,6 +3122,101 @@ function strengthDescriptionFromName(name,sets=2,preferredMode=null){
   return null;
 }
 
+function median(values){
+  const a=values.filter(Number.isFinite).sort((x,y)=>x-y);
+  if(!a.length)return null;
+  const m=Math.floor(a.length/2);
+  return a.length%2?a[m]:(a[m-1]+a[m])/2;
+}
+function sportFamily(type){
+  const t=String(type||"").toLowerCase();
+  if(t.includes("run"))return"run";
+  if(t.includes("ski"))return"ski";
+  if(t.includes("weight")||t.includes("strength"))return"strength";
+  if(t.includes("yoga"))return"yoga";
+  if(t.includes("hike")||t.includes("walk"))return"hike";
+  if(t.includes("ride")||t.includes("bike"))return"ride";
+  return t||"other";
+}
+function historicalLoadRate(type,days=42){
+  const family=sportFamily(type),cutoff=ago(days-1),rates=[];
+  for(const a of activities){
+    if(dateOf(a)<cutoff || sportFamily(typeOf(a))!==family)continue;
+    const mins=secs(a)/60;
+    if(!Number.isFinite(mins)||mins<15)continue;
+    let l=null;
+    // Running load priority in Trail Coach is HR-oriented: HR load best predicts the
+    // load the completed Garmin activity will receive in Intervals.
+    if(family==="run"||family==="ski")l=n(a,["hr_load"]);
+    if(l==null||l<=0)l=n(a,["icu_training_load","training_load","load"]);
+    if(l==null||l<=0)continue;
+    const rate=l/mins;
+    if(rate>=0.15&&rate<=2.2)rates.push(rate);
+  }
+  const med=median(rates);
+  if(med!=null)return{rate:med,samples:rates.length,source:family==="run"||family==="ski"?"historisk HR-load":"historisk load"};
+  const fallback={run:.86,ski:.82,strength:.12,yoga:.04,hike:.35,ride:.75}[family];
+  return fallback!=null?{rate:fallback,samples:0,source:"fallback"}:null;
+}
+function plannedIntensityFactor(p){
+  const x=`${p?.kind||""} ${p?.name||""} ${p?.target||""} ${p?.description||""}`.toLowerCase();
+  if(x.includes("återhämt")||x.includes("recovery"))return .70;
+  if(x.includes("lång")||x.includes("long"))return 1.06;
+  if(x.includes("back")||x.includes("hill")||x.includes("z3")||x.includes("interval"))return 1.12;
+  if(x.includes("lugn")||x.includes("easy")||x.includes("z2"))return .94;
+  return 1.0;
+}
+function estimatePlannedTrainingLoad(p){
+  const explicit=n(p,["planned_load","icu_training_load","training_load"]);
+  if(explicit!=null&&explicit>0)return Math.round(explicit);
+  const mins=Number(p?.mins)||0;
+  if(mins<=0)return null;
+  const hist=historicalLoadRate(p?.type,42);
+  if(!hist)return null;
+  const family=sportFamily(p?.type);
+  // First strength/yoga sessions: avoid inventing an endurance load. Duration + sport
+  // still help pairing, and once history exists this will calibrate automatically.
+  if((family==="strength"||family==="yoga")&&hist.samples===0)return null;
+  return Math.max(1,Math.round(hist.rate*mins*plannedIntensityFactor(p)));
+}
+function pairingTargetForType(type){
+  const f=sportFamily(type);
+  return(f==="run"||f==="ski")?"HR":null;
+}
+function pairingEstimate(p){
+  const hist=historicalLoadRate(p?.type,42);
+  const load=estimatePlannedTrainingLoad(p);
+  return{
+    moving_time:Math.max(60,Math.round((Number(p?.mins)||0)*60)),
+    icu_training_load:load,
+    load_source:hist?hist.source:null,
+    load_samples:hist?hist.samples:0,
+    target:pairingTargetForType(p?.type)
+  };
+}
+function sameSportForPairing(a,b){return sportFamily(a)===sportFamily(b)}
+function findExistingPlannedEvent(existing,p){
+  return existing.find(e=>s(e,["category"],"")==="WORKOUT" && (
+    (s(e,["external_id"],"")&&s(e,["external_id"],"")===p.external_id) ||
+    (dateOf(e)===p.date&&s(e,["name"],"")===p.name)
+  ))||null;
+}
+function plannedEventPayload(p,externalId=null){
+  const pe=pairingEstimate(p);
+  const payload={
+    start_date_local:p.date+"T00:00:00",
+    category:"WORKOUT",
+    type:p.type,
+    name:p.name,
+    description:p.description,
+    moving_time:pe.moving_time,
+    external_id:externalId||p.external_id
+  };
+  if(pe.icu_training_load!=null)payload.icu_training_load=pe.icu_training_load;
+  if(pe.target)payload.target=pe.target;
+  return payload;
+}
+
 function makeDescription(kind,mins,mode){
   const m=Math.round(mins);
   if(kind==="easy")return `Lugn trail · Z2-dominant\n- 10m Z1 HR intensity=warmup\n- ${Math.max(10,m-15)}m Z2 HR intensity=active\n- 5m Z1 HR intensity=cooldown\n\nKorta inslag i nedre Z3 är okej i backar. Power hike i branta partier.`;
@@ -3077,6 +3235,7 @@ function eventType(kind,mode){
   if(kind.startsWith("strength"))return "WeightTraining";
   if(kind==="yoga")return "Yoga";
   if(kind.startsWith("ski"))return "NordicSki";
+  if(mode==="trail" && ["easy","hills","long","recovery"].includes(kind))return "TrailRun";
   return "Run";
 }
 function eventBadge(type){
@@ -3156,7 +3315,7 @@ function makePlanEvent(date,kind,mins,name,mode,week,source){
   return{
     date:iso(date),kind,mins:Math.round(mins),name,type:eventType(kind,mode),target:targetLabel(kind),
     description:makeDescription(kind,mins,mode),week,source,status:week===1?"READY":"ROADMAP",
-    external_id:`trailcoach-v161-${iso(date)}-${kind}`
+    external_id:`trailcoach-v163-${iso(date)}-${kind}`
   };
 }
 async function fetchPlan(){
@@ -3169,7 +3328,7 @@ async function fetchPlan(){
     const planned=calendarEvents.filter(e=>s(e,["category"],"")==="WORKOUT").map(e=>({
       id:e.id,date:dateOf(e),kind:"external",mins:Math.round((n(e,["moving_time"])||0)/60),
       name:s(e,["name"],"Planerat pass"),type:s(e,["type"],"Other"),target:"Intervals.icu",
-      description:s(e,["description"],""),week:0,source:"Intervals",status:"PUBLISHED",external_id:s(e,["external_id"],"")
+      description:s(e,["description"],""),planned_load:n(e,["icu_training_load"]),week:0,source:"Intervals",status:"PUBLISHED",external_id:s(e,["external_id"],"")
     }));
     localPlan=planned;renderPlan();$("pushWeek1").disabled=true;$("pushAll4").disabled=true;
     planMsg(`${planned.length} planerade WORKOUT-händelser hämtade för perioden ${oldest}–${newest}.`,"ok");
@@ -3183,45 +3342,56 @@ async function pushPlanScope(scope="week1"){
   const selected=scope==="all"
     ? localPlan
     : localPlan.filter(p=>planWeekNumber(p)===1 || p.status==="READY");
-
   if(!selected.length)return planMsg("Det finns inga pass i nästa vecka att publicera.","warn");
 
   const button=scope==="all"?$("pushAll4"):$("pushWeek1");
   button.disabled=true;
-  planMsg(scope==="all"?"Publicerar hela 4-veckorsroadmapen …":"Publicerar endast nästa vecka …");
+  planMsg(scope==="all"?"Publicerar hela 4-veckorsroadmapen med parningsoptimering …":"Publicerar nästa vecka med parningsoptimering …");
 
   try{
     const dates=selected.map(x=>x.date).sort(),oldest=dates[0],newest=dates.at(-1);
     const existingR=await icu(`/athlete/0/events?oldest=${oldest}&newest=${newest}`);
     const existing=Array.isArray(existingR.data)?existingR.data:[];
-    const pending=selected.filter(p=>!existing.some(e=>
-      (s(e,["external_id"],"")&&s(e,["external_id"],"")===p.external_id) ||
-      (dateOf(e)===p.date&&s(e,["name"],"")===p.name)
-    ));
-    const skipped=selected.length-pending.length;
+    const createList=[],updateList=[];
 
-    if(!pending.length){
-      planMsg(`Inga nya pass att skapa. ${skipped} finns redan i Intervals.icu.`,"ok");
-      return;
+    for(const p of selected){
+      const ex=findExistingPlannedEvent(existing,p);
+      if(ex && (s(ex,["external_id"],"").startsWith("trailcoach-") || s(ex,["name"],"").startsWith("Trail Coach"))){
+        updateList.push({p,event:ex});
+      }else if(!ex){
+        createList.push(p);
+      }
     }
 
-    const payload=pending.map(p=>({
-      start_date_local:p.date+"T00:00:00",
-      category:"WORKOUT",
-      type:p.type,
-      name:p.name,
-      description:p.description,
-      external_id:p.external_id
-    }));
+    const updated=[];
+    for(const {p,event} of updateList){
+      // Preserve old external_id so updates do not create a second calendar item.
+      const payload=plannedEventPayload(p,s(event,["external_id"],"")||p.external_id);
+      const r=await icu(`/athlete/0/events/${encodeURIComponent(event.id)}`,{method:"PUT",body:payload});
+      if(r?.data)updated.push(r.data);
+    }
 
-    const r=await icu("/athlete/0/events/bulk?upsert=true",{method:"POST",body:payload});
-    const created=Array.isArray(r.data)?r.data:[];
-    const structured=created.filter(e=>e.workout_doc&&Array.isArray(e.workout_doc.steps)&&e.workout_doc.steps.length).length;
+    let created=[];
+    if(createList.length){
+      const payload=createList.map(p=>plannedEventPayload(p));
+      const r=await icu("/athlete/0/events/bulk?upsert=true",{method:"POST",body:payload});
+      created=Array.isArray(r.data)?r.data:[];
+    }
 
-    pending.forEach(p=>p.status="PUBLISHED");
+    const returned=[...updated,...created];
+    const structured=returned.filter(e=>e.workout_doc&&Array.isArray(e.workout_doc.steps)&&e.workout_doc.steps.length).length;
+    const optimized=returned.filter(e=>n(e,["moving_time"])!=null && n(e,["icu_training_load"])!=null).length;
+    const untouched=selected.length-updateList.length-createList.length;
+
+    selected.forEach(p=>p.status="PUBLISHED");
     renderPlan();
-
-    planMsg(`Klart. ${created.length} pass publicerade (${structured} strukturerade), ${skipped} dubbletter hoppades över. ${scope==="week1"?"Vecka 2–4 ligger kvar som roadmap.":"Alla fyra veckor är publicerade."}`,"ok");
+    planMsg(
+      `Klart. ${created.length} skapade, ${updated.length} uppdaterade, ${structured} strukturerade. `+
+      `${optimized} pass har explicit tid + load för bättre Intervals-parning. `+
+      `${untouched?`${untouched} befintliga externa pass lämnades orörda. `:""}`+
+      `${scope==="week1"?"Vecka 2–4 ligger kvar som roadmap.":"Alla fyra veckor är publicerade."}`,
+      optimized?"ok":"warn"
+    );
   }catch(e){
     planMsg(`Publicering misslyckades: HTTP ${e?.status||"?"} ${e?.body||e?.message||""}`,"err");
   }finally{
@@ -3245,7 +3415,10 @@ async function sendGarminTest(){
     type:"Run",
     name:"Garmin Sync Test · Lugn HR",
     description:"Garmin sync test\n- Uppvärmning 10m Z1 HR intensity=warmup\n- Lugn löpning 20m Z2 HR intensity=active\n- Nedvarvning 5m Z1 HR intensity=cooldown",
-    external_id:`trailcoach-v161-garmin-test-${d}`
+    moving_time:35*60,
+    icu_training_load:Math.round((historicalLoadRate("TrailRun",42)?.rate||.86)*35*.94),
+    target:"HR",
+    external_id:`trailcoach-v163-garmin-test-${d}`
   };
 
   $("sendGarminTest").disabled=true;
@@ -3298,7 +3471,7 @@ async function sendGarminStrengthTest(){
 - Sidoplanka 30s per sida 60s press lap
 
 Tryck LAP när varje arbetssteg är klart.`,
-    external_id:`trailcoach-v161-garmin-strength-test-${d}`
+    external_id:`trailcoach-v163-garmin-strength-test-${d}`
   };
 
   $("sendGarminStrengthTest").disabled=true;
@@ -3332,7 +3505,7 @@ async function verifyGarminStrengthTest(){
   try{
     const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
     const ev=Array.isArray(r.data)?r.data:[];
-    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v161-garmin-strength-test-${d}` || s(x,["name"],"")==="Trail Coach · Garmin Styrketest");
+    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v163-garmin-strength-test-${d}` || s(x,["name"],"")==="Trail Coach · Garmin Styrketest");
     if(!e)return garminStrengthTestMsg("Styrketestet hittades inte i Intervals.icu.","err");
     const structured=!!(e.workout_doc&&Array.isArray(e.workout_doc.steps)&&e.workout_doc.steps.length);
     garminStrengthTestMsg(
@@ -3355,7 +3528,7 @@ async function verifyGarminTest(){
   try{
     const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
     const ev=Array.isArray(r.data)?r.data:[];
-    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v161-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
+    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v163-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
     if(!e){
       garminTestMsg("Testpasset hittades inte i Intervals.icu-kalendern på valt datum.","err");
       return;
@@ -3379,7 +3552,7 @@ async function verifyGarminTest(){
 function addCustom(){
   const d=$("customDate").value,name=$("customName").value.trim(),mins=Number($("customMins").value),type=$("customType").value;
   if(!d||!name||!mins)return planMsg("Fyll i datum, namn och minuter för eget pass.","warn");
-  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`trailcoach-v161-${d}-custom-${Date.now()}`});
+  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`trailcoach-v163-${d}-custom-${Date.now()}`});
   localPlan.sort((a,b)=>a.date.localeCompare(b.date));renderPlan();$("pushWeek1").disabled=!apiKey;$("pushAll4").disabled=!apiKey;planMsg("Eget pass tillagt i den lokala planen.","ok");
 }
 function renderPlan(){
@@ -3400,7 +3573,7 @@ function renderPlan(){
     <td><span class="badge ${eventBadge(p.type)}">${esc(p.type)}</span></td>
     <td><input value="${esc(p.name)}" data-i="${i}" data-field="name"></td>
     <td class="num"><input class="minsinput" type="number" min="5" max="360" value="${p.mins||0}" data-i="${i}" data-field="mins"></td>
-    <td>${esc(p.target)}</td><td>${esc(p.source)}</td>
+    <td>${esc(p.target)}${estimatePlannedTrainingLoad(p)!=null?`<div class="pairing-load">Pair load ~${estimatePlannedTrainingLoad(p)}</div>`:""}</td><td>${esc(p.source)}</td>
     <td><button class="danger" data-remove="${i}">×</button></td></tr>`;
   }).join("");
 
@@ -3423,6 +3596,7 @@ function renderPlan(){
           <span class="badge ${eventBadge(p.type)}">${esc(p.type)}</span>
           <span>${Math.round(p.mins||0)} min</span>
           <span>${esc(p.target)}</span>
+          ${estimatePlannedTrainingLoad(p)!=null?`<span class="pairing-load">Load ~${estimatePlannedTrainingLoad(p)}</span>`:""}
           <span>${esc(p.source)}</span>
         </div>
         <div class="plan-mobile-actions"><button class="danger" data-mobile-remove="${i}">Ta bort</button></div>
@@ -3495,6 +3669,8 @@ function complianceSummary(){
   return{
     planned:planned.length,completed_matches:matched,
     calendar_match_percent:planned.length?100*matched/planned.length:null,
+    garmin_execution_score_count:feedback.execution_score_count,
+    garmin_avg_execution_score_percent:feedback.avg_execution_score,
     intervals_compliance_count:feedback.compliance_count,
     intervals_avg_compliance_percent:feedback.avg_compliance,
     rpe_count:feedback.rpe_count,avg_rpe:feedback.avg_rpe,
@@ -3538,6 +3714,11 @@ function coachSnapshot(){
     run_hr_zones_28d:hrZoneSummary(28),
     weekly_8w:weeklyData(8),
     compliance:complianceSummary(),
+    pairing_model:{
+      strategy:"same sport + explicit moving_time + historical load calibration",
+      run_load_rate_42d:historicalLoadRate("TrailRun",42),
+      note:"Intervals auto-pairing is server-side; Trail Coach optimizes the inputs but cannot force a pair via the documented API."
+    },
     activity_feedback_28d:feedbackSummary(28),
     recent_activities:sorted.slice(0,60).map(a=>({
       id:a.id,date:dateOf(a),name:s(a,["name"],""),type:typeOf(a),minutes:secs(a)/60,
@@ -3570,6 +3751,7 @@ function coachSnapshot(){
       workouts:[{
         date:"YYYY-MM-DD",type:"Run | TrailRun | WeightTraining | NordicSki | Yoga | Hike",
         name:"string",minutes:"number",target:"string",description:"Intervals workout text",
+        planned_load:"optional number; leave null to let Trail Coach estimate pairing load",
         strength_mode:"optional: home | gym",
         strength_steps:"optional array for WeightTraining: [{exercise,reps,reps_per_side,seconds,rest_seconds,notes}]"
       }]
@@ -3690,13 +3872,15 @@ async function importCoachPlan(){
       name:String(w.name),
       type:String(w.type),
       target:String(w.target||"Coach"),
+      planned_load:n(w,["planned_load","icu_training_load","training_load"]),
+      strength_mode:String(w.strength_mode||"")||null,
       description:(
         String(w.type).toLowerCase().includes("weight")
           ? (strengthStepsToDescription(String(w.name),w.strength_steps) || strengthDescriptionFromName(String(w.name),2,String(w.strength_mode||"")||null) || String(w.description||`${w.minutes} min ${w.name}`))
           : String(w.description||`${w.minutes} min ${w.name}`)
       ),
       week:1,source:"ChatGPT Coach",status:"READY",
-      external_id:`trailcoach-v161-coach-${String(w.date).slice(0,10)}-${normalized.length+1}`
+      external_id:`trailcoach-v163-coach-${String(w.date).slice(0,10)}-${normalized.length+1}`
     });
   }
 

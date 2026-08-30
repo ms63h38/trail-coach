@@ -1,30 +1,28 @@
-TRAIL COACH 2026/27 v1.6.1
+TRAIL COACH 2026/27 v1.6.3
 
-Korrigeringar före fortsatt coachning:
+Intervals pairing fix
+- Root cause addressed: previous versions posted workout description/type/name but not explicit moving_time or icu_training_load.
+- Intervals auto-pairing depends on planned/completed workout similarity; large load differences can leave two calendar cards.
+- v1.6.3 sends explicit moving_time and a dynamically estimated icu_training_load.
+- Run/ski planned load is calibrated from the median recent HR-load/minute over 42 days, adjusted for easy/long/recovery/quality.
+- Running in trail mode is posted as TrailRun instead of generic Run.
+- HR-based run/ski events set target=HR.
+- Existing Trail Coach events on the same date/name are UPDATED via PUT instead of silently skipped, so already-published future workouts can be corrected.
+- Plan view shows estimated pairing load as “Load ~N”.
+- The documented API does not expose a reliable force-pair operation. For an already completed old workout that remains unpaired, pair manually in Intervals by drag/drop.
 
-1. Wellness-färskhet
-- Trail Recovery använder senaste wellnessdagen som ankardatum.
-- Signal från samma dag: 100% vikt.
-- 1 dag äldre: 35% vikt.
-- 2 dagar äldre: 10% vikt.
-- >2 dagar äldre: ignoreras i Trail Recovery.
-- Detta gäller HRV, vilopuls, sömn, Sleep Score, readiness, Body Battery och stress.
-- Subjektiv check-in för idag vägs som tidigare fullt.
-- Recovery-rutan visar antal färska + äldre signaler.
-- Varje wellnesskort visar datum/färskhet; äldre kort markeras diskret gult.
-- Coach Snapshot current_state innehåller metric_dates med date, age_days och freshness.
+v1.6.2 carry-forward
+- Garmin Execution Score normalized (83 or 8300 -> 83%).
+- Up to 12 recent relevant FIT files are hydrated automatically on refresh and cached locally.
+- Intervals compliance=0 is ignored when paired_event_id is null.
+- Trends use Garmin Execution Score as the primary execution metric.
 
-2. Stabilt A-lopp
-- Om lokal goal storage är tom återställs standardmålet:
-  Idre Fjällmaraton · halv, 2027-08-28, prioritet A.
-- primaryGoal() har samma fallback.
-- Snapshot exporterar aldrig goals: [] bara för att enheten saknar lokal lagring.
-- Om sista målet tas bort återställs standardmålet.
-- Detta löser att iPhone/webb kan ha separata localStorage-databaser för huvudmålet.
+Goals
+- One-time v1.6.3 seed/migration adds the shared race baseline if missing:
+  Idre Fjällmaraton half 18 km / 500 hm / A / 3:00 / 2027-08-28
+  Hamra trail 12 km / 300 hm / C / 2027-07-31
+  Vemdalen winter classics 11 km / C / 2027-02-20 / XC skiing
+- Existing user edits are preserved; missing fields are filled only once.
 
-Obs:
-- Egna extra B/C-lopp lagras fortfarande lokalt per webbläsare/enhet.
-- Huvudmålet är däremot stabilt genom appens inbyggda fallback.
-
-GitHub Pages:
-Ersätt index.html och sw.js. manifest.json kan också ersättas.
+GitHub Pages
+- Replace index.html and sw.js. Replace manifest.json as well.
