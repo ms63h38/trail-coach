@@ -1,12 +1,12 @@
 {
-  "name": "Trail Coach 2026/27",
+  "name": "Trail Coach",
   "short_name": "Trail Coach",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0b0d0f",
   "theme_color": "#0b0d0f",
-  "description": "Adaptiv trailcoach med komplett Garmin/Intervals wellness- och custom-field audit.",
+  "description": "Trail Coach 2.0 — Garmin/Intervals health and adaptive training coach.",
   "icons": [
     {
       "src": "icon-192.png",

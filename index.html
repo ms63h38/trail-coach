@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Trail Coach 2026/27 v1.6.6</title>
+<title>Trail Coach 2.0</title>
 <style>
 :root{
   --bg:#0b0d0f;--panel:#12161a;--panel2:#171c21;--panel3:#0f1317;
@@ -1083,15 +1083,93 @@ input,select,textarea{max-width:100%;min-width:0}
   border-color:#665727;
 }
 
+
+/* Trail Coach 2.0 — clearer action hierarchy */
+.title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.title-row h1{margin:0}
+.version-pill{
+  display:inline-flex;align-items:center;min-height:25px;padding:0 8px;border-radius:999px;
+  background:rgba(143,199,255,.10);border:1px solid rgba(143,199,255,.25);
+  font-size:10px;font-weight:850;color:#a9d5ff;letter-spacing:.04em
+}
+.plan-command-center,.coach-flow-hero,.next-up-panel{
+  background:
+    radial-gradient(circle at 85% 0%,rgba(143,199,255,.10),transparent 34%),
+    linear-gradient(180deg,rgba(255,255,255,.025),transparent 55%),
+    var(--panel);
+  border-radius:20px;
+}
+.command-top,.next-up-head{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:14px
+}
+.command-eyebrow{
+  font-size:9px;font-weight:850;letter-spacing:.12em;color:var(--muted);margin-bottom:5px
+}
+.command-title,.next-up-title{
+  font-size:24px;line-height:1.08;font-weight:870;letter-spacing:-.035em
+}
+.command-copy{font-size:12px;color:var(--muted);margin-top:6px;max-width:720px;line-height:1.45}
+.command-badge{
+  flex:0 0 auto;min-height:30px;padding:0 10px;border-radius:999px;display:flex;align-items:center;
+  font-size:9px;font-weight:850;letter-spacing:.06em;border:1px solid var(--line)
+}
+.command-badge.ready{color:#73e2a7;border-color:#315c49;background:rgba(115,226,167,.06)}
+.command-badge.coach{color:#8fc7ff;border-color:#35526c;background:rgba(143,199,255,.07)}
+.command-badge.published{color:#9ce3ef;border-color:#37626a}
+.command-badge.idle{color:var(--muted)}
+.command-metrics{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0 10px
+}
+.command-metrics>div,.about-grid>div{
+  border:1px solid var(--line);border-radius:12px;padding:10px;background:rgba(255,255,255,.018);min-width:0
+}
+.command-metrics strong,.about-grid strong{display:block;font-size:14px;overflow-wrap:anywhere}
+.command-metrics span,.about-grid span{display:block;font-size:9px;color:var(--muted);margin-top:4px}
+.command-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.primary-cta{min-width:190px}
+.advanced-details>summary{
+  cursor:pointer;list-style:none;font-size:13px;font-weight:800;display:flex;align-items:center;min-height:38px
+}
+.advanced-details>summary::-webkit-details-marker{display:none}
+.advanced-details>summary::after{content:"Visa";margin-left:auto;font-size:9px;color:var(--muted)}
+.advanced-details[open]>summary::after{content:"Dölj"}
+.advanced-body{padding-top:10px;border-top:1px solid var(--line)}
+.coach-steps-v2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:15px}
+.coach-step-v2{
+  border:1px solid var(--line);border-radius:12px;padding:10px;display:flex;gap:8px;align-items:center;color:var(--muted)
+}
+.coach-step-v2 b{
+  width:25px;height:25px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);font-size:10px
+}
+.coach-step-v2 span{font-size:11px;font-weight:720}
+.coach-step-v2.active{color:var(--text);border-color:#35526c;background:rgba(143,199,255,.045)}
+.coach-step-v2.done{color:#73e2a7;border-color:#315c49}
+.next-up-title{font-size:18px}
+.about-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}
+.version-big{font-size:20px;font-weight:850;color:#a9d5ff}
+.publish-checks{display:grid;gap:5px;margin-top:8px}
+.publish-check{font-size:10px;color:var(--muted)}
+.publish-check.ok{color:#73e2a7}.publish-check.err{color:#ff9b9b}.publish-check.warn{color:#f4c95d}
+
+@media(max-width:700px){
+  .command-top,.next-up-head{align-items:stretch}
+  .command-title{font-size:21px}
+  .command-metrics{grid-template-columns:1fr 1fr}
+  .coach-steps-v2{grid-template-columns:1fr}
+  .about-grid{grid-template-columns:1fr 1fr}
+  .primary-cta{width:100%}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
 <header>
   <div>
-    <div class="eyebrow">TRAIL COACH · 2026/27 · IDRE FJÄLLMARATON 2027</div>
-    <h1>Trail Coach 2026/27</h1>
-    <p style="margin:0">Garmin → Intervals.icu → analys → 4-veckorsplan → Garmin Enduro 3</p>
+    <div class="eyebrow">TRAIL COACH · IDRE FJÄLLMARATON 2027</div>
+    <div class="title-row"><h1>Trail Coach</h1><span class="version-pill">v2.0</span></div>
+    <p style="margin:0">Hälsa · träning · adaptiv plan · Garmin Enduro 3</p>
   </div>
   <div class="header-sync">
       <div class="status"><span id="dot" class="dot"></span><span id="status">Inte ansluten</span></div>
@@ -1114,6 +1192,17 @@ input,select,textarea{max-width:100%;min-width:0}
   <section class="panel metric"><h3>Fatigue</h3><div id="fatigue" class="value">—</div><div class="sub">ATL</div></section>
   <section class="panel metric"><h3>Form</h3><div id="form" class="value">—</div><div class="sub">CTL − ATL</div></section>
   <section class="panel metric"><h3>VO₂max</h3><div id="vo2" class="value">—</div><div id="vo2Sub" class="sub">senaste registrerade</div></section>
+
+  <section class="panel full next-up-panel">
+    <div class="next-up-head">
+      <div>
+        <div class="command-eyebrow">NÄSTA PASS</div>
+        <div id="nextUpTitle" class="next-up-title">Inget planerat pass</div>
+        <div id="nextUpMeta" class="small">Intervals-kalendern uppdateras automatiskt.</div>
+      </div>
+      <button id="nextUpAction" class="secondary">Visa Plan</button>
+    </div>
+  </section>
 
   <section class="panel wide7">
     <h2>Fitness / Fatigue / Form · 8 veckor</h2>
@@ -1279,6 +1368,29 @@ input,select,textarea{max-width:100%;min-width:0}
 <section id="planning" class="tab">
 <div class="grid">
 
+  <section class="panel full plan-command-center">
+    <div class="command-top">
+      <div>
+        <div class="command-eyebrow">VECKOPLAN</div>
+        <div id="planHeroTitle" class="command-title">Ingen lokal plan redo</div>
+        <div id="planHeroText" class="command-copy">Intervals-schemat är källan för vad som faktiskt är publicerat. Skapa eller importera en plan när du vill ändra veckan.</div>
+      </div>
+      <div id="planHeroBadge" class="command-badge idle">INGET UTKAST</div>
+    </div>
+    <div class="command-metrics">
+      <div><strong id="planHeroWeek">—</strong><span>aktiv vecka</span></div>
+      <div><strong id="planHeroCount">0</strong><span>pass i utkast</span></div>
+      <div><strong id="planHeroSource">—</strong><span>källa</span></div>
+      <div><strong id="planHeroDecision">—</strong><span>coachbeslut</span></div>
+    </div>
+    <div class="command-actions">
+      <button id="publishReady" class="good primary-cta" disabled>Publicera aktiv vecka</button>
+      <button id="createDraftQuick" class="secondary" disabled>Skapa 4-veckorsutkast</button>
+      <button id="openAdvancedPlanner" class="secondary">Planverktyg</button>
+    </div>
+    <div id="publishResult" class="notice">Inga opublicerade ändringar.</div>
+  </section>
+
   <section class="panel full goal-phase-panel">
     <div class="goal-phase-head">
       <div>
@@ -1349,8 +1461,10 @@ input,select,textarea{max-width:100%;min-width:0}
     <div id="scheduleMsg" class="notice">Översikten är läs-only. Flytta eller ändra publicerade pass i Intervals eller i den lokala planen innan publicering.</div>
   </section>
 
-  <section class="panel full">
-    <h2>4-veckors träningsplan</h2>
+  <section class="panel full advanced-planner" id="advancedPlanner">
+    <details id="advancedPlannerDetails" class="advanced-details">
+      <summary>Planverktyg · skapa, läsa in eller publicera längre roadmap</summary>
+      <div class="advanced-body">
     <div class="plancontrols">
       <div class="field"><label>Startvecka</label><input id="planStart" type="date"></div>
       <div class="field"><label>Träningsläge</label>
@@ -1380,13 +1494,15 @@ input,select,textarea{max-width:100%;min-width:0}
     <div class="small strength-mode-note">Styrkemiljön påverkar övningar, passlängd och Garmin-textsteg. Du kan byta mellan hemgym och fullt gym inför varje ny plan.</div>
     <div class="small pairing-mode-note">Intervals-parning: sporttyp + planerad tid + dynamisk load från din senaste träningshistorik skickas med. Detta minskar risken för dubbla planerade/genomförda pass.</div>
     <div class="plan-actions">
-      <button id="generatePlan" disabled>Bygg 4 veckor från min data</button>
-      <button id="fetchPlan" class="secondary" disabled>Hämta 4 veckor från Intervals</button>
-      <button id="pushWeek1" class="good" disabled>Skicka nästa vecka</button>
-      <button id="pushAll4" class="secondary" disabled>Skicka alla 4 veckor</button>
+      <button id="generatePlan" disabled>Skapa 4-veckorsutkast</button>
+      <button id="fetchPlan" class="secondary" disabled>Läs in 4 veckor från Intervals</button>
+      <button id="pushWeek1" class="good" disabled>Publicera aktiv vecka</button>
+      <button id="pushAll4" class="secondary" disabled>Publicera alla 4 veckor</button>
       <button id="clearPlan" class="secondary">Rensa lokal plan</button>
     </div>
-    <div id="planMsg" class="notice">Anslut först. Vecka 1 är publicerbar plan. Vecka 2–4 är roadmap/prognos och bör omvärderas efter faktisk respons. Yoga ligger kvar som permanent del.</div>
+    <div id="planMsg" class="notice">Planverktyget arbetar lokalt tills du uttryckligen publicerar. Vecka 2–4 är alltid preliminära.</div>
+      </div>
+    </details>
   </section>
 
   <section class="panel wide4">
@@ -1446,11 +1562,25 @@ input,select,textarea{max-width:100%;min-width:0}
 
 <section id="coachreview" class="tab">
 <div class="grid">
+
+  <section class="panel full coach-flow-hero">
+    <div class="command-eyebrow">COACH REVIEW</div>
+    <div id="coachFlowTitle" class="command-title">Tre steg · ett beslut</div>
+    <div id="coachFlowText" class="command-copy">Exportera data → låt ChatGPT analysera → importera CoachPlan → publicera från Plan.</div>
+    <div class="coach-steps-v2">
+      <div id="coachStep1" class="coach-step-v2 active"><b>1</b><span>Exportera snapshot</span></div>
+      <div id="coachStep2" class="coach-step-v2"><b>2</b><span>2 · Importera CoachPlan</span></div>
+      <div id="coachStep3" class="coach-step-v2"><b>3</b><span>Granska & publicera</span></div>
+    </div>
+    <div class="command-actions">
+      <button id="coachGoPlan" class="good" disabled>Öppna Plan & publicera</button>
+    </div>
+  </section>
   <section class="panel wide6">
     <h2>1. Exportera till ChatGPT</h2>
     <p class="small">Exporterar <code>TC_Snap_yymmdd.json</code>. Den filen ska laddas upp i ChatGPT för analys — den ska inte importeras tillbaka direkt i appen.</p>
     <div class="row">
-      <button id="exportSnapshot" disabled>Exportera Coach Snapshot</button>
+      <button id="exportSnapshot" disabled>1 · Exportera snapshot</button>
       <button id="copyCoachPrompt" class="secondary" disabled>Kopiera instruktion</button>
     </div>
     <div id="snapshotMsg" class="notice">Anslut först.</div>
@@ -1461,7 +1591,7 @@ input,select,textarea{max-width:100%;min-width:0}
     <p class="small">Efter analys får du tillbaka <code>CoachPlan.json</code>. Det är den filen som ska importeras här. Trail Coach känner automatiskt igen om du råkar välja Snapshot-filen.</p>
     <div class="row">
       <input id="coachPlanFile" type="file" accept=".json,application/json" style="max-width:360px">
-      <button id="importCoachPlan" class="good">Importera CoachPlan</button>
+      <button id="importCoachPlan" class="good">2 · Importera CoachPlan</button>
     </div>
     <div id="coachImportMsg" class="notice">Väntar på CoachPlan från ChatGPT.</div>
   </section>
@@ -1480,9 +1610,9 @@ input,select,textarea{max-width:100%;min-width:0}
   <section class="panel full">
     <h2>Veckovis adaptiv loop</h2>
     <div class="coachbox">
-      <b>Roadmap 4 veckor</b> → genomför vecka 1 → <b>exportera snapshot</b> → analysera i ChatGPT →
-      <b>importera Coach Plan</b> → justera nästa vecka → skicka till Intervals/Garmin.
-      Vecka 2–4 är alltid preliminära tills de passerat Coach Review.
+      <b>Intervals är kalendern.</b> Trail Coach analyserar och föreslår ändringar. När en CoachPlan är importerad
+      visas den som ett lokalt utkast. Först när du trycker <b>Publicera aktiv vecka</b> skrivs den till Intervals och
+      appen verifierar därefter att ändringen verkligen finns på servern.
     </div>
   </section>
 </div>
@@ -1490,6 +1620,20 @@ input,select,textarea{max-width:100%;min-width:0}
 
 <section id="settings" class="tab">
 <div class="grid settings-grid">
+
+  <section class="panel full settings-card about-card">
+    <div class="settings-head">
+      <div><h2>Trail Coach</h2><div class="small">Appinformation</div></div>
+      <div class="version-big">v2.0.0</div>
+    </div>
+    <div class="about-grid">
+      <div><span>Version</span><strong id="appVersion">2.0.0</strong></div>
+      <div><span>Build</span><strong id="appBuild">2026-09-02</strong></div>
+      <div><span>Planeringsmodell</span><strong>Adaptiv veckoplan</strong></div>
+      <div><span>Kalender</span><strong>Intervals.icu</strong></div>
+    </div>
+    <div class="notice">v2.0 fokuserar på en enklare veckoloop och verifierad publicering till Intervals.</div>
+  </section>
 
   <section class="panel full settings-card">
     <div class="settings-head"><div><h2>Intervals.icu</h2><div class="small">Datakälla och automatisk synk</div></div><div class="status settings-status"><span class="dot" id="settingsDot"></span><span id="settingsStatus">Inte ansluten</span></div></div>
@@ -1511,7 +1655,7 @@ input,select,textarea{max-width:100%;min-width:0}
     </div>
     <div class="keyhint">När Trail Coach är öppen uppdateras data även periodiskt. iPhone tillåter inte tillförlitlig bakgrundshämtning när webbappen är helt stängd.</div>
     <div class="keyhint">Nyckeln sparas i webbläsarens lokala lagring på denna enhet. Rensa webbplatsdata eller tryck “Glöm sparad nyckel” för att ta bort den.</div></div>
-    <div id="msg" class="notice">Redo. v1.3 hämtar aktiviteter, wellness och kan läsa/skriva planerade pass.</div>
+    <div id="msg" class="notice">Redo. Trail Coach v2.0 använder verifierad läs/skriv-synk mot Intervals.</div>
     <div id="diag" class="notice" style="display:none"></div>
     <div id="autoSyncStatus" class="notice">Automatisk uppdatering väntar på anslutning.</div>
     <div id="installBox" class="notice installbox">
@@ -1627,6 +1771,8 @@ input,select,textarea{max-width:100%;min-width:0}
 <script>
 (()=>{"use strict";
 const BASE="https://intervals.icu/api/v1";
+const APP_VERSION="2.0.0";
+const APP_BUILD="2026-09-02";
 const KEY_STORE="trailcoach_2026_27_intervals_api_key_v1";
 const REMEMBER_STORE="trailcoach_2026_27_remember_key_v1";
 const AUTO_REFRESH_STORE="trailcoach_auto_refresh_v1";
@@ -1661,6 +1807,15 @@ function setStatus(ok,text){
   if($("settingsDot"))$("settingsDot").classList.toggle("ok",!!ok);
   if($("settingsStatus"))$("settingsStatus").textContent=text;
 }
+
+function activateTab(id,{scroll=true}={}){
+  if(!$(id))return;
+  document.querySelectorAll(".tabbtn").forEach(x=>x.classList.toggle("active",x.dataset.tab===id));
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.id===id));
+  try{localStorage.setItem("trailcoach_active_tab",id)}catch{}
+  if(scroll)window.scrollTo({top:0,behavior:"instant"});
+}
+
 function msg(text,kind=""){$("msg").textContent=text;$("msg").className="notice"+(kind?" "+kind:"")}
 function planMsg(text,kind=""){$("planMsg").textContent=text;$("planMsg").className="notice"+(kind?" "+kind:"")}
 function diag(text,kind=""){$("diag").style.display="block";$("diag").textContent=text;$("diag").className="notice"+(kind?" "+kind:"")}
@@ -3113,12 +3268,83 @@ function disconnect(){
   renderAll();renderPlan();renderScheduleOverview();renderCoachImport();
 }
 function enableConnected(on){
-  ["exportData","refresh","generatePlan","fetchPlan","refreshSchedule","sendGarminTest","exportSnapshot","copyCoachPrompt","sendGarminStrengthTest"].forEach(id=>$(id).disabled=!on);
+  ["exportData","refresh","generatePlan","fetchPlan","refreshSchedule","sendGarminTest","exportSnapshot","copyCoachPrompt","sendGarminStrengthTest","createDraftQuick"].forEach(id=>$(id).disabled=!on);
   if(!on){$("pushWeek1").disabled=true;$("pushAll4").disabled=true;$("verifyGarminTest").disabled=true;if($("verifyGarminStrengthTest"))$("verifyGarminStrengthTest").disabled=true;}
 }
 
+
+function activeLocalWeekItems(){
+  if(!localPlan.length)return[];
+  const ready=localPlan.filter(p=>p.status==="READY");
+  if(ready.length)return ready;
+  const starts=[...new Set(localPlan.map(p=>iso(weekStart(parseDate(p.date)))))].sort();
+  if(!starts.length)return[];
+  const first=starts[0];
+  return localPlan.filter(p=>iso(weekStart(parseDate(p.date)))===first);
+}
+function renderPlanCommandCenter(){
+  if(!$("planHeroTitle"))return;
+  const list=activeLocalWeekItems();
+  if(!list.length){
+    $("planHeroTitle").textContent="Intervals är din aktiva träningsplan";
+    $("planHeroText").textContent="Ingen lokal ändring väntar. Skapa ett utkast eller importera en CoachPlan när veckan behöver justeras.";
+    $("planHeroBadge").textContent="SYNCAD VY";
+    $("planHeroBadge").className="command-badge idle";
+    $("planHeroWeek").textContent="—";$("planHeroCount").textContent="0";
+    $("planHeroSource").textContent="Intervals";$("planHeroDecision").textContent="—";
+    $("publishReady").disabled=true;
+    return;
+  }
+  const dates=list.map(x=>x.date).sort(),start=dates[0],end=dates.at(-1);
+  const coach=!!importedCoachPlan;
+  const published=list.every(p=>p.status==="PUBLISHED");
+  $("planHeroTitle").textContent=published?"Aktiv vecka publicerad":coach?"CoachPlan redo att publiceras":"Planutkast redo";
+  $("planHeroText").textContent=published
+    ?"Trail Coach har verifierat att passen finns i Intervals."
+    :"Granska veckan nedan. Publicering skriver endast den aktiva veckan och verifierar därefter varje pass mot Intervals.";
+  $("planHeroBadge").textContent=published?"VERIFIERAD":coach?"COACHPLAN":"UTKAST";
+  $("planHeroBadge").className=`command-badge ${published?"published":coach?"coach":"ready"}`;
+  $("planHeroWeek").textContent=`${start.slice(5)}–${end.slice(5)}`;
+  $("planHeroCount").textContent=String(list.length);
+  $("planHeroSource").textContent=coach?"Coach":"Trail Coach";
+  $("planHeroDecision").textContent=String(importedCoachPlan?.decision||"—").toUpperCase();
+  $("publishReady").disabled=!apiKey||published||!list.length;
+}
+function renderCoachFlow(){
+  if(!$("coachStep1"))return;
+  const imported=!!importedCoachPlan;
+  $("coachStep1").className="coach-step-v2 "+(imported?"done":"active");
+  $("coachStep2").className="coach-step-v2 "+(imported?"done":"");
+  $("coachStep3").className="coach-step-v2 "+(imported?"active":"");
+  $("coachGoPlan").disabled=!imported;
+  $("coachFlowTitle").textContent=imported
+    ?`Coachbeslut: ${String(importedCoachPlan.decision||"modify").toUpperCase()}`
+    :"Tre steg · ett beslut";
+  $("coachFlowText").textContent=imported
+    ?`${activeLocalWeekItems().length} pass är importerade som lokalt utkast. Nästa steg är att granska och publicera från Plan.`
+    :"Exportera snapshot, låt ChatGPT analysera och importera CoachPlan. Publicering sker först efter din granskning.";
+}
+function renderNextUp(){
+  if(!$("nextUpTitle"))return;
+  const today=iso(new Date());
+  const next=(scheduleEvents||[]).filter(isWorkoutEvent).filter(e=>dateOf(e)>=today)
+    .sort((a,b)=>dateOf(a).localeCompare(dateOf(b)))[0];
+  if(!next){
+    $("nextUpTitle").textContent="Inget planerat pass";
+    $("nextUpMeta").textContent="Intervals-kalendern innehåller inget framtida workout i den hämtade perioden.";
+    $("nextUpAction").dataset.eventId="";
+    return;
+  }
+  const d=dateOf(next),mins=scheduleEventMinutes(next),pl=n(next,["icu_training_load"]);
+  const diff=Math.round((parseDate(d)-parseDate(today))/86400000);
+  const when=diff===0?"Idag":diff===1?"Imorgon":d;
+  $("nextUpTitle").textContent=s(next,["name"],"Planerat pass");
+  $("nextUpMeta").textContent=[when,mins?`${mins} min`:null,pl!=null?`Load ${Math.round(pl)}`:null,typeOf(next)].filter(Boolean).join(" · ");
+  $("nextUpAction").dataset.eventId=eventId(next);
+}
+
 function renderAll(){
-  renderDashboard();renderCheckin();renderDashboardActivities();renderTrends();renderActivities();renderBaseline();renderGoals();renderPhaseEngine();renderRaceReadiness();renderStrengthReference();renderScheduleOverview();renderWellnessInventory();renderActivityApiInventory();renderHealthDataAudit();
+  renderDashboard();renderCheckin();renderDashboardActivities();renderTrends();renderActivities();renderBaseline();renderGoals();renderPhaseEngine();renderRaceReadiness();renderStrengthReference();renderScheduleOverview();renderWellnessInventory();renderActivityApiInventory();renderHealthDataAudit();renderPlanCommandCenter();renderCoachFlow();renderNextUp();
 }
 
 function renderCheckin(){
@@ -3892,11 +4118,65 @@ function pairingEstimate(p){
   };
 }
 function sameSportForPairing(a,b){return sportFamily(a)===sportFamily(b)}
+
+function tinyHash(text){
+  let h=2166136261;
+  for(const ch of String(text||"")){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)}
+  return (h>>>0).toString(36).slice(0,7);
+}
+function stablePlanExternalId(p){
+  if(p?.external_id && String(p.external_id).startsWith("tc2-"))return String(p.external_id);
+  const key=[
+    p?.date||"",
+    sportFamily(p?.type||""),
+    p?.kind&&p.kind!=="coach"?p.kind:normalizedWorkoutName(p?.name||"")
+  ].join("|");
+  return `tc2-${p?.date||"date"}-${sportFamily(p?.type||"other")}-${tinyHash(key)}`;
+}
+function resolveExistingPlannedEvent(existing,p){
+  const workouts=(existing||[]).filter(isWorkoutEvent);
+  if(p?.event_id!=null){
+    const byId=workouts.find(e=>String(e.id)===String(p.event_id));
+    if(byId)return byId;
+  }
+  const ext=String(p?.external_id||"");
+  if(ext){
+    const byExt=workouts.find(e=>s(e,["external_id"],"")===ext);
+    if(byExt)return byExt;
+  }
+  const exact=workouts.find(e=>dateOf(e)===p.date && s(e,["name"],"")===p.name);
+  if(exact)return exact;
+
+  const same=workouts.filter(e=>dateOf(e)===p.date && sameSportForPairing(e,p));
+  const tc=same.filter(e=>s(e,["name"],"").startsWith("Trail Coach"));
+  if(tc.length===1)return tc[0];
+
+  const ranked=same.map(e=>({e,score:nameTokenSimilarity(s(e,["name"],""),p.name)}))
+    .sort((a,b)=>b.score-a.score);
+  if(ranked[0]?.score>=0.50)return ranked[0].e;
+  return null;
+}
+function planExpectedForVerification(p){
+  return{
+    date:p.date,
+    name:p.name,
+    type:p.type,
+    minutes:Math.round(Number(p.mins)||0)
+  };
+}
+function verifyPlanItemAgainstEvent(p,e){
+  if(!e)return{ok:false,reason:"event saknas efter skrivning"};
+  const reasons=[];
+  if(dateOf(e)!==p.date)reasons.push(`datum ${dateOf(e)} ≠ ${p.date}`);
+  if(!sameSportForPairing(e,p))reasons.push(`sport ${typeOf(e)} ≠ ${p.type}`);
+  if(s(e,["name"],"")!==p.name)reasons.push("namn skiljer");
+  const pm=Math.round(Number(p.mins)||0),em=scheduleEventMinutes(e);
+  if(pm&&em&&Math.abs(pm-em)>2)reasons.push(`tid ${em} ≠ ${pm} min`);
+  return{ok:reasons.length===0,reason:reasons.join(", "),event:e};
+}
+
 function findExistingPlannedEvent(existing,p){
-  return existing.find(e=>s(e,["category"],"")==="WORKOUT" && (
-    (s(e,["external_id"],"")&&s(e,["external_id"],"")===p.external_id) ||
-    (dateOf(e)===p.date&&s(e,["name"],"")===p.name)
-  ))||null;
+  return resolveExistingPlannedEvent(existing,p);
 }
 function plannedEventPayload(p,externalId=null){
   const pe=pairingEstimate(p);
@@ -3907,7 +4187,7 @@ function plannedEventPayload(p,externalId=null){
     name:p.name,
     description:p.description,
     moving_time:pe.moving_time,
-    external_id:externalId||p.external_id
+    external_id:externalId||stablePlanExternalId(p)
   };
   if(pe.icu_training_load!=null)payload.icu_training_load=pe.icu_training_load;
   if(pe.target)payload.target=pe.target;
@@ -4006,13 +4286,13 @@ function buildPlan(){
   localPlan.sort((a,b)=>a.date.localeCompare(b.date));
   renderPlan();$("pushWeek1").disabled=false;$("pushAll4").disabled=false;
   const engine=phaseEngine();
-  planMsg(`4 veckor byggda · fas ${phaseLabel(phase)} · läge ${mode==="winter"?"längdskidor":"trail"} · styrka ${strengthMode==="gym"?"fullt gym":"hemgym"}. ${localPlan.length} pass lokalt. ${$("planPhase").value==="auto"?`Auto confidence ${engine.confidence}%.`:"Manuell fas."} Inget har skrivits till Intervals.icu ännu.`,"ok");
+  planMsg(`4 veckor byggda · fas ${phaseLabel(phase)} · läge ${mode==="winter"?"längdskidor":"trail"} · styrka ${strengthMode==="gym"?"fullt gym":"hemgym"}. ${localPlan.length} pass lokalt. ${$("planPhase").value==="auto"?`Auto confidence ${engine.confidence}%.`:"Manuell fas."} Detta är ett lokalt utkast. Inget skrivs till Intervals förrän du väljer Publicera aktiv vecka.`,"ok");
 }
 function makePlanEvent(date,kind,mins,name,mode,week,source){
   return{
     date:iso(date),kind,mins:Math.round(mins),name,type:eventType(kind,mode),target:targetLabel(kind),
     description:makeDescription(kind,mins,mode),week,source,status:week===1?"READY":"ROADMAP",
-    external_id:`trailcoach-v166-${iso(date)}-${kind}`
+    external_id:`tc2-${iso(date)}-${kind}`
   };
 }
 async function fetchPlan(){
@@ -4033,66 +4313,123 @@ async function fetchPlan(){
   finally{$("fetchPlan").disabled=false}
 }
 async function pushPlanScope(scope="week1"){
-  if(!apiKey||!localPlan.length)return;
-  if(localPlan.every(x=>x.source==="Intervals"))return planMsg("Detta är redan en hämtad Intervals-plan.","warn");
+  if(!apiKey||!localPlan.length){
+    const t="Ingen lokal plan att publicera.";
+    planMsg(t,"warn");if($("publishResult"))$("publishResult").textContent=t;return false;
+  }
+  if(localPlan.every(x=>x.source==="Intervals")){
+    const t="Den lokala vyn är hämtad från Intervals och innehåller inga opublicerade ändringar.";
+    planMsg(t,"warn");if($("publishResult"))$("publishResult").textContent=t;return false;
+  }
 
-  const selected=scope==="all"
-    ? localPlan
-    : localPlan.filter(p=>planWeekNumber(p)===1 || p.status==="READY");
-  if(!selected.length)return planMsg("Det finns inga pass i nästa vecka att publicera.","warn");
+  const selected=scope==="all" ? [...localPlan] : activeLocalWeekItems();
+  if(!selected.length){
+    planMsg("Det finns inga pass i den aktiva veckan att publicera.","warn");return false;
+  }
 
-  const button=scope==="all"?$("pushAll4"):$("pushWeek1");
-  button.disabled=true;
-  planMsg(scope==="all"?"Publicerar hela 4-veckorsroadmapen med parningsoptimering …":"Publicerar nästa vecka med parningsoptimering …");
+  const buttons=[scope==="all"?$("pushAll4"):$("pushWeek1"),$("publishReady")].filter(Boolean);
+  buttons.forEach(b=>b.disabled=true);
+  const resultBox=$("publishResult");
+  const range=selected.map(x=>x.date).sort();
+  const oldest=range[0],newest=range.at(-1);
+  const progress=[];
+
+  const showProgress=()=>{
+    if(!resultBox)return;
+    resultBox.innerHTML=`<b>Publicerar till Intervals …</b><div class="publish-checks">${
+      progress.map(x=>`<div class="publish-check ${x.kind||""}">${esc(x.text)}</div>`).join("")
+    }</div>`;
+    resultBox.className="notice";
+  };
+  progress.push({text:`Förbereder ${selected.length} pass · ${oldest}–${newest}`});showProgress();
 
   try{
-    const dates=selected.map(x=>x.date).sort(),oldest=dates[0],newest=dates.at(-1);
+    // 1. Read current server state first.
     const existingR=await icu(`/athlete/0/events?oldest=${oldest}&newest=${newest}`);
-    const existing=Array.isArray(existingR.data)?existingR.data:[];
-    const createList=[],updateList=[];
+    const existing=Array.isArray(existingR.data)?existingR.data.filter(isWorkoutEvent):[];
+    progress.push({kind:"ok",text:`Läste ${existing.length} befintliga workouts från Intervals`});showProgress();
+
+    let created=0,updated=0,writeErrors=0,pushWarnings=0;
+    const touched=[];
+
+    // 2. Deterministic writes: PUT known/matched event, POST new event.
+    for(let i=0;i<selected.length;i++){
+      const p=selected[i];
+      const ex=resolveExistingPlannedEvent(existing,p);
+      try{
+        let response;
+        if(ex){
+          const ext=s(ex,["external_id"],"")||stablePlanExternalId(p);
+          const payload=plannedEventPayload(p,ext);
+          response=await icu(`/athlete/0/events/${encodeURIComponent(ex.id)}`,{method:"PUT",body:payload});
+          updated++;
+          progress.push({kind:"ok",text:`Uppdaterad: ${p.date} · ${p.name}`});
+        }else{
+          p.external_id=stablePlanExternalId(p);
+          const payload=plannedEventPayload(p,p.external_id);
+          response=await icu(`/athlete/0/events`,{method:"POST",body:payload});
+          created++;
+          progress.push({kind:"ok",text:`Skapad: ${p.date} · ${p.name}`});
+        }
+        const ev=response?.data&&typeof response.data==="object"?response.data:null;
+        if(ev){
+          p.event_id=ev.id??p.event_id;
+          p.external_id=s(ev,["external_id"],"")||p.external_id||stablePlanExternalId(p);
+          if(ev.push_errors){pushWarnings++;progress.push({kind:"warn",text:`Garmin push-varning: ${p.name}`})}
+          touched.push({p,eventId:ev.id});
+          if(!existing.some(x=>String(x.id)===String(ev.id)))existing.push(ev);
+        }else{
+          writeErrors++;progress.push({kind:"err",text:`Intervals returnerade inget event för ${p.name}`});
+        }
+      }catch(e){
+        writeErrors++;
+        progress.push({kind:"err",text:`Skrivfel ${p.date} · ${p.name}: HTTP ${e?.status||"?"} ${e?.body||e?.message||""}`});
+      }
+      showProgress();
+    }
+
+    // 3. Mandatory read-back. Never mark PUBLISHED before this succeeds.
+    const verifyR=await icu(`/athlete/0/events?oldest=${oldest}&newest=${newest}`);
+    const server=Array.isArray(verifyR.data)?verifyR.data.filter(isWorkoutEvent):[];
+    let verified=0,failed=0;
 
     for(const p of selected){
-      const ex=findExistingPlannedEvent(existing,p);
-      if(ex && (s(ex,["external_id"],"").startsWith("trailcoach-") || s(ex,["name"],"").startsWith("Trail Coach"))){
-        updateList.push({p,event:ex});
-      }else if(!ex){
-        createList.push(p);
+      let ev=null;
+      if(p.event_id!=null)ev=server.find(x=>String(x.id)===String(p.event_id));
+      if(!ev&&p.external_id)ev=server.find(x=>s(x,["external_id"],"")===p.external_id);
+      if(!ev)ev=resolveExistingPlannedEvent(server,p);
+      const check=verifyPlanItemAgainstEvent(p,ev);
+      if(check.ok){
+        verified++;p.status="PUBLISHED";
+        p.event_id=ev.id??p.event_id;
+        p.external_id=s(ev,["external_id"],"")||p.external_id;
+      }else{
+        failed++;p.status="READY";
+        progress.push({kind:"err",text:`Verifiering misslyckad: ${p.date} · ${p.name}${check.reason?` · ${check.reason}`:""}`});
       }
     }
 
-    const updated=[];
-    for(const {p,event} of updateList){
-      // Preserve old external_id so updates do not create a second calendar item.
-      const payload=plannedEventPayload(p,s(event,["external_id"],"")||p.external_id);
-      const r=await icu(`/athlete/0/events/${encodeURIComponent(event.id)}`,{method:"PUT",body:payload});
-      if(r?.data)updated.push(r.data);
-    }
+    // 4. Refresh visible Intervals view immediately.
+    await fetchScheduleOverview({quiet:true});
+    renderPlan();renderPlanCommandCenter();renderNextUp();
 
-    let created=[];
-    if(createList.length){
-      const payload=createList.map(p=>plannedEventPayload(p));
-      const r=await icu("/athlete/0/events/bulk?upsert=true",{method:"POST",body:payload});
-      created=Array.isArray(r.data)?r.data:[];
-    }
-
-    const returned=[...updated,...created];
-    const structured=returned.filter(e=>e.workout_doc&&Array.isArray(e.workout_doc.steps)&&e.workout_doc.steps.length).length;
-    const optimized=returned.filter(e=>n(e,["moving_time"])!=null && n(e,["icu_training_load"])!=null).length;
-    const untouched=selected.length-updateList.length-createList.length;
-
-    selected.forEach(p=>p.status="PUBLISHED");
-    renderPlan();
-    planMsg(
-      `Klart. ${created.length} skapade, ${updated.length} uppdaterade, ${structured} strukturerade. `+
-      `${optimized} pass har explicit tid + load för bättre Intervals-parning. `+
-      `${untouched?`${untouched} befintliga externa pass lämnades orörda. `:""}`+
-      `${scope==="week1"?"Vecka 2–4 ligger kvar som roadmap.":"Alla fyra veckor är publicerade."}`,
-      optimized?"ok":"warn"
-    );
+    const ok=failed===0&&writeErrors===0&&verified===selected.length;
+    const summary=`${verified}/${selected.length} verifierade i Intervals · ${created} skapade · ${updated} uppdaterade`+
+      (pushWarnings?` · ${pushWarnings} Garmin push-varning${pushWarnings===1?"":"ar"}`:"")+
+      (failed||writeErrors?` · ${failed+writeErrors} fel`:"");
+    progress.unshift({kind:ok?"ok":"err",text:summary});
+    showProgress();
+    if(resultBox)resultBox.className=`notice ${ok?"ok":"err"}`;
+    planMsg(ok?`Publicering verifierad. ${summary}`:`Publiceringen blev inte komplett. ${summary}` ,ok?"ok":"err");
+    return ok;
   }catch(e){
-    planMsg(`Publicering misslyckades: HTTP ${e?.status||"?"} ${e?.body||e?.message||""}`,"err");
+    const text=`Publicering misslyckades före verifiering: HTTP ${e?.status||"?"} ${e?.body||e?.message||""}`;
+    planMsg(text,"err");
+    if(resultBox){resultBox.textContent=text;resultBox.className="notice err"}
+    return false;
   }finally{
-    button.disabled=false;
+    buttons.forEach(b=>b.disabled=false);
+    renderPlanCommandCenter();
   }
 }
 
@@ -4115,7 +4452,7 @@ async function sendGarminTest(){
     moving_time:35*60,
     icu_training_load:Math.round((historicalLoadRate("TrailRun",42)?.rate||.86)*35*.94),
     target:"HR",
-    external_id:`trailcoach-v166-garmin-test-${d}`
+    external_id:`tc2-garmin-test-${d}`
   };
 
   $("sendGarminTest").disabled=true;
@@ -4168,7 +4505,7 @@ async function sendGarminStrengthTest(){
 - Sidoplanka 30s per sida 60s press lap
 
 Tryck LAP när varje arbetssteg är klart.`,
-    external_id:`trailcoach-v166-garmin-strength-test-${d}`
+    external_id:`tc2-garmin-strength-test-${d}`
   };
 
   $("sendGarminStrengthTest").disabled=true;
@@ -4202,7 +4539,7 @@ async function verifyGarminStrengthTest(){
   try{
     const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
     const ev=Array.isArray(r.data)?r.data:[];
-    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v166-garmin-strength-test-${d}` || s(x,["name"],"")==="Trail Coach · Garmin Styrketest");
+    const e=ev.find(x=>s(x,["external_id"],"")===`tc2-garmin-strength-test-${d}` || s(x,["name"],"")==="Trail Coach · Garmin Styrketest");
     if(!e)return garminStrengthTestMsg("Styrketestet hittades inte i Intervals.icu.","err");
     const structured=!!(e.workout_doc&&Array.isArray(e.workout_doc.steps)&&e.workout_doc.steps.length);
     garminStrengthTestMsg(
@@ -4225,7 +4562,7 @@ async function verifyGarminTest(){
   try{
     const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
     const ev=Array.isArray(r.data)?r.data:[];
-    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v166-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
+    const e=ev.find(x=>s(x,["external_id"],"")===`tc2-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
     if(!e){
       garminTestMsg("Testpasset hittades inte i Intervals.icu-kalendern på valt datum.","err");
       return;
@@ -4249,7 +4586,7 @@ async function verifyGarminTest(){
 function addCustom(){
   const d=$("customDate").value,name=$("customName").value.trim(),mins=Number($("customMins").value),type=$("customType").value;
   if(!d||!name||!mins)return planMsg("Fyll i datum, namn och minuter för eget pass.","warn");
-  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`trailcoach-v166-${d}-custom-${Date.now()}`});
+  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`tc2-${d}-custom-${Date.now()}`});
   localPlan.sort((a,b)=>a.date.localeCompare(b.date));renderPlan();$("pushWeek1").disabled=!apiKey;$("pushAll4").disabled=!apiKey;planMsg("Eget pass tillagt i den lokala planen.","ok");
 }
 function renderPlan(){
@@ -4336,9 +4673,10 @@ function renderPlan(){
     const list=localPlan.filter(p=>{const d=parseDate(p.date),wStart=addDays(ws,(w-1)*7),wEnd=addDays(wStart,7);return d>=wStart&&d<wEnd});
     return{w,n:list.length,mins:list.reduce((q,p)=>q+(Number(p.mins)||0),0),long:list.filter(p=>p.kind==="long"||p.kind==="ski_long").reduce((m,p)=>Math.max(m,p.mins||0),0)}
   });
-  $("planSummary").innerHTML=sums.map(x=>`<div class="mini"><div class="v">${Math.round(x.mins)} min</div><div class="l">Vecka ${x.w} · ${x.n} pass${x.long?` · lång ${x.long}m`:""} · ${x.w===1?"PUBLICERBAR":"ROADMAP"}</div></div>`).join("");
+  $("planSummary").innerHTML=sums.map(x=>`<div class="mini"><div class="v">${Math.round(x.mins)} min</div><div class="l">Vecka ${x.w} · ${x.n} pass${x.long?` · lång ${x.long}m`:""} · ${x.w===1?"AKTIV":"ROADMAP"}</div></div>`).join("");
+  renderPlanCommandCenter();
 }
-function clearPlan(){localPlan=[];importedCoachPlan=null;renderPlan();renderCoachImport();$("pushWeek1").disabled=true;$("pushAll4").disabled=true;planMsg("Lokal plan rensad.")}
+function clearPlan(){localPlan=[];importedCoachPlan=null;renderPlan();renderCoachImport();renderPlanCommandCenter();renderCoachFlow();$("pushWeek1").disabled=true;$("pushAll4").disabled=true;planMsg("Lokal plan rensad.")}
 
 
 function snapshotMessage(text,kind=""){
@@ -4628,7 +4966,7 @@ async function importCoachPlan(){
           : String(w.description||`${w.minutes} min ${w.name}`)
       ),
       week:1,source:"ChatGPT Coach",status:"READY",
-      external_id:`trailcoach-v166-coach-${String(w.date).slice(0,10)}-${normalized.length+1}`
+      external_id:null,event_id:null
     });
   }
 
@@ -4637,18 +4975,29 @@ async function importCoachPlan(){
     return importMessage("CoachPlan innehåller inga giltiga träningspass.","err");
   }
 
+  // Link imported coach changes to already published Intervals events when possible.
+  for(const p of normalized){
+    const ex=resolveExistingPlannedEvent(scheduleEvents,p);
+    if(ex){
+      p.event_id=ex.id;
+      p.external_id=s(ex,["external_id"],"")||stablePlanExternalId(p);
+    }else{
+      p.external_id=stablePlanExternalId(p);
+    }
+  }
+
   importedCoachPlan=obj;
 
   // Replace only next-week / READY items; keep week 2–4 as roadmap.
   const futureRoadmap=localPlan.filter(p=>planWeekNumber(p)>1 && p.status!=="READY");
   localPlan=[...normalized,...futureRoadmap].sort((a,b)=>a.date.localeCompare(b.date));
-  renderPlan();renderCoachImport();
+  renderPlan();renderCoachImport();renderPlanCommandCenter();renderCoachFlow();
   $("pushWeek1").disabled=!apiKey;
   $("pushAll4").disabled=!apiKey;
   input.value="";
   importMessage(
-    `CoachPlan importerad korrekt (${schema}): ${normalized.length} pass för nästa vecka. `+
-    `Vecka 2–4 ligger kvar som roadmap. Du kan flytta pass inom veckan innan publicering.`,
+    `CoachPlan importerad: ${normalized.length} pass är redo som lokalt utkast. `+
+    `Gå till Plan och välj Publicera aktiv vecka när du har granskat ändringarna.`,
     "ok"
   );
 }
@@ -4675,13 +5024,7 @@ function exportData(){
   msg("Export skapad. API-nyckeln är inte med i filen.","ok");
 }
 
-document.querySelectorAll(".tabbtn").forEach(b=>b.addEventListener("click",()=>{
-  document.querySelectorAll(".tabbtn").forEach(x=>x.classList.remove("active"));
-  document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-  b.classList.add("active");$(b.dataset.tab).classList.add("active");
-  try{localStorage.setItem("trailcoach_active_tab",b.dataset.tab)}catch{}
-  window.scrollTo({top:0,behavior:"instant"});
-}));
+document.querySelectorAll(".tabbtn").forEach(b=>b.addEventListener("click",()=>activateTab(b.dataset.tab)));
 $("connect").onclick=connect;$("disconnect").onclick=disconnect;$("refresh").onclick=refreshAll;$("forgetKey").onclick=forgetSavedKey;
 $("refreshSchedule").onclick=()=>fetchScheduleOverview({quiet:false});
 $("saveCheckin").onclick=saveDailyCheckin;
@@ -4698,6 +5041,22 @@ $("activityDetailDialog").addEventListener("cancel",e=>{
   e.preventDefault();closeActivityDetail();
 });
 $("generatePlan").onclick=buildPlan;$("fetchPlan").onclick=fetchPlan;$("pushWeek1").onclick=()=>pushPlanScope("week1");$("pushAll4").onclick=()=>pushPlanScope("all");
+$("publishReady").onclick=()=>pushPlanScope("week1");
+$("createDraftQuick").onclick=()=>{
+  if($("advancedPlannerDetails"))$("advancedPlannerDetails").open=true;
+  buildPlan();
+  renderPlanCommandCenter();
+};
+$("openAdvancedPlanner").onclick=()=>{
+  const d=$("advancedPlannerDetails");if(d)d.open=true;
+  $("advancedPlanner")?.scrollIntoView({behavior:"smooth",block:"start"});
+};
+$("coachGoPlan").onclick=()=>activateTab("planning");
+$("nextUpAction").onclick=()=>{
+  const id=$("nextUpAction").dataset.eventId;
+  if(id)openPlannedWorkoutDetail(id);
+  else activateTab("planning");
+};
 $("clearPlan").onclick=clearPlan;$("addCustom").onclick=addCustom;$("exportData").onclick=exportData;
 $("sendGarminTest").onclick=sendGarminTest;$("verifyGarminTest").onclick=verifyGarminTest;
 $("sendGarminStrengthTest").onclick=sendGarminStrengthTest;$("verifyGarminStrengthTest").onclick=verifyGarminStrengthTest;
@@ -4719,6 +5078,8 @@ $("autoRefresh").addEventListener("change",()=>{
   }
 });
 
+if($("appVersion"))$("appVersion").textContent=APP_VERSION;
+if($("appBuild"))$("appBuild").textContent=APP_BUILD;
 restoreCoachLocalState();
 const nm=nextMonday();$("planStart").value=iso(nm);$("customDate").value=iso(nm);$("garminTestDate").value=iso(addDays(new Date(),1));
 $("goalDate").value="2027-08-28";
