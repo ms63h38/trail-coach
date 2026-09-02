@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Trail Coach 2026/27 v1.6.3</title>
+<title>Trail Coach 2026/27 v1.6.4</title>
 <style>
 :root{
   --bg:#0b0d0f;--panel:#12161a;--panel2:#171c21;--panel3:#0f1317;
@@ -966,6 +966,94 @@ input,select,textarea{max-width:100%;min-width:0}
 .pairing-mode-note{margin:5px 0 2px;color:#a9b6c1;line-height:1.35}
 .pairing-load{font-size:9px;color:var(--good);margin-top:3px;white-space:normal}
 
+
+/* v1.6.4 — live Intervals week overview */
+.schedule-overview-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px
+}
+.schedule-overview-head h2{margin:0 0 3px}
+.schedule-kpis{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:9px
+}
+.schedule-legend{
+  display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;font-size:10px;color:var(--muted)
+}
+.schedule-legend span{display:inline-flex;align-items:center;gap:5px}
+.schedule-dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:#6d7781}
+.schedule-dot.done{background:#73e2a7}
+.schedule-dot.planned{background:#8fc7ff}
+.schedule-dot.paired{background:#9ce3ef}
+.schedule-dot.unpaired{background:#f4c95d}
+
+.schedule-week{
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel2);margin-top:9px
+}
+.schedule-week-head{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 11px;border-bottom:1px solid var(--line)
+}
+.schedule-week-title{font-size:13px;font-weight:820}
+.schedule-week-meta{font-size:10px;color:var(--muted)}
+
+.schedule-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+.schedule-day{
+  min-width:0;padding:9px 7px;border-right:1px solid var(--line);min-height:138px;background:var(--panel2)
+}
+.schedule-day:last-child{border-right:0}
+.schedule-day.today{box-shadow:inset 0 3px 0 #8fc7ff;background:rgba(143,199,255,.035)}
+.schedule-day.next7{background:rgba(115,226,167,.025)}
+.schedule-day.today.next7{background:rgba(143,199,255,.05)}
+.schedule-day-head{display:flex;align-items:flex-start;justify-content:space-between;gap:5px;margin-bottom:7px}
+.schedule-day-name{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.schedule-day-date{font-size:9px;color:var(--muted);white-space:nowrap}
+.schedule-day-empty{font-size:10px;color:var(--muted);line-height:1.35;padding-top:5px}
+
+.schedule-item{
+  border:1px solid var(--line);border-radius:10px;padding:7px;margin-top:6px;background:var(--panel)
+}
+.schedule-item.done{border-left:3px solid #73e2a7}
+.schedule-item.planned{border-left:3px solid #8fc7ff}
+.schedule-item.unpaired{border-left:3px solid #f4c95d}
+.schedule-item.paired{border-left:3px solid #9ce3ef}
+.schedule-item-top{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:5px;margin-bottom:3px
+}
+.schedule-item-status{
+  font-size:8px;text-transform:uppercase;letter-spacing:.05em;font-weight:850;color:var(--muted)
+}
+.schedule-item-status.done{color:#73e2a7}
+.schedule-item-status.planned{color:#8fc7ff}
+.schedule-item-status.unpaired{color:#f4c95d}
+.schedule-item-status.paired{color:#9ce3ef}
+.schedule-item-name{
+  font-size:10px;font-weight:760;line-height:1.25;overflow-wrap:anywhere;margin-bottom:4px
+}
+.schedule-item-meta{
+  display:flex;flex-wrap:wrap;gap:4px 7px;font-size:9px;color:var(--muted);line-height:1.25
+}
+.schedule-item-plan{
+  margin-top:5px;padding-top:5px;border-top:1px dashed var(--line);font-size:9px;color:var(--muted);line-height:1.3
+}
+
+@media(max-width:900px){
+  .schedule-days{grid-template-columns:1fr}
+  .schedule-day{
+    min-height:0;border-right:0;border-bottom:1px solid var(--line);
+    display:grid;grid-template-columns:78px minmax(0,1fr);gap:8px
+  }
+  .schedule-day:last-child{border-bottom:0}
+  .schedule-day-head{display:block;margin:0}
+  .schedule-day-date{display:block;margin-top:2px}
+  .schedule-day-empty{padding:0;align-self:center}
+  .schedule-day-items{min-width:0}
+}
+@media(max-width:560px){
+  .schedule-overview-head{align-items:stretch}
+  .schedule-overview-head button{flex:0 0 auto}
+  .schedule-kpis{grid-template-columns:1fr 1fr}
+  .schedule-day{grid-template-columns:68px minmax(0,1fr);padding:9px}
+}
+
 </style>
 </head>
 <body>
@@ -1203,6 +1291,35 @@ input,select,textarea{max-width:100%;min-width:0}
         <button id="addGoal" class="secondary">Lägg till mål</button>
       </div>
     </details>
+  </section>
+
+  <section class="panel full schedule-overview-panel">
+    <div class="schedule-overview-head">
+      <div>
+        <h2>Intervals · denna vecka + nästa vecka</h2>
+        <div id="scheduleRange" class="small">Hämtas automatiskt från Intervals.</div>
+      </div>
+      <button id="refreshSchedule" class="secondary" disabled>Uppdatera schema</button>
+    </div>
+
+    <div class="schedule-kpis">
+      <div class="mini"><div id="scheduleNext7Count" class="v">—</div><div class="l">planerade pass · nästa 7 dagar</div></div>
+      <div class="mini"><div id="scheduleNext7Minutes" class="v">—</div><div class="l">planerad tid · nästa 7 dagar</div></div>
+      <div class="mini"><div id="scheduleNext7Load" class="v">—</div><div class="l">planerad load · nästa 7 dagar</div></div>
+      <div class="mini"><div id="scheduleWeekDone" class="v">—</div><div class="l">utförda pass · denna vecka</div></div>
+    </div>
+
+    <div class="schedule-legend">
+      <span><i class="schedule-dot done"></i>Utfört</span>
+      <span><i class="schedule-dot planned"></i>Planerat</span>
+      <span><i class="schedule-dot paired"></i>Parat</span>
+      <span><i class="schedule-dot unpaired"></i>Ej parat</span>
+    </div>
+
+    <div id="scheduleOverview" class="schedule-overview">
+      <div class="small">Anslut till Intervals för kalenderöversikt.</div>
+    </div>
+    <div id="scheduleMsg" class="notice">Översikten är läs-only. Flytta eller ändra publicerade pass i Intervals eller i den lokala planen innan publicering.</div>
   </section>
 
   <section class="panel full">
@@ -1458,7 +1575,7 @@ const EXECUTION_SCORE_CACHE_STORE="trailcoach_execution_score_cache_v1";
 const AUTO_REFRESH_STALE_MS=5*60*1000;
 const AUTO_REFRESH_INTERVAL_MS=15*60*1000;
 let refreshInFlight=false,lastRefreshAt=0,autoRefreshTimer=null;
-let apiKey="",activities=[],wellness=[],calendarEvents=[],localPlan=[],importedCoachPlan=null;
+let apiKey="",activities=[],wellness=[],calendarEvents=[],scheduleEvents=[],localPlan=[],importedCoachPlan=null;
 let raceGoals=[],dailyCheckins={},executionScoreCache={};
 const $=id=>document.getElementById(id);
 const fmt=new Intl.NumberFormat("sv-SE",{maximumFractionDigits:1});
@@ -2069,6 +2186,175 @@ function raceReadinessProfile(){
   return{goal,phase,overall,dimensions,long_target_min:longTargets[phase],target_weekly_elevation_m:targetElev};
 }
 
+
+function scheduleWindow(){
+  const today=parseDate(iso(new Date()));
+  const start=weekStart(today);
+  const end=addDays(start,13);
+  return{today,start,end,next7End:addDays(today,6)};
+}
+function isWorkoutEvent(e){
+  return s(e,["category"],"").toUpperCase()==="WORKOUT";
+}
+function eventId(e){return e?.id==null?"":String(e.id)}
+function pairedEventId(a){return a?.paired_event_id==null?"":String(a.paired_event_id)}
+function sameSportLoose(a,b){
+  const ta=typeOf(a).toLowerCase(),tb=typeOf(b).toLowerCase();
+  if(!ta||!tb)return true;
+  if(ta.includes("run")&&tb.includes("run"))return true;
+  if((ta.includes("weight")||ta.includes("strength"))&&(tb.includes("weight")||tb.includes("strength")))return true;
+  if(ta.includes("ski")&&tb.includes("ski"))return true;
+  if(ta.includes("yoga")&&tb.includes("yoga"))return true;
+  if(ta.includes("hike")&&tb.includes("hike"))return true;
+  return ta===tb;
+}
+function scheduleEventMinutes(e){
+  return Math.round((n(e,["moving_time","elapsed_time","duration"])||0)/60);
+}
+function scheduleStatusForActivity(a,eventsSameDay=[]){
+  const pid=pairedEventId(a);
+  if(pid)return{key:"paired",label:"Utfört · parat"};
+  const similar=eventsSameDay.some(e=>sameSportLoose(a,e));
+  return similar?{key:"unpaired",label:"Utfört · ej parat"}:{key:"done",label:"Utfört"};
+}
+function scheduleActualCard(a,eventsSameDay,eventMap){
+  const st=scheduleStatusForActivity(a,eventsSameDay);
+  const pid=pairedEventId(a),planned=pid?eventMap.get(pid):null;
+  const bits=[];
+  if(secs(a))bits.push(duration(secs(a)));
+  if(km(a))bits.push(`${fmt.format(km(a))} km`);
+  if(load(a))bits.push(`Load ${fmt.format(load(a))}`);
+  const rpe=n(a,["icu_rpe"]);
+  if(rpe!=null)bits.push(`RPE ${fmt.format(rpe)}`);
+  const exec=garminExecutionScoreFromActivity(a);
+  if(exec!=null)bits.push(`Exec ${Math.round(exec)}%`);
+  const feel=n(a,["feel"]);
+  if(feel!=null)bits.push(feelLabel(feel)||`Feel ${feel}`);
+  let planHtml="";
+  if(planned){
+    const pm=scheduleEventMinutes(planned),pl=n(planned,["icu_training_load"]);
+    const pbits=[pm?`${pm} min plan`:null,pl!=null?`Load ${fmt.format(pl)}`:null].filter(Boolean).join(" · ");
+    planHtml=`<div class="schedule-item-plan">Plan: ${esc(s(planned,["name"],"Planerat pass"))}${pbits?` · ${esc(pbits)}`:""}</div>`;
+  }
+  return `<div class="schedule-item ${st.key}">
+    <div class="schedule-item-top">
+      <span class="schedule-item-status ${st.key}">${esc(st.label)}</span>
+      <span class="badge ${eventBadge(typeOf(a)||"Other")}">${esc(typeOf(a)||"Aktivitet")}</span>
+    </div>
+    <div class="schedule-item-name">${esc(s(a,["name"],"Aktivitet"))}</div>
+    <div class="schedule-item-meta">${bits.map(x=>`<span>${esc(x)}</span>`).join("")}</div>
+    ${planHtml}
+  </div>`;
+}
+function schedulePlannedCard(e,isPast,hasSimilarActual){
+  const mins=scheduleEventMinutes(e),pl=n(e,["icu_training_load"]);
+  let key="planned",label="Planerat";
+  if(isPast){
+    key=hasSimilarActual?"unpaired":"unpaired";
+    label=hasSimilarActual?"Planerat · ej parat":"Planerat · ej utfört";
+  }
+  const bits=[];
+  if(mins)bits.push(`${mins} min`);
+  if(pl!=null)bits.push(`Load ${fmt.format(pl)}`);
+  return `<div class="schedule-item ${key}">
+    <div class="schedule-item-top">
+      <span class="schedule-item-status ${key}">${esc(label)}</span>
+      <span class="badge ${eventBadge(typeOf(e)||"Other")}">${esc(typeOf(e)||"Workout")}</span>
+    </div>
+    <div class="schedule-item-name">${esc(s(e,["name"],"Planerat pass"))}</div>
+    <div class="schedule-item-meta">${bits.map(x=>`<span>${esc(x)}</span>`).join("")}</div>
+  </div>`;
+}
+function scheduleDayHtml(d,allEvents,eventMap){
+  const date=iso(d),today=iso(new Date());
+  const w=scheduleWindow();
+  const dayActs=activities.filter(a=>dateOf(a)===date).sort((a,b)=>s(a,["start_date_local"],"").localeCompare(s(b,["start_date_local"],"")));
+  const dayEvents=allEvents.filter(e=>dateOf(e)===date);
+  const consumed=new Set();
+  const cards=[];
+  dayActs.forEach(a=>{
+    const pid=pairedEventId(a);
+    if(pid && eventMap.has(pid))consumed.add(pid);
+    cards.push(scheduleActualCard(a,dayEvents,eventMap));
+  });
+  dayEvents.forEach(e=>{
+    const id=eventId(e);
+    if(id && consumed.has(id))return;
+    const similar=dayActs.some(a=>sameSportLoose(a,e));
+    cards.push(schedulePlannedCard(e,date<today,similar));
+  });
+
+  const dayNames=["Sön","Mån","Tis","Ons","Tor","Fre","Lör"];
+  const next7=date>=today && date<=iso(w.next7End);
+  const classes=["schedule-day"];
+  if(date===today)classes.push("today");
+  if(next7)classes.push("next7");
+  return `<div class="${classes.join(" ")}">
+    <div class="schedule-day-head">
+      <div class="schedule-day-name">${dayNames[d.getDay()]}</div>
+      <div class="schedule-day-date">${date.slice(5)}</div>
+    </div>
+    <div class="schedule-day-items">${cards.length?cards.join(""):`<div class="schedule-day-empty">${date<today?"Ingen registrerad aktivitet":"Inget planerat"}</div>`}</div>
+  </div>`;
+}
+function scheduleWeekBlock(start,title,events,eventMap){
+  const days=Array.from({length:7},(_,i)=>addDays(start,i));
+  const end=addDays(start,6);
+  const weekActs=activities.filter(a=>dateOf(a)>=iso(start)&&dateOf(a)<=iso(end));
+  const weekEvents=events.filter(e=>dateOf(e)>=iso(start)&&dateOf(e)<=iso(end));
+  const plannedMins=weekEvents.reduce((q,e)=>q+scheduleEventMinutes(e),0);
+  return `<section class="schedule-week">
+    <div class="schedule-week-head">
+      <div class="schedule-week-title">${esc(title)}</div>
+      <div class="schedule-week-meta">${weekActs.length} utförda · ${weekEvents.length} planerade · ${plannedMins} planmin</div>
+    </div>
+    <div class="schedule-days">${days.map(d=>scheduleDayHtml(d,events,eventMap)).join("")}</div>
+  </section>`;
+}
+function renderScheduleOverview(){
+  const box=$("scheduleOverview");if(!box)return;
+  const w=scheduleWindow(),today=iso(new Date()),next7End=iso(w.next7End);
+  const events=(scheduleEvents||[]).filter(isWorkoutEvent).filter(e=>dateOf(e)>=iso(w.start)&&dateOf(e)<=iso(w.end));
+  const eventMap=new Map(events.filter(e=>eventId(e)).map(e=>[eventId(e),e]));
+  $("scheduleRange").textContent=`${iso(w.start)}–${iso(w.end)} · grönton markerar kommande 7 dagar`;
+
+  const next7=events.filter(e=>dateOf(e)>=today&&dateOf(e)<=next7End);
+  const next7Mins=next7.reduce((q,e)=>q+scheduleEventMinutes(e),0);
+  const next7Load=next7.map(e=>n(e,["icu_training_load"])).filter(v=>v!=null).reduce((q,v)=>q+v,0);
+  const weekDone=activities.filter(a=>dateOf(a)>=iso(w.start)&&dateOf(a)<=iso(addDays(w.start,6))).length;
+
+  $("scheduleNext7Count").textContent=String(next7.length);
+  $("scheduleNext7Minutes").textContent=next7Mins?duration(next7Mins*60):"0 min";
+  $("scheduleNext7Load").textContent=next7Load?Math.round(next7Load):"0";
+  $("scheduleWeekDone").textContent=String(weekDone);
+
+  box.innerHTML=
+    scheduleWeekBlock(w.start,"Denna vecka",events,eventMap)+
+    scheduleWeekBlock(addDays(w.start,7),"Nästa vecka",events,eventMap);
+}
+async function fetchScheduleOverview({quiet=false}={}){
+  if(!apiKey)return false;
+  const w=scheduleWindow(),oldest=iso(w.start),newest=iso(w.end);
+  if(!quiet && $("scheduleMsg"))$("scheduleMsg").textContent="Hämtar Intervals-kalender …";
+  try{
+    const r=await icu(`/athlete/0/events?oldest=${oldest}&newest=${newest}`);
+    scheduleEvents=Array.isArray(r.data)?r.data:[];
+    renderScheduleOverview();
+    if(!quiet && $("scheduleMsg")){
+      const nWork=scheduleEvents.filter(isWorkoutEvent).length;
+      $("scheduleMsg").textContent=`Uppdaterat från Intervals · ${nWork} planerade workouts i perioden. Genomförda aktiviteter kommer från aktivitets-API:t.`;
+      $("scheduleMsg").className="notice ok";
+    }
+    return true;
+  }catch(e){
+    if(!quiet && $("scheduleMsg")){
+      $("scheduleMsg").textContent=`Kunde inte hämta kalendern: HTTP ${e?.status||"?"} ${e?.body||e?.message||""}`;
+      $("scheduleMsg").className="notice err";
+    }
+    return false;
+  }
+}
+
 function recentActivities(days){const cutoff=ago(days-1);return activities.filter(a=>dateOf(a)>=cutoff)}
 function runRecent(days){return recentActivities(days).filter(isRun)}
 
@@ -2397,6 +2683,7 @@ async function refreshData({reason="manual",quiet=false}={}){
     activities=Array.isArray(a.data)?a.data:[];
     wellness=Array.isArray(w.data)?w.data:[];
     await hydrateGarminExecutionScores(28);
+    await fetchScheduleOverview({quiet:true});
     enableConnected(true);renderAll();
     saveRefreshTime();
     setStatus(true,"Ansluten");
@@ -2452,21 +2739,21 @@ async function refreshAll(){
   }finally{$("refresh").disabled=false}
 }
 function disconnect(){
-  apiKey="";activities=[];wellness=[];calendarEvents=[];localPlan=[];
+  apiKey="";activities=[];wellness=[];calendarEvents=[];scheduleEvents=[];localPlan=[];
   if(autoRefreshTimer){clearInterval(autoRefreshTimer);autoRefreshTimer=null;}
   if(!(storageAvailable() && localStorage.getItem(KEY_STORE)))$("key").value="";
   enableConnected(false);setStatus(false,"Inte ansluten");
   msg("Frånkopplad. En eventuell sparad API-nyckel ligger kvar på denna enhet.");
   updateRefreshUI("idle","Automatisk synk väntar på anslutning.");
-  renderAll();renderPlan();renderCoachImport();
+  renderAll();renderPlan();renderScheduleOverview();renderCoachImport();
 }
 function enableConnected(on){
-  ["exportData","refresh","generatePlan","fetchPlan","sendGarminTest","exportSnapshot","copyCoachPrompt","sendGarminStrengthTest"].forEach(id=>$(id).disabled=!on);
+  ["exportData","refresh","generatePlan","fetchPlan","refreshSchedule","sendGarminTest","exportSnapshot","copyCoachPrompt","sendGarminStrengthTest"].forEach(id=>$(id).disabled=!on);
   if(!on){$("pushWeek1").disabled=true;$("pushAll4").disabled=true;$("verifyGarminTest").disabled=true;if($("verifyGarminStrengthTest"))$("verifyGarminStrengthTest").disabled=true;}
 }
 
 function renderAll(){
-  renderDashboard();renderCheckin();renderDashboardActivities();renderTrends();renderActivities();renderBaseline();renderGoals();renderPhaseEngine();renderRaceReadiness();renderStrengthReference();renderWellnessInventory();renderActivityApiInventory();
+  renderDashboard();renderCheckin();renderDashboardActivities();renderTrends();renderActivities();renderBaseline();renderGoals();renderPhaseEngine();renderRaceReadiness();renderStrengthReference();renderScheduleOverview();renderWellnessInventory();renderActivityApiInventory();
 }
 
 function renderCheckin(){
@@ -3315,7 +3602,7 @@ function makePlanEvent(date,kind,mins,name,mode,week,source){
   return{
     date:iso(date),kind,mins:Math.round(mins),name,type:eventType(kind,mode),target:targetLabel(kind),
     description:makeDescription(kind,mins,mode),week,source,status:week===1?"READY":"ROADMAP",
-    external_id:`trailcoach-v163-${iso(date)}-${kind}`
+    external_id:`trailcoach-v164-${iso(date)}-${kind}`
   };
 }
 async function fetchPlan(){
@@ -3418,7 +3705,7 @@ async function sendGarminTest(){
     moving_time:35*60,
     icu_training_load:Math.round((historicalLoadRate("TrailRun",42)?.rate||.86)*35*.94),
     target:"HR",
-    external_id:`trailcoach-v163-garmin-test-${d}`
+    external_id:`trailcoach-v164-garmin-test-${d}`
   };
 
   $("sendGarminTest").disabled=true;
@@ -3471,7 +3758,7 @@ async function sendGarminStrengthTest(){
 - Sidoplanka 30s per sida 60s press lap
 
 Tryck LAP när varje arbetssteg är klart.`,
-    external_id:`trailcoach-v163-garmin-strength-test-${d}`
+    external_id:`trailcoach-v164-garmin-strength-test-${d}`
   };
 
   $("sendGarminStrengthTest").disabled=true;
@@ -3505,7 +3792,7 @@ async function verifyGarminStrengthTest(){
   try{
     const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
     const ev=Array.isArray(r.data)?r.data:[];
-    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v163-garmin-strength-test-${d}` || s(x,["name"],"")==="Trail Coach · Garmin Styrketest");
+    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v164-garmin-strength-test-${d}` || s(x,["name"],"")==="Trail Coach · Garmin Styrketest");
     if(!e)return garminStrengthTestMsg("Styrketestet hittades inte i Intervals.icu.","err");
     const structured=!!(e.workout_doc&&Array.isArray(e.workout_doc.steps)&&e.workout_doc.steps.length);
     garminStrengthTestMsg(
@@ -3528,7 +3815,7 @@ async function verifyGarminTest(){
   try{
     const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
     const ev=Array.isArray(r.data)?r.data:[];
-    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v163-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
+    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v164-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
     if(!e){
       garminTestMsg("Testpasset hittades inte i Intervals.icu-kalendern på valt datum.","err");
       return;
@@ -3552,7 +3839,7 @@ async function verifyGarminTest(){
 function addCustom(){
   const d=$("customDate").value,name=$("customName").value.trim(),mins=Number($("customMins").value),type=$("customType").value;
   if(!d||!name||!mins)return planMsg("Fyll i datum, namn och minuter för eget pass.","warn");
-  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`trailcoach-v163-${d}-custom-${Date.now()}`});
+  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`trailcoach-v164-${d}-custom-${Date.now()}`});
   localPlan.sort((a,b)=>a.date.localeCompare(b.date));renderPlan();$("pushWeek1").disabled=!apiKey;$("pushAll4").disabled=!apiKey;planMsg("Eget pass tillagt i den lokala planen.","ok");
 }
 function renderPlan(){
@@ -3736,6 +4023,11 @@ function coachSnapshot(){
       source:s(a,["source"],""),device_name:s(a,["device_name"],""),kg_lifted:n(a,["kg_lifted"])
     })),
     roadmap_4_weeks:localPlan,
+    schedule_overview_events:scheduleEvents.filter(isWorkoutEvent).map(e=>({
+      id:e.id,date:dateOf(e),name:s(e,["name"],""),type:typeOf(e),
+      minutes:scheduleEventMinutes(e),planned_load:n(e,["icu_training_load"]),
+      external_id:s(e,["external_id"],"")
+    })),
     calendar_events:calendarEvents.filter(e=>dateOf(e)>=ago(14)).map(e=>({
       id:e.id,date:dateOf(e),category:s(e,["category"],""),type:s(e,["type"],""),
       name:s(e,["name"],""),description:s(e,["description"],""),external_id:s(e,["external_id"],"")
@@ -3880,7 +4172,7 @@ async function importCoachPlan(){
           : String(w.description||`${w.minutes} min ${w.name}`)
       ),
       week:1,source:"ChatGPT Coach",status:"READY",
-      external_id:`trailcoach-v163-coach-${String(w.date).slice(0,10)}-${normalized.length+1}`
+      external_id:`trailcoach-v164-coach-${String(w.date).slice(0,10)}-${normalized.length+1}`
     });
   }
 
@@ -3933,6 +4225,7 @@ document.querySelectorAll(".tabbtn").forEach(b=>b.addEventListener("click",()=>{
   window.scrollTo({top:0,behavior:"instant"});
 }));
 $("connect").onclick=connect;$("disconnect").onclick=disconnect;$("refresh").onclick=refreshAll;$("forgetKey").onclick=forgetSavedKey;
+$("refreshSchedule").onclick=()=>fetchScheduleOverview({quiet:false});
 $("saveCheckin").onclick=saveDailyCheckin;
 $("addGoal").onclick=addGoal;
 $("planPhase").addEventListener("change",()=>{renderPhaseEngine();renderRaceReadiness();});

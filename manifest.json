@@ -6,7 +6,7 @@
   "display": "standalone",
   "background_color": "#0b0d0f",
   "theme_color": "#0b0d0f",
-  "description": "Adaptiv trailcoach med Intervals pairing-optimering, Garmin Execution Score och gym/hemstyrka.",
+  "description": "Adaptiv trailcoach med live Intervals-veckoöversikt, Garmin feedback och planering.",
   "icons": [
     {
       "src": "icon-192.png",
