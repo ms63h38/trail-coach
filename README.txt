@@ -1,49 +1,55 @@
-TRAIL COACH 2026/27 v1.6.5
+TRAIL COACH 2026/27 v1.6.6 — Garmin / Intervals data audit
 
-1. Roadmap
-- En tom roadmap är nu uttryckligen "not_created", inte en motsägelse.
-- Snapshot har roadmap_status + local_plan.
-- roadmap_4_weeks fylls endast när minst fyra lokala veckor faktiskt finns.
-- planning_model säger "optional 4-week roadmap".
+Research findings:
+- Intervals Wellness model supports avgSleepingHR, sleepQuality, hrvSDNN and many additional fields.
+- Garmin -> Intervals does not necessarily populate every field in the Intervals model.
+- Avg Sleeping HR is a known example: model support exists but Garmin direct sync often does not populate it.
+- Body Battery can be supported through custom wellness fields BodyBatteryMin / BodyBatteryMax when configured and supplied.
+- Garmin Training Readiness is not assumed to be the generic Intervals readiness field.
+- Direct Garmin sleep stages (REM/Deep/Light) are not treated as native Intervals wellness data.
 
-2. Compliance / schema
-- Compliance använder scheduleEvents från Intervals, inte den gamla calendarEvents-listan.
-- Kalenderhämtningen går 28 dagar bakåt + till slutet av nästa vecka.
-- Snapshot skiljer på:
-  planned_in_schedule_overview
-  planned_due_last_28d
-  intervals_paired_count
-  trailcoach_candidate_match_count
-  estimated_plan_coverage_percent
-- Intervals compliance med 0 på ett oparat pass tas inte med i genomsnitt.
+App changes:
+1. Sleep Quality
+- Added to wellness model.
+- Shows in Health & Recovery trends.
+- Current Garmin values such as sleepQuality=2 are no longer ignored.
+- It is NOT added separately to Trail Recovery because Sleep Score already represents sleep quality; avoids double-counting.
 
-3. Pairing
-- paired_event_id är enda officiella Intervals-parningen.
-- Trail Coach kan märka "Trolig match NN% · ej Intervals-parad" baserat på:
-  samma datum + sport + namnlikhet + load/tid.
-- Heuristiken är bara diagnostik och ändrar aldrig paired_event_id.
+2. Sleeping HR
+- avgSleepingHR aliases expanded:
+  avgSleepingHR, averageSleepingHR, avg_sleep_hr, sleepingHR, sleep_hr.
+- Searches both top-level wellness fields and customFields.
+- Diagnostics explicitly says whether the field is absent upstream.
 
-4–6. Garmin Execution Score
-- Gammal v1-cache är övergiven; v2-cache används.
-- session.xxx185 behandlas som direkt heltalsprocent 0–100.
-- Ogiltigt FIT-värde 255 skalas inte längre till 2.55%.
-- Fraktionella värden som 2.55 avvisas.
-- Genomsnitt beräknas bara på validerade värden.
-- 94% och 81% behålls; falska 2.55%-värden försvinner efter omladdning.
+3. HRV SDNN
+- Added and auto-detected if Intervals starts populating it.
 
-7. Body Battery
-- Borttagen från aktiv UI, Recovery, trender, field inventory och Coach Snapshot.
-- Trail Coach använder endast signaler som Intervals faktiskt levererar.
+4. Body Battery
+- Reintroduced only as optional/diagnostic metrics.
+- Supports top-level and customFields aliases for BodyBatteryMin/Max.
+- Not used in Trail Recovery unless intentionally added later.
 
-8. Klickbart planerat pass
-- Klicka på ett planerat kort i Intervals-veckoöversikten.
-- Trail Coach hämtar GET /athlete/0/events/{eventId}.
-- Modal visar planerad tid/load, workout_doc steps, intervallmål och description/workout syntax.
-- Även parade aktivitetskort får "Visa pass".
+5. Raw wellness audit
+- Scans every populated scalar field returned by Intervals for the last 28 days.
+- Scans nested customFields too.
+- Unknown/new fields are labelled "Nytt/okänt".
+- This means future Garmin/Intervals additions will be visible even before Trail Coach explicitly supports them.
 
-9. Kort snapshotfil
-- TC_Snap_yymmdd.json
-- Exempel: TC_Snap_260902.json
+6. Athlete wellness configuration
+- Tries GET /athlete/0 and displays icu_wellness_keys when the endpoint supplies them.
+
+7. Activity customFields
+- Scans completed activities for customFields.
+- Useful for Garmin running dynamics or other FIT-derived custom fields configured in Intervals.
+
+8. Coach Snapshot
+- Adds data_audit with diagnostics, raw wellness fields, activity custom fields and athlete wellness keys.
+- Adds sleep_quality, hrv_sdnn, weight and optional Body Battery to current state.
+- Recent activities also include temperature, calories, GAP, HR recovery and customFields.
+
+Important:
+Trail Coach can only consume data that reaches Intervals or is present in activity FIT/custom fields.
+Garmin metrics visible only inside Garmin Connect but not exposed through Garmin's official integration cannot be retrieved through this architecture.
 
 GitHub Pages:
-Ersätt index.html och sw.js. manifest.json kan också ersättas.
+Replace index.html and sw.js. manifest.json can also be replaced.

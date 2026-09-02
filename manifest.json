@@ -6,7 +6,7 @@
   "display": "standalone",
   "background_color": "#0b0d0f",
   "theme_color": "#0b0d0f",
-  "description": "Adaptiv trailcoach med validerad Garmin feedback, pairing candidates och klickbara Intervals-workouts.",
+  "description": "Adaptiv trailcoach med komplett Garmin/Intervals wellness- och custom-field audit.",
   "icons": [
     {
       "src": "icon-192.png",

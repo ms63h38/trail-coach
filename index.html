@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Trail Coach 2026/27 v1.6.5</title>
+<title>Trail Coach 2026/27 v1.6.6</title>
 <style>
 :root{
   --bg:#0b0d0f;--panel:#12161a;--panel2:#171c21;--panel3:#0f1317;
@@ -1076,6 +1076,13 @@ input,select,textarea{max-width:100%;min-width:0}
 .planned-step-meta{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.3;overflow-wrap:anywhere}
 .planned-step-children{display:grid;gap:5px;margin-top:6px}
 
+
+/* v1.6.6 — complete wellness/raw field audit */
+.wellness-field-status.warn{
+  color:#f4c95d;
+  border-color:#665727;
+}
+
 </style>
 </head>
 <body>
@@ -1540,9 +1547,30 @@ input,select,textarea{max-width:100%;min-width:0}
 
   <section class="panel full settings-card">
     <h2>Garmin / Intervals · wellnessfält</h2>
-    <div class="small" style="margin-bottom:10px">Trail Coach söker automatiskt efter relevanta wellnessfält och visar vilka som faktiskt levereras via ditt Intervals-konto.</div>
+    <div class="small" style="margin-bottom:10px">Trail Coach söker både kända standardfält och customFields. Sleep Quality, HRV SDNN, sömnpuls och valfria Body Battery-fält upptäcks automatiskt när Intervals faktiskt levererar dem.</div>
     <div id="wellnessInventory" class="wellness-inventory"><div class="small">Anslut för att inspektera wellness-data.</div></div>
-    <div id="wellnessInventoryNote" class="notice">Readiness märks som “Intervals readiness” eftersom Trail Coach inte antar att fältet är identiskt med Garmin Training Readiness.</div>
+    <div id="wellnessInventoryNote" class="notice">Readiness märks som “Intervals readiness”. Sömnpuls och Body Battery kan finnas i Intervals-modellen utan att Garmin faktiskt levererar dem på ditt konto.</div>
+  </section>
+
+  <section class="panel full settings-card">
+    <h2>Garmin → Intervals · datagranskning</h2>
+    <div class="small" style="margin-bottom:10px">Kontrollerar både kända Intervals-fält, råa API-fält och customFields så att nya Garmin-signaler inte missas när Intervals börjar leverera dem.</div>
+    <div id="healthDataDiagnostics" class="wellness-inventory"><div class="small">Anslut för diagnostik.</div></div>
+
+    <details class="settings-details" style="margin-top:10px">
+      <summary>Visa alla råa wellnessfält</summary>
+      <div class="settings-detail-body">
+        <div id="rawWellnessAudit" class="wellness-inventory"><div class="small">Ingen data.</div></div>
+      </div>
+    </details>
+
+    <details class="settings-details" style="margin-top:8px">
+      <summary>Visa activity customFields</summary>
+      <div class="settings-detail-body">
+        <div id="activityCustomAudit" class="wellness-inventory"><div class="small">Ingen custom activity-data.</div></div>
+      </div>
+    </details>
+    <div id="wellnessSelectedFields" class="notice">Intervals-profilens valda wellnessfält hämtas när API:t tillåter det.</div>
   </section>
 
   <section class="panel settings-card settings-data-actions">
@@ -1609,7 +1637,7 @@ const EXECUTION_SCORE_CACHE_STORE="trailcoach_execution_score_cache_v2";
 const AUTO_REFRESH_STALE_MS=5*60*1000;
 const AUTO_REFRESH_INTERVAL_MS=15*60*1000;
 let refreshInFlight=false,lastRefreshAt=0,autoRefreshTimer=null;
-let apiKey="",activities=[],wellness=[],calendarEvents=[],scheduleEvents=[],localPlan=[],importedCoachPlan=null;
+let apiKey="",activities=[],wellness=[],calendarEvents=[],scheduleEvents=[],localPlan=[],importedCoachPlan=null,athleteProfile={};
 let raceGoals=[],dailyCheckins={},executionScoreCache={};
 const $=id=>document.getElementById(id);
 const fmt=new Intl.NumberFormat("sv-SE",{maximumFractionDigits:1});
@@ -1725,22 +1753,36 @@ function trendDelta(keys,days){
 
 const WELLNESS_METRICS={
   hrv:{label:"HRV",unit:"ms",aliases:["hrv","hrvRMSSD"],digits:1,higherBetter:true},
+  hrvSDNN:{label:"HRV SDNN",unit:"ms",aliases:["hrvSDNN","hrv_sdnn","SDNN"],digits:1,higherBetter:null},
   restingHR:{label:"Vilopuls",unit:"bpm",aliases:["restingHR","resting_hr"],digits:0,higherBetter:false},
   sleepSecs:{label:"Sömn",unit:"h",aliases:["sleepSecs","sleep_secs"],digits:1,higherBetter:true,transform:v=>v/3600},
   sleepScore:{label:"Sleep Score",unit:"",aliases:["sleepScore","sleep_score"],digits:0,higherBetter:true},
+  sleepQuality:{label:"Sleep Quality",unit:"",aliases:["sleepQuality","sleep_quality"],digits:1,higherBetter:false,
+    categoryMap:{1:"Excellent",2:"Good",3:"Average",4:"Poor"}},
+  avgSleepingHR:{label:"Sömnpuls",unit:"bpm",aliases:["avgSleepingHR","averageSleepingHR","avg_sleep_hr","sleepingHR","sleep_hr"],digits:0,higherBetter:false},
   spO2:{label:"SpO₂",unit:"%",aliases:["spO2","spo2","SpO2"],digits:1,higherBetter:null},
   respiration:{label:"Respiration",unit:"/min",aliases:["RespRate","respRate","respiration","respirationRate","avgRespiration"],digits:1,higherBetter:null},
   steps:{label:"Steg",unit:"",aliases:["steps","Steps","stepCount","StepCount"],digits:0,higherBetter:true},
   readiness:{label:"Intervals readiness",unit:"",aliases:["readiness"],digits:0,higherBetter:true},
   stress:{label:"Stress",unit:"",aliases:["stress"],digits:1,higherBetter:false},
-  avgSleepingHR:{label:"Sömnpuls",unit:"bpm",aliases:["avgSleepingHR","averageSleepingHR"],digits:0,higherBetter:false},
   weight:{label:"Vikt",unit:"kg",aliases:["weight"],digits:1,higherBetter:null},
-  vo2max:{label:"VO₂max",unit:"",aliases:["vo2max"],digits:1,higherBetter:true}
+  vo2max:{label:"VO₂max",unit:"",aliases:["vo2max"],digits:1,higherBetter:true},
+  BodyBatteryMax:{label:"Body Battery max · valfritt",unit:"",aliases:["BodyBatteryMax","bodyBatteryMax","body_battery_max"],digits:0,higherBetter:true,optional:true},
+  BodyBatteryMin:{label:"Body Battery min · valfritt",unit:"",aliases:["BodyBatteryMin","bodyBatteryMin","body_battery_min"],digits:0,higherBetter:null,optional:true}
 };
 function wellnessMetricRaw(row,key){
   const def=WELLNESS_METRICS[key];
   if(!row||!def)return null;
-  return n(row,def.aliases);
+  const direct=n(row,def.aliases);
+  if(direct!=null)return direct;
+  const cf=row.customFields;
+  if(cf&&typeof cf==="object"){
+    for(const alias of def.aliases){
+      const v=cf[alias];
+      if(v!=null&&Number.isFinite(Number(v)))return Number(v);
+    }
+  }
+  return null;
 }
 function wellnessMetricValue(row,key){
   const def=WELLNESS_METRICS[key],raw=wellnessMetricRaw(row,key);
@@ -1798,6 +1840,7 @@ function metricFormat(key,v){
   if(v==null||!Number.isFinite(Number(v)))return"—";
   const d=WELLNESS_METRICS[key]||{digits:1,unit:""};
   const x=Number(v);
+  if(d.categoryMap && Number.isInteger(x) && d.categoryMap[x])return `${d.categoryMap[x]} (${x})`;
   const txt=new Intl.NumberFormat("sv-SE",{maximumFractionDigits:d.digits??1}).format(x);
   return d.unit?`${txt} ${d.unit}`:txt;
 }
@@ -1812,6 +1855,7 @@ function wellnessInventory(days=28){
     for(const row of wellness){
       for(const alias of def.aliases){
         if(row && row[alias]!=null){resolvedAlias=alias;break}
+        if(row?.customFields && row.customFields[alias]!=null){resolvedAlias=`customFields.${alias}`;break}
       }
       if(resolvedAlias)break;
     }
@@ -1819,6 +1863,130 @@ function wellnessInventory(days=28){
   });
 }
 
+
+
+const INTERVALS_WELLNESS_STANDARD={
+  weight:"Vikt",restingHR:"Vilopuls",hrv:"HRV rMSSD",hrvSDNN:"HRV SDNN",
+  kcalConsumed:"Kalorier konsumerade",sleepSecs:"Sömntid",sleepScore:"Sleep Score",
+  sleepQuality:"Sleep Quality",avgSleepingHR:"Sömnpuls",soreness:"Muskelömhet",
+  fatigue:"Subjektiv fatigue",stress:"Subjektiv stress",mood:"Humör",
+  motivation:"Motivation",injury:"Skada/niggle",spO2:"SpO₂",systolic:"Systoliskt BT",
+  diastolic:"Diastoliskt BT",hydration:"Hydreringsstatus",hydrationVolume:"Vätskevolym",
+  readiness:"Readiness",baevskySI:"Baevsky Stress Index",bloodGlucose:"Blodglukos",
+  lactate:"Laktat",bodyFat:"Kroppsfett",abdomen:"Bukmått",vo2max:"VO₂max",
+  comments:"Kommentar",steps:"Steg",respiration:"Respiration",locked:"Locked",
+  tempWeight:"Temporär vikt",tempRestingHR:"Temporär vilopuls"
+};
+const WELLNESS_STRUCTURAL_KEYS=new Set([
+  "id","ctl","atl","rampRate","ctlLoad","atlLoad","sportInfo","updated",
+  "menstrualPhase","menstrualPhasePredicted","customFields"
+]);
+function isAuditScalar(v){
+  return v!=null && ["string","number","boolean"].includes(typeof v);
+}
+function rawWellnessAudit(days=28){
+  const cutoff=ago(days-1),rows=wellness.filter(w=>dateOf(w)>=cutoff);
+  const map=new Map();
+  const add=(key,value,date,kind="standard")=>{
+    if(!isAuditScalar(value))return;
+    const id=`${kind}:${key}`;
+    if(!map.has(id))map.set(id,{key,kind,count:0,last_date:null,last_value:null});
+    const x=map.get(id);x.count++;
+    if(!x.last_date||date>=x.last_date){x.last_date=date;x.last_value=value}
+  };
+  for(const row of rows){
+    const d=dateOf(row);
+    for(const [k,v] of Object.entries(row||{})){
+      if(WELLNESS_STRUCTURAL_KEYS.has(k))continue;
+      add(k,v,d,INTERVALS_WELLNESS_STANDARD[k]?"standard":"unknown");
+    }
+    if(row?.customFields&&typeof row.customFields==="object"){
+      for(const [k,v] of Object.entries(row.customFields))add(k,v,d,"custom");
+    }
+  }
+  return [...map.values()].sort((a,b)=>{
+    const rank={custom:0,unknown:1,standard:2};
+    return (rank[a.kind]-rank[b.kind]) || a.key.localeCompare(b.key);
+  });
+}
+function activityCustomFieldAudit(days=28){
+  const cutoff=ago(days-1),rows=activities.filter(a=>dateOf(a)>=cutoff),map=new Map();
+  for(const a of rows){
+    const cf=a?.customFields;
+    if(!cf||typeof cf!=="object")continue;
+    for(const [k,v] of Object.entries(cf)){
+      if(!isAuditScalar(v))continue;
+      if(!map.has(k))map.set(k,{key:k,count:0,last_date:null,last_value:null});
+      const x=map.get(k);x.count++;const d=dateOf(a);
+      if(!x.last_date||d>=x.last_date){x.last_date=d;x.last_value=v}
+    }
+  }
+  return [...map.values()].sort((a,b)=>a.key.localeCompare(b.key));
+}
+function wellnessHas(key){
+  return metricCoverage(key,28).count>0;
+}
+function healthDataDiagnostics(){
+  const raw=rawWellnessAudit(28);
+  const rawKeys=new Set(raw.map(x=>x.key));
+  const hasBB=wellnessHas("BodyBatteryMax")||wellnessHas("BodyBatteryMin");
+  const selected=Array.isArray(athleteProfile?.icu_wellness_keys)?athleteProfile.icu_wellness_keys:[];
+  return[
+    {
+      key:"sleepQuality",label:"Sleep Quality",
+      status:wellnessHas("sleepQuality")?"available":"missing",
+      detail:wellnessHas("sleepQuality")
+        ?`Finns i Intervals (${metricCoverage("sleepQuality",28).count}/28 dagar). Visas nu separat men dubbelräknas inte med Sleep Score i Trail Recovery.`
+        :"Stöds av Intervals men inga värden hittades."
+    },
+    {
+      key:"avgSleepingHR",label:"Sömnpuls / Avg Sleeping HR",
+      status:wellnessHas("avgSleepingHR")?"available":"upstream",
+      detail:wellnessHas("avgSleepingHR")
+        ?`Tillgänglig via ${wellnessInventory(28).find(x=>x.key==="avgSleepingHR")?.resolvedAlias||"Intervals"}.`
+        :"Intervals datamodell har avgSleepingHR, men Garmin→Intervals levererar inget värde på ditt konto. Trail Coach kan därför inte läsa sömnpuls via nuvarande pipeline."
+    },
+    {
+      key:"hrvSDNN",label:"HRV SDNN",
+      status:wellnessHas("hrvSDNN")?"available":"optional",
+      detail:wellnessHas("hrvSDNN")
+        ?`${metricCoverage("hrvSDNN",28).count}/28 dagar tillgängliga.`
+        :"Stöds av Intervals. Garmin natt-HRV som kommer in hos dig är primärt rMSSD; SDNN används automatiskt om fältet senare börjar fyllas."
+    },
+    {
+      key:"bodyBattery",label:"Body Battery min/max",
+      status:hasBB?"available":"setup",
+      detail:hasBB
+        ?"Body Battery hittades och kan följas som valfri signal."
+        :"Inte levererat i din wellness-data. Intervals kan använda custom wellness-koderna BodyBatteryMin/BodyBatteryMax när de är konfigurerade och Garmin erbjuder datan."
+    },
+    {
+      key:"readiness",label:"Garmin Training Readiness",
+      status:"upstream",
+      detail:wellnessHas("readiness")
+        ?"Fältet readiness finns, men Trail Coach behandlar det som Intervals readiness och antar inte att det är Garmins Training Readiness."
+        :"Garmin Training Readiness hittades inte via Intervals."
+    },
+    {
+      key:"sleepStages",label:"REM / Deep / Light sleep",
+      status:"upstream",
+      detail:"Ingår inte nativt i den vanliga Garmin→Intervals wellness-syncen. Kan förekomma via tredjepart/custom fields, vilket råfältsauditen fångar om det dyker upp."
+    },
+    {
+      key:"garminStress",label:"Garmin all-day Stress",
+      status:"upstream",
+      detail:"Intervals standardfält stress är en subjektiv skala. Trail Coach tolkar därför inte detta som Garmins all-day Stress utan explicit custom field."
+    },
+    {
+      key:"rawCoverage",label:"Rå wellness-audit",
+      status:"available",
+      detail:`${raw.length} populära råfält/custom fields hittades senaste 28 dagarna. ${selected.length?`${selected.length} wellnessfält är valda i din Intervals-profil.`:"Athlete icu_wellness_keys saknas/är tomt."}`
+    }
+  ];
+}
+function auditStatusLabel(s){
+  return({available:"Tillgänglig",missing:"Saknas",upstream:"Ej från Garmin",optional:"Valfri",setup:"Kräver setup"})[s]||s;
+}
 
 function safeLocalGet(key,fallback){
   try{const x=localStorage.getItem(key);return x?JSON.parse(x):fallback}catch{return fallback}
@@ -2568,15 +2736,20 @@ function wellnessSummary(days){
   return{
     days:wellness.filter(w=>dateOf(w)>=ago(days-1)).length,
     avg_hrv:metricAverage("hrv",days),
+    avg_hrv_sdnn:metricAverage("hrvSDNN",days),
     avg_resting_hr:metricAverage("restingHR",days),
     avg_sleep_hours:metricAverage("sleepSecs",days),
     avg_readiness:metricAverage("readiness",days),
     avg_sleep_score:metricAverage("sleepScore",days),
+    avg_sleep_quality:metricAverage("sleepQuality",days),
     avg_spo2:metricAverage("spO2",days),
     avg_respiration:metricAverage("respiration",days),
     avg_steps:metricAverage("steps",days),
     avg_stress:metricAverage("stress",days),
     avg_sleeping_hr:metricAverage("avgSleepingHR",days),
+    avg_weight:metricAverage("weight",days),
+    avg_body_battery_max:metricAverage("BodyBatteryMax",days),
+    avg_body_battery_min:metricAverage("BodyBatteryMin",days),
     avg_vo2max:metricAverage("vo2max",days)
   };
 }
@@ -2696,7 +2869,7 @@ function currentLoadState(){
   if(!w)return{};
   const ctl=n(w,["ctl","fitness"]),atl=n(w,["atl","fatigue"]);
   const vo2Latest=latestMetric("vo2max"),engine=recoveryEngine();
-  const metricKeys=["hrv","restingHR","sleepSecs","sleepScore","spO2","respiration","steps","readiness","stress","avgSleepingHR","vo2max"];
+  const metricKeys=["hrv","hrvSDNN","restingHR","sleepSecs","sleepScore","sleepQuality","avgSleepingHR","spO2","respiration","steps","readiness","stress","weight","vo2max","BodyBatteryMax","BodyBatteryMin"];
   const metricDates=Object.fromEntries(metricKeys.map(k=>{
     const m=latestMetric(k);
     return[k,m?{date:m.date,age_days:metricAgeDays(m),freshness:metricFreshnessFactor(k,m)}:null];
@@ -2705,15 +2878,20 @@ function currentLoadState(){
     date:dateOf(w),ctl,atl,form:(ctl!=null&&atl!=null)?ctl-atl:null,
     ramp_rate:n(w,["rampRate"]),
     hrv:latestMetric("hrv")?.value??null,
+    hrv_sdnn:latestMetric("hrvSDNN")?.value??null,
     resting_hr:latestMetric("restingHR")?.value??null,
     sleep_hours:latestMetric("sleepSecs")?.value??null,
     sleep_score:latestMetric("sleepScore")?.value??null,
+    sleep_quality:latestMetric("sleepQuality")?.value??null,
     spo2:latestMetric("spO2")?.value??null,
     respiration:latestMetric("respiration")?.value??null,
     steps:latestMetric("steps")?.value??null,
     readiness:latestMetric("readiness")?.value??null,
     stress:latestMetric("stress")?.value??null,
     avg_sleeping_hr:latestMetric("avgSleepingHR")?.value??null,
+    weight:latestMetric("weight")?.value??null,
+    body_battery_max:latestMetric("BodyBatteryMax")?.value??null,
+    body_battery_min:latestMetric("BodyBatteryMin")?.value??null,
     vo2max:vo2Latest?vo2Latest.value:null,
     vo2max_date:vo2Latest?vo2Latest.date:null,
     metric_dates:metricDates,
@@ -2863,6 +3041,12 @@ async function refreshData({reason="manual",quiet=false}={}){
     ]);
     activities=Array.isArray(a.data)?a.data:[];
     wellness=Array.isArray(w.data)?w.data:[];
+    try{
+      const ap=await icu(`/athlete/0`);
+      athleteProfile=ap?.data&&typeof ap.data==="object"?ap.data:{};
+    }catch{
+      athleteProfile={};
+    }
     await hydrateGarminExecutionScores(28);
     await fetchScheduleOverview({quiet:true});
     enableConnected(true);renderAll();
@@ -2920,7 +3104,7 @@ async function refreshAll(){
   }finally{$("refresh").disabled=false}
 }
 function disconnect(){
-  apiKey="";activities=[];wellness=[];calendarEvents=[];scheduleEvents=[];localPlan=[];
+  apiKey="";activities=[];wellness=[];calendarEvents=[];scheduleEvents=[];localPlan=[];athleteProfile={};
   if(autoRefreshTimer){clearInterval(autoRefreshTimer);autoRefreshTimer=null;}
   if(!(storageAvailable() && localStorage.getItem(KEY_STORE)))$("key").value="";
   enableConnected(false);setStatus(false,"Inte ansluten");
@@ -2934,7 +3118,7 @@ function enableConnected(on){
 }
 
 function renderAll(){
-  renderDashboard();renderCheckin();renderDashboardActivities();renderTrends();renderActivities();renderBaseline();renderGoals();renderPhaseEngine();renderRaceReadiness();renderStrengthReference();renderScheduleOverview();renderWellnessInventory();renderActivityApiInventory();
+  renderDashboard();renderCheckin();renderDashboardActivities();renderTrends();renderActivities();renderBaseline();renderGoals();renderPhaseEngine();renderRaceReadiness();renderStrengthReference();renderScheduleOverview();renderWellnessInventory();renderActivityApiInventory();renderHealthDataAudit();
 }
 
 function renderCheckin(){
@@ -3061,6 +3245,52 @@ function renderActivityApiInventory(){
       <div class="wellness-field-meta">${count?`${count}/${arr.length} aktiviteter · API-fält ${esc(key)}`:`Kan fortfarande finnas i GET /activity/{id} · ${esc(key)}`}</div>
     </div>`;
   }).join("");
+}
+
+
+function renderHealthDataAudit(){
+  const box=$("healthDataDiagnostics");
+  if(!box)return;
+  const diagItems=healthDataDiagnostics();
+  box.innerHTML=diagItems.map(x=>`<div class="wellness-field-card">
+    <div class="wellness-field-top">
+      <div class="wellness-field-name">${esc(x.label)}</div>
+      <div class="wellness-field-status ${x.status==="available"?"ok":x.status==="upstream"?"warn":""}">${esc(auditStatusLabel(x.status))}</div>
+    </div>
+    <div class="wellness-field-meta">${esc(x.detail)}</div>
+  </div>`).join("");
+
+  const raw=$("rawWellnessAudit");
+  if(raw){
+    const items=rawWellnessAudit(28);
+    raw.innerHTML=items.length?items.map(x=>{
+      const known=INTERVALS_WELLNESS_STANDARD[x.key]||WELLNESS_METRICS[x.key]?.label;
+      return `<div class="wellness-field-card">
+        <div class="wellness-field-top">
+          <div class="wellness-field-name">${esc(known||x.key)}</div>
+          <div class="wellness-field-status ${known?"ok":""}">${x.kind==="custom"?"Custom":x.kind==="unknown"?"Nytt/okänt":"Standard"}</div>
+        </div>
+        <div class="wellness-field-meta">API: ${esc(x.kind==="custom"?`customFields.${x.key}`:x.key)} · ${x.count}/28 dagar · senaste ${esc(x.last_date||"—")} · värde ${esc(String(x.last_value))}</div>
+      </div>`;
+    }).join(""):'<div class="small">Inga populära råfält hittades.</div>';
+  }
+
+  const act=$("activityCustomAudit");
+  if(act){
+    const items=activityCustomFieldAudit(28);
+    act.innerHTML=items.length?items.map(x=>`<div class="wellness-field-card">
+      <div class="wellness-field-top">
+        <div class="wellness-field-name">${esc(x.key)}</div>
+        <div class="wellness-field-status ok">Custom activity</div>
+      </div>
+      <div class="wellness-field-meta">${x.count} aktiviteter · senaste ${esc(x.last_date||"—")} · ${esc(String(x.last_value))}</div>
+    </div>`).join(""):'<div class="small">Inga scalar customFields hittades i aktiviteter senaste 28 dagarna.</div>';
+  }
+
+  const selected=Array.isArray(athleteProfile?.icu_wellness_keys)?athleteProfile.icu_wellness_keys:[];
+  $("wellnessSelectedFields").textContent=selected.length
+    ?`Intervals icu_wellness_keys: ${selected.join(", ")}`
+    :"Athlete-endpointen gav inga icu_wellness_keys. Råfältsauditen ovan är fortfarande aktiv.";
 }
 
 function renderDashboard(){
@@ -3215,7 +3445,7 @@ function renderFeedbackTrends(){
 function renderHealthTrends(){
   const tbody=$("healthTrendRows");
   if(!tbody)return;
-  const keys=["hrv","restingHR","sleepSecs","sleepScore","spO2","respiration","steps","readiness"];
+  const keys=["hrv","hrvSDNN","restingHR","sleepSecs","sleepScore","sleepQuality","avgSleepingHR","spO2","respiration","steps","readiness","weight"];
   const rows=[];
   for(const key of keys){
     const latest=latestMetric(key);
@@ -3232,7 +3462,7 @@ function renderHealthTrends(){
   }
   tbody.innerHTML=rows.length?rows.join(""):'<tr><td colspan="5" class="small">Inga relevanta wellnessfält hittades.</td></tr>';
   const available=wellnessInventory(28).filter(x=>x.available).length;
-  $("healthTrendNote").textContent=`${available} relevanta wellnessfält hittades de senaste 28 dagarna. Readiness behandlas som ett generellt Intervals-fält.`;
+  $("healthTrendNote").textContent=`${available} relevanta wellnessfält hittades de senaste 28 dagarna. Sleep Quality visas separat från Sleep Score och dubbelräknas inte i Recovery. Readiness behandlas som ett generellt Intervals-fält.`;
 }
 function drawBodyBatteryChart(){
   const svg=$("bodyBatteryChart");
@@ -3782,7 +4012,7 @@ function makePlanEvent(date,kind,mins,name,mode,week,source){
   return{
     date:iso(date),kind,mins:Math.round(mins),name,type:eventType(kind,mode),target:targetLabel(kind),
     description:makeDescription(kind,mins,mode),week,source,status:week===1?"READY":"ROADMAP",
-    external_id:`trailcoach-v165-${iso(date)}-${kind}`
+    external_id:`trailcoach-v166-${iso(date)}-${kind}`
   };
 }
 async function fetchPlan(){
@@ -3885,7 +4115,7 @@ async function sendGarminTest(){
     moving_time:35*60,
     icu_training_load:Math.round((historicalLoadRate("TrailRun",42)?.rate||.86)*35*.94),
     target:"HR",
-    external_id:`trailcoach-v165-garmin-test-${d}`
+    external_id:`trailcoach-v166-garmin-test-${d}`
   };
 
   $("sendGarminTest").disabled=true;
@@ -3938,7 +4168,7 @@ async function sendGarminStrengthTest(){
 - Sidoplanka 30s per sida 60s press lap
 
 Tryck LAP när varje arbetssteg är klart.`,
-    external_id:`trailcoach-v165-garmin-strength-test-${d}`
+    external_id:`trailcoach-v166-garmin-strength-test-${d}`
   };
 
   $("sendGarminStrengthTest").disabled=true;
@@ -3972,7 +4202,7 @@ async function verifyGarminStrengthTest(){
   try{
     const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
     const ev=Array.isArray(r.data)?r.data:[];
-    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v165-garmin-strength-test-${d}` || s(x,["name"],"")==="Trail Coach · Garmin Styrketest");
+    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v166-garmin-strength-test-${d}` || s(x,["name"],"")==="Trail Coach · Garmin Styrketest");
     if(!e)return garminStrengthTestMsg("Styrketestet hittades inte i Intervals.icu.","err");
     const structured=!!(e.workout_doc&&Array.isArray(e.workout_doc.steps)&&e.workout_doc.steps.length);
     garminStrengthTestMsg(
@@ -3995,7 +4225,7 @@ async function verifyGarminTest(){
   try{
     const r=await icu(`/athlete/0/events?oldest=${d}&newest=${d}`);
     const ev=Array.isArray(r.data)?r.data:[];
-    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v165-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
+    const e=ev.find(x=>s(x,["external_id"],"")===`trailcoach-v166-garmin-test-${d}` || s(x,["name"],"")==="Garmin Sync Test · Lugn HR");
     if(!e){
       garminTestMsg("Testpasset hittades inte i Intervals.icu-kalendern på valt datum.","err");
       return;
@@ -4019,7 +4249,7 @@ async function verifyGarminTest(){
 function addCustom(){
   const d=$("customDate").value,name=$("customName").value.trim(),mins=Number($("customMins").value),type=$("customType").value;
   if(!d||!name||!mins)return planMsg("Fyll i datum, namn och minuter för eget pass.","warn");
-  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`trailcoach-v165-${d}-custom-${Date.now()}`});
+  localPlan.push({date:d,kind:"custom",mins,name,type,target:"Eget",description:`${mins} min ${name}`,week:1,source:"Eget",status:"READY",external_id:`trailcoach-v166-${d}-custom-${Date.now()}`});
   localPlan.sort((a,b)=>a.date.localeCompare(b.date));renderPlan();$("pushWeek1").disabled=!apiKey;$("pushAll4").disabled=!apiKey;planMsg("Eget pass tillagt i den lokala planen.","ok");
 }
 function renderPlan(){
@@ -4202,6 +4432,13 @@ function coachSnapshot(){
       field_inventory_28d:wellnessInventory(28),
       note:"readiness is treated as an Intervals field and is not assumed to equal Garmin Training Readiness"
     },
+    data_audit:{
+      athlete_wellness_keys:Array.isArray(athleteProfile?.icu_wellness_keys)?athleteProfile.icu_wellness_keys:[],
+      diagnostics:healthDataDiagnostics(),
+      raw_wellness_fields_28d:rawWellnessAudit(28),
+      activity_custom_fields_28d:activityCustomFieldAudit(28),
+      note:"Raw and custom field inventories are included so new Intervals/Garmin fields can be detected even before Trail Coach has explicit UI support."
+    },
     periods:{
       days_7:sumActivities(recentActivities(7)),
       days_28:sumActivities(recentActivities(28)),
@@ -4234,8 +4471,11 @@ function coachSnapshot(){
       decoupling:n(a,["decoupling"]),icu_intensity:n(a,["icu_intensity"]),
       variability_index:n(a,["icu_variability_index"]),average_stride_m:n(a,["average_stride"]),
       efficiency_factor:n(a,["icu_efficiency_factor"]),
+      gap_mps:n(a,["gap"]),average_temp_c:n(a,["average_temp"]),min_temp_c:n(a,["min_temp"]),max_temp_c:n(a,["max_temp"]),
+      calories:n(a,["calories"]),hr_recovery:a.icu_hrr??null,
       hr_load:n(a,["hr_load"]),pace_load:n(a,["pace_load"]),power_load:n(a,["power_load"]),
-      source:s(a,["source"],""),device_name:s(a,["device_name"],""),kg_lifted:n(a,["kg_lifted"])
+      source:s(a,["source"],""),device_name:s(a,["device_name"],""),kg_lifted:n(a,["kg_lifted"]),
+      custom_fields:a.customFields??null
     })),
     local_plan:localPlan,
     roadmap_4_weeks:roadmapState().has_four_week_roadmap?localPlan:[],
@@ -4388,7 +4628,7 @@ async function importCoachPlan(){
           : String(w.description||`${w.minutes} min ${w.name}`)
       ),
       week:1,source:"ChatGPT Coach",status:"READY",
-      external_id:`trailcoach-v165-coach-${String(w.date).slice(0,10)}-${normalized.length+1}`
+      external_id:`trailcoach-v166-coach-${String(w.date).slice(0,10)}-${normalized.length+1}`
     });
   }
 
@@ -4422,6 +4662,8 @@ function exportData(){
     activities_count:activities.length,
     wellness_count:wellness.length,
     activities,wellness,
+    athlete_profile:athleteProfile,
+    data_audit:{diagnostics:healthDataDiagnostics(),raw_wellness_fields_28d:rawWellnessAudit(28),activity_custom_fields_28d:activityCustomFieldAudit(28)},
     calendar_events:calendarEvents,
     local_4_week_plan:localPlan,
     imported_coach_plan:importedCoachPlan,
