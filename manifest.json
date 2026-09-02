@@ -6,7 +6,7 @@
   "display": "standalone",
   "background_color": "#0b0d0f",
   "theme_color": "#0b0d0f",
-  "description": "Adaptiv trailcoach med live Intervals-veckoöversikt, Garmin feedback och planering.",
+  "description": "Adaptiv trailcoach med validerad Garmin feedback, pairing candidates och klickbara Intervals-workouts.",
   "icons": [
     {
       "src": "icon-192.png",

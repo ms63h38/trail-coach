@@ -1,31 +1,49 @@
-TRAIL COACH 2026/27 v1.6.4 — Intervals week overview
+TRAIL COACH 2026/27 v1.6.5
 
-Nytt överst i Plan:
-- Läs-only liveöversikt från Intervals för innevarande vecka + nästa vecka.
-- Hämtas automatiskt vid normal datauppdatering.
-- Separat knapp "Uppdatera schema".
-- Genomförda aktiviteter kommer från /activities.
-- Planerade pass kommer från /events.
-- Paired activity använder paired_event_id när Intervals har parat passet.
-- Om samma sport finns samma dag men paired_event_id saknas visas "Utfört · ej parat"
-  och det planerade passet ligger kvar separat. Appen gissar inte att de är parade.
-- Parat pass visas som ett genomfört kort med planerad information under.
-- Gamla planerade pass utan aktivitet visas "Planerat · ej utfört".
+1. Roadmap
+- En tom roadmap är nu uttryckligen "not_created", inte en motsägelse.
+- Snapshot har roadmap_status + local_plan.
+- roadmap_4_weeks fylls endast när minst fyra lokala veckor faktiskt finns.
+- planning_model säger "optional 4-week roadmap".
 
-Kommande 7 dagar:
-- antal planerade pass
-- planerad tid
-- planerad training load
-- denna veckas genomförda pass
+2. Compliance / schema
+- Compliance använder scheduleEvents från Intervals, inte den gamla calendarEvents-listan.
+- Kalenderhämtningen går 28 dagar bakåt + till slutet av nästa vecka.
+- Snapshot skiljer på:
+  planned_in_schedule_overview
+  planned_due_last_28d
+  intervals_paired_count
+  trailcoach_candidate_match_count
+  estimated_plan_coverage_percent
+- Intervals compliance med 0 på ett oparat pass tas inte med i genomsnitt.
 
-Layout:
-- Desktop: 7-dagars veckor i kolumner.
-- iPhone: varje vecka blir en kompakt vertikal daglista.
-- Idag markeras blått.
-- Dagar inom kommande 7 dagar får diskret grön ton.
+3. Pairing
+- paired_event_id är enda officiella Intervals-parningen.
+- Trail Coach kan märka "Trolig match NN% · ej Intervals-parad" baserat på:
+  samma datum + sport + namnlikhet + load/tid.
+- Heuristiken är bara diagnostik och ändrar aldrig paired_event_id.
 
-Den lokala 4-veckorsplanen är oförändrad och ligger under liveöversikten.
-Det gör att "vad som faktiskt ligger i Intervals" inte blandas ihop med den lokala roadmapen.
+4–6. Garmin Execution Score
+- Gammal v1-cache är övergiven; v2-cache används.
+- session.xxx185 behandlas som direkt heltalsprocent 0–100.
+- Ogiltigt FIT-värde 255 skalas inte längre till 2.55%.
+- Fraktionella värden som 2.55 avvisas.
+- Genomsnitt beräknas bara på validerade värden.
+- 94% och 81% behålls; falska 2.55%-värden försvinner efter omladdning.
+
+7. Body Battery
+- Borttagen från aktiv UI, Recovery, trender, field inventory och Coach Snapshot.
+- Trail Coach använder endast signaler som Intervals faktiskt levererar.
+
+8. Klickbart planerat pass
+- Klicka på ett planerat kort i Intervals-veckoöversikten.
+- Trail Coach hämtar GET /athlete/0/events/{eventId}.
+- Modal visar planerad tid/load, workout_doc steps, intervallmål och description/workout syntax.
+- Även parade aktivitetskort får "Visa pass".
+
+9. Kort snapshotfil
+- TC_Snap_yymmdd.json
+- Exempel: TC_Snap_260902.json
 
 GitHub Pages:
 Ersätt index.html och sw.js. manifest.json kan också ersättas.
