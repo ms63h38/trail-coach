@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Trail Coach 2.0</title>
+<title>Trail Coach 2.1</title>
 <style>
 :root{
   --bg:#0b0d0f;--panel:#12161a;--panel2:#171c21;--panel3:#0f1317;
@@ -1084,7 +1084,7 @@ input,select,textarea{max-width:100%;min-width:0}
 }
 
 
-/* Trail Coach 2.0 — clearer action hierarchy */
+/* Trail Coach 2.1 — clearer action hierarchy */
 .title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .title-row h1{margin:0}
 .version-pill{
@@ -1161,6 +1161,182 @@ input,select,textarea{max-width:100%;min-width:0}
   .primary-cta{width:100%}
 }
 
+
+/* Trail Coach 2.1 — shadcn/Tailwind-inspired visual language without framework dependency */
+:root{
+  --bg:#09090b;
+  --panel:#111318;
+  --panel2:#16191f;
+  --panel3:#0d0f13;
+  --text:#f4f4f5;
+  --muted:#8b919b;
+  --line:#282c33;
+  --good:#5ee6a8;
+  --bad:#ff6b78;
+  --accent:#80bfff;
+  --warn:#f6c653;
+  --purple:#b69cff;
+  --radius:14px;
+  --shadow:0 1px 2px rgba(0,0,0,.18),0 10px 28px rgba(0,0,0,.10);
+}
+body{
+  background:
+    radial-gradient(circle at 20% -10%,rgba(74,144,226,.08),transparent 28%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+}
+.app{max-width:1180px}
+header{
+  padding-bottom:13px;
+  border-bottom:1px solid rgba(255,255,255,.055);
+}
+h1{font-weight:720}
+h2{font-weight:680;letter-spacing:-.015em}
+h3{font-weight:650}
+.panel{
+  background:var(--panel);
+  border:1px solid rgba(255,255,255,.075);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.metric{
+  min-height:104px;
+  padding:15px;
+  background:#14171c;
+}
+.metric h3{font-size:10px;letter-spacing:.085em}
+.metric .value{font-size:31px;margin-top:9px;font-weight:680}
+.metric .sub{font-size:10px}
+.mini{
+  background:#161a20;
+  border-color:rgba(255,255,255,.075);
+  border-radius:12px;
+}
+button{
+  border-radius:10px;
+  font-weight:650;
+  box-shadow:none;
+}
+button.secondary{
+  background:#15191e;
+  border:1px solid rgba(255,255,255,.09);
+}
+button.secondary:hover{background:#1b2027}
+input,select,textarea{
+  background:#0d0f13;
+  border-color:rgba(255,255,255,.09);
+  border-radius:10px;
+}
+.notice{
+  background:rgba(255,255,255,.018);
+  border-color:rgba(255,255,255,.07);
+}
+.version-pill{
+  background:rgba(128,191,255,.08);
+  border-color:rgba(128,191,255,.20);
+  color:#9dceff;
+}
+.tabs .tabbtn{
+  border-radius:9px;
+  background:#111419;
+  border-color:rgba(255,255,255,.07);
+}
+.tabs .tabbtn.active{
+  background:#1d232b;
+  color:var(--text);
+  border-color:rgba(128,191,255,.26);
+}
+.recovery-panel{
+  background:
+    linear-gradient(180deg,rgba(94,230,168,.025),transparent 36%),
+    var(--panel);
+}
+.recovery-badge,.training-status{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:26px;padding:0 9px;border-radius:999px;
+  font-size:9px;font-weight:800;letter-spacing:.05em;
+  border:1px solid var(--line);white-space:nowrap;
+}
+.training-status.idle{color:var(--muted)}
+.training-status.planned{color:#9dceff;border-color:#35526c;background:rgba(128,191,255,.06)}
+.training-status.done{color:#7de7b3;border-color:#2d614b;background:rgba(94,230,168,.07)}
+.training-status.candidate{color:#f6cf69;border-color:#6c5b2d;background:rgba(246,198,83,.06)}
+
+.today-training-panel{
+  padding:17px;
+  background:
+    radial-gradient(circle at 90% 0%,rgba(128,191,255,.075),transparent 34%),
+    var(--panel);
+}
+.today-training-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+}
+.today-training-comparison{
+  margin-top:13px;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+.training-side{
+  background:#15191f;border:1px solid rgba(255,255,255,.065);
+  border-radius:11px;padding:11px;min-width:0;
+}
+.training-side.actual{border-color:rgba(94,230,168,.20)}
+.training-side-label{
+  font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px
+}
+.training-side-value{font-size:14px;font-weight:680;line-height:1.3}
+.training-side-meta{
+  display:flex;flex-wrap:wrap;gap:5px 10px;margin-top:7px;
+  font-size:10px;color:var(--muted);line-height:1.35
+}
+.training-side-meta strong{color:var(--text);font-weight:650}
+.today-training-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.today-training-actions button{min-height:38px;padding:8px 11px;font-size:12px}
+.today-training-following{
+  margin-top:11px;padding-top:10px;border-top:1px solid rgba(255,255,255,.055);
+  font-size:10px;color:var(--muted)
+}
+.training-match-note{color:var(--warn)}
+.training-execution-good{color:var(--good)}
+.training-execution-mid{color:var(--warn)}
+.training-execution-low{color:var(--bad)}
+
+.command-title,.next-up-title{font-weight:700}
+.command-eyebrow{font-weight:700;color:#8c939d}
+.command-badge{font-weight:700}
+.plan-command-center,.coach-flow-hero{
+  background:
+    radial-gradient(circle at 90% 0%,rgba(128,191,255,.065),transparent 34%),
+    var(--panel);
+}
+.schedule-item,.planned-step,.wellness-field-card{
+  border-color:rgba(255,255,255,.07);
+  background:#14181e;
+}
+.activity-dialog-shell{
+  background:#101318;
+  border-color:rgba(255,255,255,.08);
+}
+.about-grid>div,.command-metrics>div{
+  background:#14181e;
+  border-color:rgba(255,255,255,.07);
+}
+@media(max-width:560px){
+  .panel{border-radius:14px}
+  .grid{gap:10px}
+  .metric{grid-column:span 3!important;min-height:102px;padding:12px}
+  .metric .value{font-size:25px}
+  .metric .sub{font-size:9px}
+  .today-training-comparison{grid-template-columns:1fr}
+  .today-training-actions button{flex:1 1 auto}
+}
+@media(max-width:430px){
+  .metric .value{font-size:23px}
+  .metric h3{font-size:9px}
+}
+
 </style>
 </head>
 <body>
@@ -1168,7 +1344,7 @@ input,select,textarea{max-width:100%;min-width:0}
 <header>
   <div>
     <div class="eyebrow">TRAIL COACH · IDRE FJÄLLMARATON 2027</div>
-    <div class="title-row"><h1>Trail Coach</h1><span class="version-pill">v2.0</span></div>
+    <div class="title-row"><h1>Trail Coach</h1><span class="version-pill">v2.1</span></div>
     <p style="margin:0">Hälsa · träning · adaptiv plan · Garmin Enduro 3</p>
   </div>
   <div class="header-sync">
@@ -1193,15 +1369,25 @@ input,select,textarea{max-width:100%;min-width:0}
   <section class="panel metric"><h3>Form</h3><div id="form" class="value">—</div><div class="sub">CTL − ATL</div></section>
   <section class="panel metric"><h3>VO₂max</h3><div id="vo2" class="value">—</div><div id="vo2Sub" class="sub">senaste registrerade</div></section>
 
-  <section class="panel full next-up-panel">
-    <div class="next-up-head">
+  <section class="panel full today-training-panel">
+    <div class="today-training-head">
       <div>
-        <div class="command-eyebrow">NÄSTA PASS</div>
+        <div id="todayTrainingEyebrow" class="command-eyebrow">DAGENS TRÄNING</div>
         <div id="nextUpTitle" class="next-up-title">Inget planerat pass</div>
         <div id="nextUpMeta" class="small">Intervals-kalendern uppdateras automatiskt.</div>
       </div>
-      <button id="nextUpAction" class="secondary">Visa Plan</button>
+      <div id="todayTrainingStatus" class="training-status idle">—</div>
     </div>
+
+    <div id="todayTrainingComparison" class="today-training-comparison" style="display:none"></div>
+
+    <div class="today-training-actions">
+      <button id="nextUpPlanAction" class="secondary">Visa plan</button>
+      <button id="nextUpExecutionAction" class="secondary" style="display:none">Visa utförande</button>
+      <button id="nextUpAction" class="secondary">Öppna Plan</button>
+    </div>
+
+    <div id="todayTrainingFollowing" class="today-training-following" style="display:none"></div>
   </section>
 
   <section class="panel wide7">
@@ -1627,12 +1813,12 @@ input,select,textarea{max-width:100%;min-width:0}
       <div class="version-big">v2.0.0</div>
     </div>
     <div class="about-grid">
-      <div><span>Version</span><strong id="appVersion">2.0.0</strong></div>
-      <div><span>Build</span><strong id="appBuild">2026-09-02</strong></div>
+      <div><span>Version</span><strong id="appVersion">2.1.0</strong></div>
+      <div><span>Build</span><strong id="appBuild">2026-09-03</strong></div>
       <div><span>Planeringsmodell</span><strong>Adaptiv veckoplan</strong></div>
       <div><span>Kalender</span><strong>Intervals.icu</strong></div>
     </div>
-    <div class="notice">v2.0 fokuserar på en enklare veckoloop och verifierad publicering till Intervals.</div>
+    <div class="notice">v2.1 introducerar ett nytt kompakt UI och kopplar dagens planerade pass till faktiskt utförande.</div>
   </section>
 
   <section class="panel full settings-card">
@@ -1771,8 +1957,8 @@ input,select,textarea{max-width:100%;min-width:0}
 <script>
 (()=>{"use strict";
 const BASE="https://intervals.icu/api/v1";
-const APP_VERSION="2.0.0";
-const APP_BUILD="2026-09-02";
+const APP_VERSION="2.1.0";
+const APP_BUILD="2026-09-03";
 const KEY_STORE="trailcoach_2026_27_intervals_api_key_v1";
 const REMEMBER_STORE="trailcoach_2026_27_remember_key_v1";
 const AUTO_REFRESH_STORE="trailcoach_auto_refresh_v1";
@@ -3324,23 +3510,193 @@ function renderCoachFlow(){
     ?`${activeLocalWeekItems().length} pass är importerade som lokalt utkast. Nästa steg är att granska och publicera från Plan.`
     :"Exportera snapshot, låt ChatGPT analysera och importera CoachPlan. Publicering sker först efter din granskning.";
 }
+
+function todayWorkoutMatches(events,acts){
+  const result=new Map(),usedActs=new Set();
+
+  // Official Intervals pairing first.
+  for(const e of events){
+    const eid=eventId(e);
+    const a=acts.find(x=>!usedActs.has(String(x.id)) && pairedEventId(x)===eid);
+    if(a){
+      result.set(eid,{activity:a,status:"paired",confidence:100});
+      usedActs.add(String(a.id));
+    }
+  }
+
+  // Conservative Trail Coach candidate only if official pair is missing.
+  const candidates=[];
+  for(const e of events){
+    const eid=eventId(e);
+    if(result.has(eid))continue;
+    for(const a of acts){
+      if(usedActs.has(String(a.id)))continue;
+      const score=pairingCandidateScore(a,e);
+      if(score>=0.65)candidates.push({e,a,score});
+    }
+  }
+  candidates.sort((x,y)=>y.score-x.score);
+  for(const c of candidates){
+    const eid=eventId(c.e),aid=String(c.a.id);
+    if(result.has(eid)||usedActs.has(aid))continue;
+    result.set(eid,{activity:c.a,status:"candidate",confidence:Math.round(c.score*100)});
+    usedActs.add(aid);
+  }
+  return result;
+}
+function executionScoreClass(v){
+  if(v==null)return"";
+  if(v>=80)return"training-execution-good";
+  if(v>=60)return"training-execution-mid";
+  return"training-execution-low";
+}
+function plannedTrainingSide(e){
+  const mins=scheduleEventMinutes(e),pl=n(e,["icu_training_load"]);
+  return `<div class="training-side">
+    <div class="training-side-label">Plan</div>
+    <div class="training-side-value">${esc(s(e,["name"],"Planerat pass"))}</div>
+    <div class="training-side-meta">
+      ${mins?`<span><strong>${mins}</strong> min</span>`:""}
+      ${pl!=null?`<span>Load <strong>${Math.round(pl)}</strong></span>`:""}
+      ${typeOf(e)?`<span>${esc(typeOf(e))}</span>`:""}
+    </div>
+  </div>`;
+}
+function actualTrainingSide(a,match){
+  const score=garminExecutionScoreFromActivity(a);
+  const rpe=n(a,["icu_rpe"]),feel=n(a,["feel"]);
+  const compliance=pairedIntervalsComplianceValue(a);
+  const matchText=match?.status==="paired"
+    ?"Intervals-parat"
+    :match?.status==="candidate"
+      ?`Trolig match ${match.confidence}%`
+      :"Utfört";
+  return `<div class="training-side actual">
+    <div class="training-side-label">Utförande · ${esc(matchText)}</div>
+    <div class="training-side-value">${duration(secs(a))}${km(a)?` · ${fmt.format(km(a))} km`:""}</div>
+    <div class="training-side-meta">
+      ${load(a)?`<span>Load <strong>${fmt.format(load(a))}</strong></span>`:""}
+      ${score!=null?`<span>Execution <strong class="${executionScoreClass(score)}">${Math.round(score)}%</strong></span>`:""}
+      ${rpe!=null?`<span>RPE <strong>${fmt.format(rpe)}</strong></span>`:""}
+      ${feel!=null?`<span>${esc(feelLabel(feel)||`Feel ${feel}`)}</span>`:""}
+      ${compliance!=null?`<span>Intervals <strong>${Math.round(compliance)}%</strong></span>`:""}
+    </div>
+  </div>`;
+}
+
 function renderNextUp(){
   if(!$("nextUpTitle"))return;
   const today=iso(new Date());
-  const next=(scheduleEvents||[]).filter(isWorkoutEvent).filter(e=>dateOf(e)>=today)
-    .sort((a,b)=>dateOf(a).localeCompare(dateOf(b)))[0];
-  if(!next){
-    $("nextUpTitle").textContent="Inget planerat pass";
-    $("nextUpMeta").textContent="Intervals-kalendern innehåller inget framtida workout i den hämtade perioden.";
-    $("nextUpAction").dataset.eventId="";
+  const events=(scheduleEvents||[]).filter(isWorkoutEvent).sort((a,b)=>dateOf(a).localeCompare(dateOf(b)));
+  const todayEvents=events.filter(e=>dateOf(e)===today);
+  const todayActs=(activities||[]).filter(a=>dateOf(a)===today);
+  const matches=todayWorkoutMatches(todayEvents,todayActs);
+
+  const planBtn=$("nextUpPlanAction"),execBtn=$("nextUpExecutionAction"),openPlanBtn=$("nextUpAction");
+  planBtn.style.display="none";execBtn.style.display="none";
+  planBtn.dataset.eventId="";execBtn.dataset.activityId="";openPlanBtn.dataset.eventId="";
+  $("todayTrainingComparison").style.display="none";
+  $("todayTrainingComparison").innerHTML="";
+  $("todayTrainingFollowing").style.display="none";
+  $("todayTrainingFollowing").innerHTML="";
+
+  if(todayEvents.length){
+    // Prioritize an unfinished workout; otherwise show the latest/primary completed workout.
+    let event=todayEvents.find(e=>!matches.has(eventId(e))) || todayEvents[0];
+    let match=matches.get(eventId(event))||null;
+
+    // If all are done, choose the one with the most substantial actual duration.
+    if(todayEvents.every(e=>matches.has(eventId(e)))){
+      event=[...todayEvents].sort((a,b)=>{
+        const aa=matches.get(eventId(a))?.activity,bb=matches.get(eventId(b))?.activity;
+        return (secs(bb)||0)-(secs(aa)||0);
+      })[0];
+      match=matches.get(eventId(event));
+    }
+
+    $("todayTrainingEyebrow").textContent="DAGENS TRÄNING";
+    $("nextUpTitle").textContent=s(event,["name"],"Planerat pass");
+    const mins=scheduleEventMinutes(event),pl=n(event,["icu_training_load"]);
+    $("nextUpMeta").textContent=[mins?`${mins} min plan`:null,pl!=null?`Load ${Math.round(pl)}`:null,typeOf(event)].filter(Boolean).join(" · ");
+
+    planBtn.style.display="";
+    planBtn.dataset.eventId=eventId(event);
+    openPlanBtn.textContent="Öppna Plan";
+    openPlanBtn.dataset.eventId="";
+
+    if(match?.activity){
+      const a=match.activity,score=garminExecutionScoreFromActivity(a);
+      $("todayTrainingStatus").textContent=match.status==="paired"?"GENOMFÖRT":`UTFÖRT · MATCH ${match.confidence}%`;
+      $("todayTrainingStatus").className=`training-status ${match.status==="paired"?"done":"candidate"}`;
+      $("todayTrainingComparison").style.display="grid";
+      $("todayTrainingComparison").innerHTML=plannedTrainingSide(event)+actualTrainingSide(a,match);
+      execBtn.style.display="";
+      execBtn.dataset.activityId=String(a.id);
+      $("nextUpMeta").textContent=[
+        `Utfört ${duration(secs(a))}`,
+        load(a)?`Load ${fmt.format(load(a))}`:null,
+        score!=null?`Execution ${Math.round(score)}%`:null
+      ].filter(Boolean).join(" · ");
+    }else{
+      $("todayTrainingStatus").textContent="PLANERAT";
+      $("todayTrainingStatus").className="training-status planned";
+      $("todayTrainingComparison").style.display="grid";
+      $("todayTrainingComparison").innerHTML=plannedTrainingSide(event);
+    }
+
+    const remaining=todayEvents.filter(e=>eventId(e)!==eventId(event));
+    if(remaining.length){
+      const done=remaining.filter(e=>matches.has(eventId(e))).length;
+      $("todayTrainingFollowing").style.display="";
+      $("todayTrainingFollowing").textContent=`Ytterligare ${remaining.length} pass idag · ${done} genomförda. Se Plan för hela dagen.`;
+    }else if(match?.activity){
+      const next=events.find(e=>dateOf(e)>today);
+      if(next){
+        const d=dateOf(next),diff=Math.round((parseDate(d)-parseDate(today))/86400000);
+        const when=diff===1?"Imorgon":d;
+        $("todayTrainingFollowing").style.display="";
+        $("todayTrainingFollowing").textContent=`Nästa planerade: ${when} · ${s(next,["name"],"Pass")}`;
+      }
+    }
     return;
   }
+
+  // No planned workout today. Show completed unplanned work first, otherwise next future workout.
+  if(todayActs.length){
+    const a=[...todayActs].sort((x,y)=>(secs(y)||0)-(secs(x)||0))[0];
+    $("todayTrainingEyebrow").textContent="TRÄNING IDAG";
+    $("nextUpTitle").textContent=s(a,["name"],"Genomfört pass");
+    $("nextUpMeta").textContent=[duration(secs(a)),km(a)?`${fmt.format(km(a))} km`:null,load(a)?`Load ${fmt.format(load(a))}`:null].filter(Boolean).join(" · ");
+    $("todayTrainingStatus").textContent="GENOMFÖRT · EJ PLANERAT";
+    $("todayTrainingStatus").className="training-status done";
+    $("todayTrainingComparison").style.display="grid";
+    $("todayTrainingComparison").innerHTML=actualTrainingSide(a,{status:"unplanned"});
+    execBtn.style.display="";
+    execBtn.dataset.activityId=String(a.id);
+    return;
+  }
+
+  const next=events.find(e=>dateOf(e)>today);
+  if(!next){
+    $("todayTrainingEyebrow").textContent="NÄSTA PASS";
+    $("nextUpTitle").textContent="Inget planerat pass";
+    $("nextUpMeta").textContent="Intervals-kalendern innehåller inget framtida workout i den hämtade perioden.";
+    $("todayTrainingStatus").textContent="—";
+    $("todayTrainingStatus").className="training-status idle";
+    return;
+  }
+
   const d=dateOf(next),mins=scheduleEventMinutes(next),pl=n(next,["icu_training_load"]);
   const diff=Math.round((parseDate(d)-parseDate(today))/86400000);
-  const when=diff===0?"Idag":diff===1?"Imorgon":d;
+  const when=diff===1?"Imorgon":d;
+  $("todayTrainingEyebrow").textContent="NÄSTA PASS";
   $("nextUpTitle").textContent=s(next,["name"],"Planerat pass");
   $("nextUpMeta").textContent=[when,mins?`${mins} min`:null,pl!=null?`Load ${Math.round(pl)}`:null,typeOf(next)].filter(Boolean).join(" · ");
-  $("nextUpAction").dataset.eventId=eventId(next);
+  $("todayTrainingStatus").textContent="KOMMANDE";
+  $("todayTrainingStatus").className="training-status planned";
+  planBtn.style.display="";
+  planBtn.dataset.eventId=eventId(next);
+  openPlanBtn.dataset.eventId=eventId(next);
 }
 
 function renderAll(){
@@ -5052,10 +5408,15 @@ $("openAdvancedPlanner").onclick=()=>{
   $("advancedPlanner")?.scrollIntoView({behavior:"smooth",block:"start"});
 };
 $("coachGoPlan").onclick=()=>activateTab("planning");
-$("nextUpAction").onclick=()=>{
-  const id=$("nextUpAction").dataset.eventId;
+$("nextUpAction").onclick=()=>activateTab("planning");
+$("nextUpPlanAction").onclick=()=>{
+  const id=$("nextUpPlanAction").dataset.eventId;
   if(id)openPlannedWorkoutDetail(id);
-  else activateTab("planning");
+};
+$("nextUpExecutionAction").onclick=()=>{
+  const id=$("nextUpExecutionAction").dataset.activityId;
+  const a=(activities||[]).find(x=>String(x.id)===String(id));
+  if(a)openActivityDetail(a);
 };
 $("clearPlan").onclick=clearPlan;$("addCustom").onclick=addCustom;$("exportData").onclick=exportData;
 $("sendGarminTest").onclick=sendGarminTest;$("verifyGarminTest").onclick=verifyGarminTest;

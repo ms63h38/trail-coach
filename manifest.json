@@ -4,9 +4,9 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0b0d0f",
-  "theme_color": "#0b0d0f",
-  "description": "Trail Coach 2.0 — Garmin/Intervals health and adaptive training coach.",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "description": "Trail Coach 2.1 — adaptive trail training with a compact shadcn-inspired UI and plan-to-execution view.",
   "icons": [
     {
       "src": "icon-192.png",
