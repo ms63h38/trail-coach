@@ -6,7 +6,7 @@
   "display": "standalone",
   "background_color": "#09090b",
   "theme_color": "#09090b",
-  "description": "Trail Coach 2.1 — adaptive trail training with a compact shadcn-inspired UI and plan-to-execution view.",
+  "description": "Trail Coach 2.3.1 — cleaner Trail Engine summary and 8-week chart on Today.",
   "icons": [
     {
       "src": "icon-192.png",

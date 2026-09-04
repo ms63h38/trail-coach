@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<title>Trail Coach 2.1</title>
+<title>Trail Coach 2.3.1</title>
 <style>
 :root{
   --bg:#0b0d0f;--panel:#12161a;--panel2:#171c21;--panel3:#0f1317;
@@ -1084,7 +1084,7 @@ input,select,textarea{max-width:100%;min-width:0}
 }
 
 
-/* Trail Coach 2.1 — clearer action hierarchy */
+/* Trail Coach 2.3.1 — clearer action hierarchy */
 .title-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .title-row h1{margin:0}
 .version-pill{
@@ -1162,7 +1162,7 @@ input,select,textarea{max-width:100%;min-width:0}
 }
 
 
-/* Trail Coach 2.1 — shadcn/Tailwind-inspired visual language without framework dependency */
+/* Trail Coach 2.3.1 — shadcn/Tailwind-inspired visual language without framework dependency */
 :root{
   --bg:#09090b;
   --panel:#111318;
@@ -1337,6 +1337,98 @@ input,select,textarea{
   .metric h3{font-size:9px}
 }
 
+
+/* v2.2 — Trail Engine */
+.trail-engine-metric .value{color:#86e6b7}
+.trail-engine-panel{
+  background:
+    radial-gradient(circle at 92% 0%,rgba(94,230,168,.075),transparent 35%),
+    var(--panel);
+}
+.trail-engine-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.trail-engine-score-row{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:13px 0}
+.trail-engine-score{font-size:42px;font-weight:720;letter-spacing:-.04em;color:#86e6b7;line-height:1}
+.trail-engine-delta{font-size:20px;font-weight:700;text-align:right}
+.trail-engine-components{display:grid;gap:8px;margin:12px 0}
+.trail-engine-component{display:grid;grid-template-columns:125px minmax(0,1fr) 38px;gap:9px;align-items:center}
+.trail-engine-component-label{font-size:10px;color:var(--muted)}
+.trail-engine-component-track{height:7px;background:#252a31;border-radius:999px;overflow:hidden}
+.trail-engine-component-fill{height:100%;border-radius:999px;background:#72d9aa}
+.trail-engine-component-value{text-align:right;font-size:10px;font-weight:700}
+.strength-garmin-ready{display:inline-flex;align-items:center;gap:5px;margin-top:5px;color:#7de7b3;font-size:9px;font-weight:700}
+@media(max-width:560px){
+  .trail-engine-component{grid-template-columns:105px minmax(0,1fr) 32px}
+  .trail-engine-score{font-size:36px}
+}
+
+
+/* v2.3 — Trail Engine trend visualisation */
+.trail-engine-mini-head{display:flex;align-items:flex-start;justify-content:space-between;gap:7px}
+.trail-engine-mini-head h3{margin:0}
+.trail-engine-mini-delta{
+  font-size:9px;font-weight:750;color:var(--muted);white-space:nowrap;
+  padding-top:1px
+}
+.trail-engine-mini-delta.up{color:#79e7b2}
+.trail-engine-mini-delta.down{color:#ff7f89}
+.trail-engine-spark{
+  display:block;width:100%;height:30px;margin-top:5px;
+}
+.trail-engine-chart-panel{
+  background:
+    radial-gradient(circle at 88% -10%,rgba(94,230,168,.07),transparent 38%),
+    var(--panel);
+}
+.trail-engine-chart{
+  display:block;width:100%;height:220px;margin-top:10px
+}
+.trail-engine-legend{
+  display:flex;gap:15px;flex-wrap:wrap;margin-top:8px;
+  color:var(--muted);font-size:10px
+}
+.trail-engine-legend span{display:inline-flex;align-items:center;gap:5px}
+.legend-line{width:15px;height:2px;border-radius:999px;display:inline-block;background:#86e6b7}
+.legend-line.recovery{background:#80bfff}
+.legend-line.durability{background:#f6c653}
+@media(max-width:560px){
+  .trail-engine-chart{height:190px}
+}
+
+
+/* v2.3.1 — cleaner Trail Engine summary + chart under Fitness */
+.trail-engine-mini-delta{
+  font-size:10px;
+  font-weight:800;
+  padding-top:0;
+}
+.trail-engine-mini-delta.up{color:#79e7b2}
+.trail-engine-mini-delta.down{color:#ff7f89}
+
+.today-engine-divider{
+  height:1px;
+  background:rgba(255,255,255,.06);
+  margin:18px 0 14px;
+}
+.today-engine-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.today-engine-head h3{
+  margin:0;
+  font-size:14px;
+}
+.today-trail-engine-chart{
+  display:block;
+  width:100%;
+  height:150px;
+  margin-top:8px;
+}
+.today-engine-note{
+  margin-top:6px;
+}
+
 </style>
 </head>
 <body>
@@ -1344,7 +1436,7 @@ input,select,textarea{
 <header>
   <div>
     <div class="eyebrow">TRAIL COACH · IDRE FJÄLLMARATON 2027</div>
-    <div class="title-row"><h1>Trail Coach</h1><span class="version-pill">v2.1</span></div>
+    <div class="title-row"><h1>Trail Coach</h1><span class="version-pill">v2.3.1</span></div>
     <p style="margin:0">Hälsa · träning · adaptiv plan · Garmin Enduro 3</p>
   </div>
   <div class="header-sync">
@@ -1367,7 +1459,14 @@ input,select,textarea{
   <section class="panel metric"><h3>Fitness</h3><div id="fitness" class="value">—</div><div class="sub">CTL · HRSS efter omräkning</div></section>
   <section class="panel metric"><h3>Fatigue</h3><div id="fatigue" class="value">—</div><div class="sub">ATL</div></section>
   <section class="panel metric"><h3>Form</h3><div id="form" class="value">—</div><div class="sub">CTL − ATL</div></section>
-  <section class="panel metric"><h3>VO₂max</h3><div id="vo2" class="value">—</div><div id="vo2Sub" class="sub">senaste registrerade</div></section>
+  <section class="panel metric trail-engine-metric">
+    <div class="trail-engine-mini-head">
+      <h3>Trail Engine</h3>
+      <div id="trailEngineMiniDelta" class="trail-engine-mini-delta">—</div>
+    </div>
+    <div id="trailEngine" class="value">—</div>
+    <div id="trailEngineSub" class="sub">hållbar aerob kapacitet · 0–100</div>
+  </section>
 
   <section class="panel full today-training-panel">
     <div class="today-training-head">
@@ -1394,6 +1493,16 @@ input,select,textarea{
     <h2>Fitness / Fatigue / Form · 8 veckor</h2>
     <div class="chartwrap"><svg id="fitnessChart" viewBox="0 0 900 230" preserveAspectRatio="none"></svg></div>
     <div class="legend"><span style="--c:#8fc7ff">Fitness</span><span style="--c:#f4c95d">Fatigue</span><span style="--c:#73e2a7">Form</span></div>
+    <div class="today-engine-divider"></div>
+    <div class="today-engine-head">
+      <div>
+        <h3>Trail Engine · 8 veckor</h3>
+        <div class="small">Hållbar aerob kapacitet · veckopunkter</div>
+      </div>
+      <div id="todayTrailEngineDelta" class="training-status idle">—</div>
+    </div>
+    <canvas id="todayTrailEngineChart" class="today-trail-engine-chart" aria-label="Trail Engine utveckling 8 veckor"></canvas>
+    <div id="todayTrailEngineChartNote" class="small today-engine-note">—</div>
   </section>
 
   <section class="panel wide5 recovery-panel">
@@ -1526,11 +1635,50 @@ input,select,textarea{
     <div class="notice">Zonfördelningen bygger på <code>icu_hr_zone_times</code> från Garmin/Intervals och använder dina aktuella löpzoner.</div>
   </section>
 
+  <section class="panel full trail-engine-chart-panel">
+    <div class="trail-engine-head">
+      <div>
+        <h2>Trail Engine · 8 veckor</h2>
+        <div class="small">Utveckling av hållbar aerob kapacitet. Veckovärden minskar brus från enskilda dagar.</div>
+      </div>
+      <div id="trailEngine8wDelta" class="training-status idle">—</div>
+    </div>
+    <canvas id="trailEngineChart" class="chart trail-engine-chart" aria-label="Trail Engine utveckling 8 veckor"></canvas>
+    <div class="legend trail-engine-legend">
+      <span><i class="legend-line engine"></i>Trail Engine</span>
+      <span><i class="legend-line recovery"></i>Återhämtning</span>
+      <span><i class="legend-line durability"></i>Durability</span>
+    </div>
+    <div id="trailEngineChartNote" class="small">—</div>
+  </section>
+
+  <section class="panel wide6 trail-engine-panel">
+    <div class="trail-engine-head">
+      <div>
+        <h2>Trail Engine · uthållighet</h2>
+        <div class="small">Trail Coach egen transparenta indikator · inte laboratoriemätt VO₂max.</div>
+      </div>
+      <div id="trailEngineBadge" class="training-status idle">—</div>
+    </div>
+    <div class="trail-engine-score-row">
+      <div>
+        <div id="trailEngineTrendScore" class="trail-engine-score">—</div>
+        <div class="small">0–100 · 28/90-dagars perspektiv</div>
+      </div>
+      <div>
+        <div id="trailEngineDelta28" class="trail-engine-delta">—</div>
+        <div class="small">mot 28 dagar sedan</div>
+      </div>
+    </div>
+    <div id="trailEngineComponents" class="trail-engine-components"></div>
+    <div id="trailEngineNote" class="notice">Anslut för beräkning.</div>
+  </section>
+
   <section class="panel wide6">
-    <h2>VO₂max · 90 dagar</h2>
+    <h2>Garmin VO₂max · 90 dagar</h2>
     <div class="chartwrap"><svg id="vo2Chart" viewBox="0 0 900 230" preserveAspectRatio="none"></svg></div>
     <div class="kpis" style="margin-top:10px">
-      <div class="mini"><div id="vo2CurrentTrend" class="v">—</div><div class="l">Senaste värde</div></div>
+      <div class="mini"><div id="vo2CurrentTrend" class="v">—</div><div class="l">Garmin · senaste</div></div>
       <div class="mini"><div id="vo2Delta28" class="v">—</div><div class="l">Förändring 28 dagar</div></div>
       <div class="mini"><div id="vo2Delta90" class="v">—</div><div class="l">Förändring 90 dagar</div></div>
       <div class="mini"><div id="vo2Samples90" class="v">—</div><div class="l">Registrerade värden</div></div>
@@ -1810,15 +1958,15 @@ input,select,textarea{
   <section class="panel full settings-card about-card">
     <div class="settings-head">
       <div><h2>Trail Coach</h2><div class="small">Appinformation</div></div>
-      <div class="version-big">v2.0.0</div>
+      <div class="version-big">v2.3.1</div>
     </div>
     <div class="about-grid">
-      <div><span>Version</span><strong id="appVersion">2.1.0</strong></div>
-      <div><span>Build</span><strong id="appBuild">2026-09-03</strong></div>
+      <div><span>Version</span><strong id="appVersion">2.3.1</strong></div>
+      <div><span>Build</span><strong id="appBuild">2026-09-04</strong></div>
       <div><span>Planeringsmodell</span><strong>Adaptiv veckoplan</strong></div>
       <div><span>Kalender</span><strong>Intervals.icu</strong></div>
     </div>
-    <div class="notice">v2.1 introducerar ett nytt kompakt UI och kopplar dagens planerade pass till faktiskt utförande.</div>
+    <div class="notice">v2.3.1 visar +/− förändring på 28 dagar i Trail Engine-kortet och en ren 8-veckors Trail Engine-graf under Fitness/Fatigue/Form på Idag.</div>
   </section>
 
   <section class="panel full settings-card">
@@ -1957,8 +2105,8 @@ input,select,textarea{
 <script>
 (()=>{"use strict";
 const BASE="https://intervals.icu/api/v1";
-const APP_VERSION="2.1.0";
-const APP_BUILD="2026-09-03";
+const APP_VERSION="2.3.1";
+const APP_BUILD="2026-09-04";
 const KEY_STORE="trailcoach_2026_27_intervals_api_key_v1";
 const REMEMBER_STORE="trailcoach_2026_27_remember_key_v1";
 const AUTO_REFRESH_STORE="trailcoach_auto_refresh_v1";
@@ -3238,7 +3386,8 @@ function currentLoadState(){
     metric_dates:metricDates,
     wellness_anchor_date:wellnessAnchorDate(),
     trail_recovery_score:engine.score,
-    trail_recovery_status:engine.status
+    trail_recovery_status:engine.status,
+    trail_engine:trailEngineAt(new Date())
   };
 }
 function planWeekNumber(p){
@@ -3784,8 +3933,8 @@ function renderStrengthReference(){
   const mode=$("strengthMode")?.value||"home";
   if(!$("strengthReference"))return;
   $("strengthReference").innerHTML=mode==="gym"
-    ? `<b>Fullt gym</b><br>A: knäböj, RDL, Bulgarian split squat, sittande vadpress, rodd och Pallof press.<br>B: trap bar/marklyft, step-up, lårcurl, stående vadpress, press och farmers carry.<br>RPE 6–7 · lämna 2–4 reps i reserv.`
-    : `<b>Hemgym</b><br>A/B använder split squat, enbens RDL, step-up, utfall, höftlyft, vad/soleus och bål. Anpassat till 6 kg kettlebell + 10 kg skivstång.`;
+    ? `<b>Fullt gym</b><br><b>A:</b> knäböj, RDL, Bulgarian split squat, sittande vadpress, rodd och Pallof press.<br><b>B:</b> trap bar/marklyft, step-up, lårcurl, stående vadpress, press och farmers carry.<br><span class="strength-garmin-ready">✓ Både A och B genereras som Garmin-steg med LAP-styrning</span><br>RPE 6–7 · lämna 2–4 reps i reserv.`
+    : `<b>Hemgym</b><br>A/B använder split squat, enbens RDL, step-up, utfall, höftlyft, vad/soleus och bål.<br><span class="strength-garmin-ready">✓ Både A och B genereras som Garmin-steg</span>`;
 }
 
 function renderPhaseEngine(){
@@ -3875,6 +4024,358 @@ function renderHealthDataAudit(){
     :"Athlete-endpointen gav inga icu_wellness_keys. Råfältsauditen ovan är fortfarande aktiv.";
 }
 
+
+function dateAtOffset(daysAgo=0){
+  const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-daysAgo);return d;
+}
+function activityWindow(endDate,days){
+  const end=iso(endDate),start=iso(addDays(endDate,-(days-1)));
+  return activities.filter(a=>dateOf(a)>=start&&dateOf(a)<=end);
+}
+function wellnessWindow(endDate,days){
+  const end=iso(endDate),start=iso(addDays(endDate,-(days-1)));
+  return wellness.filter(w=>dateOf(w)>=start&&dateOf(w)<=end);
+}
+function metricAverageAt(key,days,endDate){
+  const vals=[];
+  for(const row of wellnessWindow(endDate,days)){
+    const v=wellnessMetricValue(row,key);
+    if(v!=null&&Number.isFinite(Number(v)))vals.push(Number(v));
+  }
+  return vals.length?vals.reduce((a,b)=>a+b,0)/vals.length:null;
+}
+function latestMetricAt(key,endDate,lookback=5){
+  const rows=wellnessWindow(endDate,lookback).sort((a,b)=>dateOf(b).localeCompare(dateOf(a)));
+  for(const row of rows){
+    const v=wellnessMetricValue(row,key);
+    if(v!=null)return{value:Number(v),date:dateOf(row)};
+  }
+  return null;
+}
+function linearClamp(value,low,high,lowScore=0,highScore=100){
+  if(value==null||!Number.isFinite(Number(value)))return null;
+  if(high===low)return highScore;
+  const t=Math.max(0,Math.min(1,(Number(value)-low)/(high-low)));
+  return lowScore+t*(highScore-lowScore);
+}
+function historicalRecoveryAt(endDate){
+  const h=latestMetricAt("hrv",endDate),r=latestMetricAt("restingHR",endDate),
+        sl=latestMetricAt("sleepSecs",endDate),ss=latestMetricAt("sleepScore",endDate);
+  const h28=metricAverageAt("hrv",28,endDate),r28=metricAverageAt("restingHR",28,endDate);
+  const pieces=[];
+  if(h&&h28)pieces.push({v:linearClamp(h.value/h28,.80,1.15,25,100),w:3});
+  if(r&&r28)pieces.push({v:linearClamp(r.value-r28,7,-5,25,100),w:2.5});
+  if(sl)pieces.push({v:linearClamp(sl.value,5.5,8.5,30,100),w:2});
+  if(ss)pieces.push({v:linearClamp(ss.value,55,95,30,100),w:1.5});
+  if(!pieces.length)return null;
+  return pieces.reduce((q,x)=>q+x.v*x.w,0)/pieces.reduce((q,x)=>q+x.w,0);
+}
+function aerobicForTrail(a){
+  const f=sportFamily(typeOf(a));
+  return f==="run"||f==="ski"||f==="hike";
+}
+function trailEngineAt(endDate){
+  const a28=activityWindow(endDate,28),a42=activityWindow(endDate,42);
+  const aero=a28.filter(aerobicForTrail);
+  const weeklyAerobicMinutes=aero.reduce((q,a)=>q+secs(a)/60,0)/4;
+  const base=linearClamp(weeklyAerobicMinutes,120,330,35,100);
+
+  const longCandidates=aero.filter(a=>secs(a)>=45*60);
+  const longest=longCandidates.length?Math.max(...longCandidates.map(a=>secs(a)/60)):0;
+  const longScore=linearClamp(longest,45,100,35,100);
+  const decVals=a42.filter(a=>sportFamily(typeOf(a))==="run"&&secs(a)>=50*60)
+    .map(a=>Math.abs(n(a,["decoupling"]))).filter(v=>v!=null&&Number.isFinite(v)&&v<=40);
+  const medDec=median(decVals);
+  const driftScore=medDec==null?65:linearClamp(medDec,15,3,30,100);
+  const durability=.62*longScore+.38*driftScore;
+
+  const activeDays=new Set(aero.map(a=>dateOf(a))).size;
+  const freqScore=linearClamp(activeDays,6,16,35,100);
+  const endMonday=weekStart(endDate),weekMins=[];
+  for(let i=0;i<4;i++){
+    const ws=addDays(endMonday,-7*i),we=addDays(ws,6);
+    const list=aero.filter(a=>dateOf(a)>=iso(ws)&&dateOf(a)<=iso(we));
+    weekMins.push(list.reduce((q,a)=>q+secs(a)/60,0));
+  }
+  const mean=weekMins.reduce((a,b)=>a+b,0)/Math.max(1,weekMins.length);
+  const sd=Math.sqrt(weekMins.reduce((q,x)=>q+(x-mean)*(x-mean),0)/Math.max(1,weekMins.length));
+  const cv=mean>0?sd/mean:1;
+  const stability=linearClamp(cv,.75,.20,35,100);
+  const consistency=.65*freqScore+.35*stability;
+
+  const recovery=historicalRecoveryAt(endDate) ?? 65;
+
+  const h28=metricAverageAt("hrv",28,endDate),h90=metricAverageAt("hrv",90,endDate);
+  const r28=metricAverageAt("restingHR",28,endDate),r90=metricAverageAt("restingHR",90,endDate);
+  const hScore=(h28&&h90)?linearClamp(h28/h90,.90,1.10,40,100):65;
+  const rScore=(r28&&r90)?linearClamp(r28-r90,4,-4,40,100):65;
+  const physiology=.55*hScore+.45*rScore;
+
+  const score=.26*base+.28*durability+.20*consistency+.16*recovery+.10*physiology;
+  const garminVo2=latestMetricAt("vo2max",endDate,30)?.value??null;
+  return{
+    score:Math.round(Math.max(0,Math.min(100,score))),
+    components:{
+      aerobic_base:Math.round(base),
+      durability:Math.round(durability),
+      consistency:Math.round(consistency),
+      recovery:Math.round(recovery),
+      physiology_trend:Math.round(physiology)
+    },
+    inputs:{
+      weekly_aerobic_minutes:Math.round(weeklyAerobicMinutes),
+      longest_aerobic_min:Math.round(longest),
+      median_run_decoupling_percent:medDec==null?null:Number(medDec.toFixed(1)),
+      aerobic_active_days_28d:activeDays,
+      garmin_vo2max:garminVo2
+    },
+    note:"Trail Engine är Trail Coach egen 0–100-heuristik för hållbar aerob kapacitet. Den är inte VO₂max i ml/kg/min och är inte medicinskt validerad."
+  };
+}
+function trailEngineLabel(score){
+  if(score==null)return"DATA";
+  if(score>=85)return"STARK";
+  if(score>=70)return"STABIL";
+  if(score>=55)return"BYGGER";
+  return"FÖRSIKTIG";
+}
+
+function trailEngineDailySeries(days=28){
+  const out=[];
+  for(let ago=days-1;ago>=0;ago--){
+    const d=dateAtOffset(ago);
+    const x=trailEngineAt(d);
+    if(x&&Number.isFinite(x.score))out.push({
+      date:iso(d),
+      score:x.score,
+      recovery:x.components.recovery,
+      durability:x.components.durability,
+      aerobic_base:x.components.aerobic_base,
+      consistency:x.components.consistency
+    });
+  }
+  return out;
+}
+function trailEngineWeeklySeries(weeks=8){
+  const out=[];
+  for(let ago=(weeks-1)*7;ago>=0;ago-=7){
+    const d=dateAtOffset(ago);
+    const x=trailEngineAt(d);
+    if(x&&Number.isFinite(x.score))out.push({
+      date:iso(d),
+      score:x.score,
+      recovery:x.components.recovery,
+      durability:x.components.durability,
+      aerobic_base:x.components.aerobic_base,
+      consistency:x.components.consistency
+    });
+  }
+  return out;
+}
+function prepCanvas(canvas,cssHeight){
+  if(!canvas)return null;
+  const rect=canvas.getBoundingClientRect();
+  const dpr=Math.max(1,Math.min(3,window.devicePixelRatio||1));
+  const w=Math.max(10,rect.width);
+  const h=cssHeight||Math.max(10,rect.height);
+  canvas.width=Math.round(w*dpr);
+  canvas.height=Math.round(h*dpr);
+  const ctx=canvas.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return{ctx,w,h};
+}
+function cssColor(name,fallback){
+  const v=getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return v||fallback;
+}
+function drawMiniSparkline(canvas,data,key="score"){
+  const c=prepCanvas(canvas,30);if(!c||!data.length)return;
+  const {ctx,w,h}=c;
+  ctx.clearRect(0,0,w,h);
+  const vals=data.map(x=>Number(x[key])).filter(Number.isFinite);
+  if(vals.length<2)return;
+  let lo=Math.min(...vals),hi=Math.max(...vals);
+  if(hi-lo<6){const mid=(hi+lo)/2;lo=mid-3;hi=mid+3}
+  const pad=2;
+  const px=i=>pad+(w-2*pad)*(i/(data.length-1));
+  const py=v=>h-pad-(h-2*pad)*((v-lo)/(hi-lo));
+  ctx.beginPath();
+  data.forEach((x,i)=>{
+    const y=py(Number(x[key]));
+    if(i===0)ctx.moveTo(px(i),y);else ctx.lineTo(px(i),y);
+  });
+  ctx.strokeStyle=cssColor("--good","#5ee6a8");
+  ctx.lineWidth=1.6;
+  ctx.lineJoin="round";ctx.lineCap="round";
+  ctx.stroke();
+  const last=data.at(-1);
+  ctx.beginPath();ctx.arc(px(data.length-1),py(Number(last[key])),2.4,0,Math.PI*2);
+  ctx.fillStyle=cssColor("--good","#5ee6a8");ctx.fill();
+}
+
+function drawTodayTrailEngineChart(){
+  const canvas=$("todayTrailEngineChart");if(!canvas)return;
+  const data=trailEngineWeeklySeries(8);
+  const c=prepCanvas(canvas,150);
+  if(!c||data.length<2)return;
+  const {ctx,w,h}=c;
+  ctx.clearRect(0,0,w,h);
+
+  const pad={l:28,r:8,t:8,b:24};
+  let values=data.map(d=>d.score).filter(Number.isFinite);
+  let minV=Math.min(...values),maxV=Math.max(...values);
+  // Keep a meaningful window but avoid exaggerated movement.
+  minV=Math.max(0,Math.floor((minV-5)/5)*5);
+  maxV=Math.min(100,Math.ceil((maxV+5)/5)*5);
+  if(maxV-minV<20){
+    const mid=(minV+maxV)/2;
+    minV=Math.max(0,Math.floor((mid-10)/5)*5);
+    maxV=Math.min(100,Math.ceil((mid+10)/5)*5);
+  }
+
+  const x=i=>pad.l+(w-pad.l-pad.r)*(i/(data.length-1));
+  const y=v=>pad.t+(h-pad.t-pad.b)*(1-(v-minV)/(maxV-minV));
+
+  ctx.font='9px -apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif';
+  ctx.fillStyle=cssColor("--muted","#8b919b");
+  ctx.strokeStyle="rgba(255,255,255,.05)";
+  ctx.lineWidth=1;
+
+  const mid=Math.round((minV+maxV)/2);
+  [minV,mid,maxV].forEach(v=>{
+    const yy=y(v);
+    ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();
+    ctx.fillText(String(v),3,yy+3);
+  });
+
+  data.forEach((d,i)=>{
+    if(i===0||i===data.length-1||i%2===1){
+      ctx.fillText(d.date.slice(5),Math.max(pad.l-3,x(i)-12),h-6);
+    }
+  });
+
+  ctx.beginPath();
+  data.forEach((d,i)=>{
+    if(i===0)ctx.moveTo(x(i),y(d.score));else ctx.lineTo(x(i),y(d.score));
+  });
+  ctx.strokeStyle=cssColor("--good","#5ee6a8");
+  ctx.lineWidth=2.3;
+  ctx.lineJoin="round";
+  ctx.lineCap="round";
+  ctx.stroke();
+
+  // Dots only at weekly samples
+  ctx.fillStyle=cssColor("--good","#5ee6a8");
+  data.forEach((d,i)=>{
+    ctx.beginPath();
+    ctx.arc(x(i),y(d.score),2.4,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  const first=data[0],last=data.at(-1),delta=last.score-first.score;
+  $("todayTrailEngineDelta").textContent=`${delta>=0?"+":""}${delta} · 8v`;
+  $("todayTrailEngineDelta").className=`training-status ${delta>1?"done":delta<-1?"candidate":"idle"}`;
+  $("todayTrailEngineChartNote").textContent=
+    `Nu ${last.score} · 8 veckor sedan ${first.score}. `+
+    `Grafen visar bara Trail Engine för att göra trenden lättläst.`;
+}
+
+function drawTrailEngineChart(){
+  const canvas=$("trailEngineChart");if(!canvas)return;
+  const data=trailEngineWeeklySeries(8);
+  const c=prepCanvas(canvas,window.innerWidth<=560?190:220);
+  if(!c||data.length<2)return;
+  const {ctx,w,h}=c;
+  ctx.clearRect(0,0,w,h);
+
+  const pad={l:34,r:10,t:12,b:28};
+  const lo=35,hi=100;
+  const x=i=>pad.l+(w-pad.l-pad.r)*(i/(data.length-1));
+  const y=v=>pad.t+(h-pad.t-pad.b)*(1-(v-lo)/(hi-lo));
+
+  ctx.font='9px -apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif';
+  ctx.fillStyle=cssColor("--muted","#8b919b");
+  ctx.strokeStyle="rgba(255,255,255,.055)";
+  ctx.lineWidth=1;
+
+  [40,60,80,100].forEach(v=>{
+    const yy=y(v);
+    ctx.beginPath();ctx.moveTo(pad.l,yy);ctx.lineTo(w-pad.r,yy);ctx.stroke();
+    ctx.fillText(String(v),5,yy+3);
+  });
+
+  data.forEach((d,i)=>{
+    const label=d.date.slice(5);
+    if(i===0||i===data.length-1||i%2===1){
+      ctx.fillText(label,Math.max(pad.l-4,x(i)-13),h-7);
+    }
+  });
+
+  const drawSeries=(key,color,width=1.6,dash=[])=>{
+    ctx.beginPath();
+    data.forEach((d,i)=>{
+      const v=Number(d[key]);
+      if(!Number.isFinite(v))return;
+      if(i===0)ctx.moveTo(x(i),y(v));else ctx.lineTo(x(i),y(v));
+    });
+    ctx.strokeStyle=color;ctx.lineWidth=width;
+    ctx.setLineDash(dash);ctx.lineJoin="round";ctx.lineCap="round";ctx.stroke();
+    ctx.setLineDash([]);
+  };
+  drawSeries("recovery",cssColor("--accent","#80bfff"),1.2,[4,3]);
+  drawSeries("durability",cssColor("--warn","#f6c653"),1.2,[3,3]);
+  drawSeries("score",cssColor("--good","#5ee6a8"),2.4,[]);
+
+  const last=data.at(-1);
+  ctx.beginPath();ctx.arc(x(data.length-1),y(last.score),3.4,0,Math.PI*2);
+  ctx.fillStyle=cssColor("--good","#5ee6a8");ctx.fill();
+
+  const first=data[0],delta=last.score-first.score;
+  $("trailEngine8wDelta").textContent=`${delta>=0?"+":""}${delta} · 8v`;
+  $("trailEngine8wDelta").className=`training-status ${delta>1?"done":delta<-1?"candidate":"idle"}`;
+  $("trailEngineChartNote").textContent=
+    `Nu ${last.score}. För 8 veckor sedan ${first.score}. `+
+    `Durability ${last.durability}, återhämtning ${last.recovery}. `+
+    `Veckopunkter används för att visa den långsiktiga riktningen snarare än dagsbrus.`;
+}
+
+function renderTrailEngine(){
+  if(!$("trailEngine"))return;
+  const current=trailEngineAt(new Date()),past=trailEngineAt(dateAtOffset(28));
+  const delta=(current&&past)?current.score-past.score:null;
+  $("trailEngine").textContent=current?.score??"—";
+  if($("trailEngineMiniDelta")){
+    $("trailEngineMiniDelta").textContent=delta==null?"—":`${delta>=0?"+":""}${delta} på 28 dagar`;
+    $("trailEngineMiniDelta").className=`trail-engine-mini-delta ${delta>1?"up":delta<-1?"down":""}`;
+  }
+  const gv=current?.inputs?.garmin_vo2max;
+  $("trailEngineSub").textContent=current?`0–100 · Garmin VO₂max ${gv!=null?fmt.format(gv):"—"}`:"hållbar aerob kapacitet";
+
+  if($("trailEngineTrendScore")){
+    $("trailEngineTrendScore").textContent=current?.score??"—";
+    $("trailEngineDelta28").textContent=delta==null?"—":`${delta>=0?"+":""}${delta}`;
+    $("trailEngineDelta28").className=`trail-engine-delta ${delta>1?"training-execution-good":delta<-1?"training-execution-low":""}`;
+    $("trailEngineBadge").textContent=trailEngineLabel(current?.score);
+    $("trailEngineBadge").className=`training-status ${current?.score>=70?"done":current?.score>=55?"candidate":"idle"}`;
+    const comps=[
+      ["Aerob bas",current?.components?.aerobic_base],
+      ["Durability",current?.components?.durability],
+      ["Kontinuitet",current?.components?.consistency],
+      ["Återhämtning",current?.components?.recovery],
+      ["Fysiologisk trend",current?.components?.physiology_trend]
+    ];
+    $("trailEngineComponents").innerHTML=comps.map(([label,v])=>`<div class="trail-engine-component">
+      <div class="trail-engine-component-label">${esc(label)}</div>
+      <div class="trail-engine-component-track"><div class="trail-engine-component-fill" style="width:${Math.max(0,Math.min(100,v??0))}%"></div></div>
+      <div class="trail-engine-component-value">${v??"—"}</div>
+    </div>`).join("");
+    const i=current?.inputs||{};
+    $("trailEngineNote").textContent=current
+      ? `Bygger på ${i.weekly_aerobic_minutes} aerobmin/vecka, längsta aeroba pass ${i.longest_aerobic_min} min${i.median_run_decoupling_percent!=null?`, median decoupling ${i.median_run_decoupling_percent}%`:""}, ${i.aerobic_active_days_28d} aktiva aerobdagar/28d samt HRV, vilopuls och sömn. Garmin VO₂max visas separat och ingår inte i Trail Engine-poängen.`
+      :"Otillräcklig data.";
+  }
+}
+
 function renderDashboard(){
   const w=latestWellness();
   const ctl=w?n(w,["ctl","fitness"]):null,atl=w?n(w,["atl","fatigue"]):null;
@@ -3882,9 +4383,8 @@ function renderDashboard(){
   $("fitness").textContent=ctl==null?"—":fmt.format(ctl);
   $("fatigue").textContent=atl==null?"—":fmt.format(atl);
   $("form").textContent=form==null?"—":fmt.format(form);
-  const vo2Latest=latestWellnessValue(["vo2max"]);
-  $("vo2").textContent=vo2Latest?fmt.format(vo2Latest.value):"—";
-  $("vo2Sub").textContent=vo2Latest?`senast registrerad ${vo2Latest.date}`:"inget VO₂max-värde i vald historik";
+  renderTrailEngine();
+  drawTodayTrailEngineChart();
   const healthMap=[
     ["hrv","hrv","hrvBase"],["restingHR","rhr","rhrBase"],["sleepSecs","sleep","sleepBase"],
     ["sleepScore","sleepScoreToday","sleepScoreBase"],["spO2","spo2Today","spo2Base"],
@@ -3927,7 +4427,7 @@ function renderDashboard(){
   drawFitnessChart();
 }
 function renderTrends(){
-  drawWeeklyChart();drawRecoveryChart();drawVO2Chart();renderFeedbackTrends();renderHealthTrends();renderZones();renderSportMix();renderFocus();
+  drawWeeklyChart();drawRecoveryChart();renderTrailEngine();drawTrailEngineChart();drawVO2Chart();renderFeedbackTrends();renderHealthTrends();renderZones();renderSportMix();renderFocus();
 }
 function weekStart(d){
   const x=new Date(d);x.setHours(12,0,0,0);const day=x.getDay(),diff=(day+6)%7;x.setDate(x.getDate()-diff);return x;
@@ -4315,6 +4815,103 @@ function renderBaseline(){
 }
 
 
+
+function strengthKindFromName(name){
+  const x=String(name||"").toLowerCase();
+  if(x.includes("styrka a")||x.includes("strength a"))return"strengthA";
+  if(x.includes("styrka b")||x.includes("strength b"))return"strengthB";
+  return null;
+}
+function canonicalStrengthBase(kind,mode="gym"){
+  if(mode==="gym" && kind==="strengthA")return[
+    {exercise:"Knäböj med skivstång",reps:6,reps_per_side:false,seconds:60,rest_seconds:90,notes:"RPE 6–7"},
+    {exercise:"Rumänska marklyft med skivstång",reps:8,reps_per_side:false,seconds:60,rest_seconds:90,notes:"kontrollerad excentrisk fas"},
+    {exercise:"Bulgarian split squat med hantlar",reps:8,reps_per_side:true,seconds:60,rest_seconds:60,notes:"per ben"},
+    {exercise:"Sittande vadpress",reps:12,reps_per_side:false,seconds:50,rest_seconds:45,notes:"full rörelse"},
+    {exercise:"Kabelrodd eller sittande rodd",reps:12,reps_per_side:false,seconds:50,rest_seconds:45,notes:""},
+    {exercise:"Pallof press",reps:10,reps_per_side:true,seconds:45,rest_seconds:45,notes:"per sida"}
+  ];
+  if(mode==="gym" && kind==="strengthB")return[
+    {exercise:"Trap bar-marklyft eller marklyft",reps:6,reps_per_side:false,seconds:60,rest_seconds:90,notes:"RPE 6–7"},
+    {exercise:"Step-up med hantlar",reps:8,reps_per_side:true,seconds:60,rest_seconds:60,notes:"per ben"},
+    {exercise:"Lårcurl",reps:10,reps_per_side:false,seconds:50,rest_seconds:45,notes:"kontrollerat"},
+    {exercise:"Stående vadpress",reps:12,reps_per_side:false,seconds:50,rest_seconds:45,notes:"full rörelse"},
+    {exercise:"Hantelpress eller bänkpress",reps:8,reps_per_side:false,seconds:50,rest_seconds:45,notes:""},
+    {exercise:"Farmers carry",reps:0,reps_per_side:false,seconds:40,rest_seconds:60,notes:"stabil bål och hållning"}
+  ];
+  if(mode==="home" && kind==="strengthA")return[
+    {exercise:"Split squat",reps:8,reps_per_side:true,seconds:50,rest_seconds:40,notes:"per ben"},
+    {exercise:"Enbens RDL",reps:8,reps_per_side:true,seconds:50,rest_seconds:40,notes:"per ben"},
+    {exercise:"Enbens tåhävning",reps:12,reps_per_side:true,seconds:45,rest_seconds:30,notes:"per ben"},
+    {exercise:"Soleus",reps:15,reps_per_side:true,seconds:45,rest_seconds:30,notes:"per ben"},
+    {exercise:"Sidoplanka",reps:0,reps_per_side:true,seconds:60,rest_seconds:45,notes:"30 s per sida"}
+  ];
+  return[
+    {exercise:"Step-up",reps:8,reps_per_side:true,seconds:50,rest_seconds:40,notes:"per ben"},
+    {exercise:"Bakåtutfall",reps:8,reps_per_side:true,seconds:50,rest_seconds:40,notes:"per ben"},
+    {exercise:"Höftlyft",reps:12,reps_per_side:false,seconds:45,rest_seconds:30,notes:""},
+    {exercise:"Långsam step-down",reps:8,reps_per_side:true,seconds:50,rest_seconds:40,notes:"per ben"},
+    {exercise:"Rodd eller armhävning",reps:0,reps_per_side:false,seconds:45,rest_seconds:45,notes:"kontrollerat"}
+  ];
+}
+function canonicalStrengthSteps(kind,mode="gym",sets=2){
+  const base=canonicalStrengthBase(kind,mode);
+  const count=Math.max(1,Math.min(4,Number(sets)||2));
+  const out=[];
+  for(let set=1;set<=count;set++){
+    for(const st of base){
+      out.push({...st,notes:[`set ${set}/${count}`,st.notes].filter(Boolean).join(" · ")});
+    }
+  }
+  return out;
+}
+function strengthStepDisplay(st){
+  const reps=Number(st?.reps)||0;
+  const side=!!st?.reps_per_side;
+  const exercise=String(st?.exercise||"Övning");
+  if(reps)return `${exercise} · ${reps}${side?"/sida":""} reps`;
+  return `${exercise}${side?" · per sida":""}`;
+}
+function strengthStepsToGarminDescription(name,steps){
+  if(!Array.isArray(steps)||!steps.length)return null;
+  const lines=[`${name} · Garmin-guidat`];
+  let lastSet=null;
+  for(const st of steps){
+    if(!st||!st.exercise)continue;
+    const note=String(st.notes||"");
+    const m=note.match(/set\s+(\d+)\/(\d+)/i);
+    if(m && m[1]!==lastSet){
+      lastSet=m[1];
+      lines.push("");
+      lines.push(`Set ${m[1]} av ${m[2]}`);
+    }
+    const secs=Math.max(10,Number(st.seconds)||45);
+    const rest=Math.max(0,Number(st.rest_seconds)||0);
+    lines.push(`- ${strengthStepDisplay(st)} ${secs}s press lap`);
+    if(rest)lines.push(`- Vila ${rest}s`);
+  }
+  lines.push("");
+  lines.push("Tryck LAP när arbetssteget är klart. Lämna 2–4 repetitioner i reserv.");
+  return lines.join("\n");
+}
+function ensureStrengthPlanStructure(p,defaultSets=2){
+  if(!p || sportFamily(p.type)!=="strength")return p;
+  const mode=p.strength_mode || (String(p.name||"").toLowerCase().includes("gym")?"gym":"home");
+  const kind=p.kind==="strengthA"||p.kind==="strengthB" ? p.kind : strengthKindFromName(p.name);
+  if(!kind)return p;
+  if(!Array.isArray(p.strength_steps)||!p.strength_steps.length)p.strength_steps=canonicalStrengthSteps(kind,mode,defaultSets);
+  p.strength_mode=mode;
+  p.description=strengthStepsToGarminDescription(p.name,p.strength_steps) || p.description;
+  return p;
+}
+function workoutDocLeafCount(doc){
+  const walk=steps=>(Array.isArray(steps)?steps.reduce((q,st)=>q+(Array.isArray(st?.steps)?walk(st.steps):1),0):0);
+  return walk(doc?.steps);
+}
+function strengthWorkoutStructured(e){
+  return sportFamily(typeOf(e))!=="strength" || workoutDocLeafCount(e?.workout_doc)>=4;
+}
+
 function homeStrengthDescriptionA(sets=3){
   const s=Math.max(1,Math.min(4,Number(sets)||3));
   return `Hemstyrka A · Garmin-guidat
@@ -4389,8 +4986,10 @@ ${s}x
 Belastning: RPE 6–7. Lämna 2–4 repetitioner i reserv. Kontrollerad excentrisk fas.`;
 }
 function strengthDescriptionForMode(kind,sets=3,mode="home"){
-  if(mode==="gym")return kind==="strengthA"?gymStrengthDescriptionA(sets):gymStrengthDescriptionB(sets);
-  return kind==="strengthA"?homeStrengthDescriptionA(sets):homeStrengthDescriptionB(sets);
+  return strengthStepsToGarminDescription(
+    `Trail Coach · ${mode==="gym"?"Gymstyrka":"Hemstyrka"} ${kind==="strengthA"?"A":"B"}`,
+    canonicalStrengthSteps(kind,mode,sets)
+  );
 }
 
 function strengthDescriptionFromName(name,sets=2,preferredMode=null){
@@ -4535,6 +5134,7 @@ function findExistingPlannedEvent(existing,p){
   return resolveExistingPlannedEvent(existing,p);
 }
 function plannedEventPayload(p,externalId=null){
+  if(sportFamily(p?.type)==="strength")ensureStrengthPlanStructure(p,2);
   const pe=pairingEstimate(p);
   const payload={
     start_date_local:p.date+"T00:00:00",
@@ -4629,7 +5229,8 @@ function buildPlan(){
       const mins=(phase==="taper"||phase==="recovery")?(isGym?30:20):(isGym?40:25);
       const ev=makePlanEvent(addDays(ws,offset),kind,mins,name,mode,w+1,"Coach");
       ev.strength_mode=strengthMode;
-      ev.description=strengthDescriptionForMode(kind,strengthSets,strengthMode);
+      ev.strength_steps=canonicalStrengthSteps(kind,strengthMode,strengthSets);
+      ev.description=strengthStepsToGarminDescription(name,ev.strength_steps);
       localPlan.push(ev);
     });
 
@@ -4754,7 +5355,25 @@ async function pushPlanScope(scope="week1"){
       if(p.event_id!=null)ev=server.find(x=>String(x.id)===String(p.event_id));
       if(!ev&&p.external_id)ev=server.find(x=>s(x,["external_id"],"")===p.external_id);
       if(!ev)ev=resolveExistingPlannedEvent(server,p);
-      const check=verifyPlanItemAgainstEvent(p,ev);
+      let check=verifyPlanItemAgainstEvent(p,ev);
+
+      if(check.ok && sportFamily(p.type)==="strength" && ev?.id!=null){
+        let detail=ev;
+        if(!strengthWorkoutStructured(detail)){
+          try{
+            const dr=await icu(`/athlete/0/events/${encodeURIComponent(ev.id)}`);
+            if(dr?.data&&typeof dr.data==="object")detail={...ev,...dr.data};
+          }catch{}
+        }
+        if(!strengthWorkoutStructured(detail)){
+          check={ok:false,reason:"styrkepasset saknar strukturerade workout_doc-steg för Garmin"};
+        }else{
+          const leaves=workoutDocLeafCount(detail.workout_doc);
+          progress.push({kind:"ok",text:`Garmin-steg verifierade: ${p.name} · ${leaves} strukturerade steg`});
+          ev=detail;
+        }
+      }
+
       if(check.ok){
         verified++;p.status="PUBLISHED";
         p.event_id=ev.id??p.event_id;
@@ -5107,6 +5726,11 @@ function coachSnapshot(){
   return{
     schema:"trailcoach-2026-27-coach-snapshot-v3",
     generated_at:new Date().toISOString(),
+    trail_engine:{
+      current:trailEngineAt(new Date()),
+      days_28_ago:trailEngineAt(dateAtOffset(28)),
+      interpretation:"Trail Engine is a transparent Trail Coach 0–100 durability/aerobic index, not VO2max ml/kg/min."
+    },
     goals:(raceGoals&&raceGoals.length)?raceGoals:defaultGoals(),
     primary_goal:primaryGoal(),
     phase_engine:phaseEngine(),
@@ -5195,7 +5819,7 @@ function coachSnapshot(){
         name:"string",minutes:"number",target:"string",description:"Intervals workout text",
         planned_load:"optional number; leave null to let Trail Coach estimate pairing load",
         strength_mode:"optional: home | gym",
-        strength_steps:"optional array for WeightTraining: [{exercise,reps,reps_per_side,seconds,rest_seconds,notes}]"
+        strength_steps:"REQUIRED for WeightTraining: [{exercise,reps,reps_per_side,seconds,rest_seconds,notes}]. Include complete steps for BOTH Gymstyrka A and Gymstyrka B when both are planned."
       }]
     }
   };
@@ -5212,7 +5836,7 @@ function exportSnapshot(){
 }
 
 async function copyCoachPrompt(){
-  const text="Analysera bifogad Trail Coach Snapshot. Bedöm mål/A-lopp, automatisk fas, Race Readiness, genomförande, CTL/ATL/Form, Trail Recovery, HRV, vilopuls, sömn, subjektiv check-in, löpvolym, höjdmeter, zonfördelning, långpass, yoga och styrka. Använd Garmin/Intervals post-workout feedback när den finns: icu_rpe, feel, validerat Garmin Execution Score, officiell Intervals-parning via paired_event_id och Trail Coach pairing candidates som separata mått, session_rpe och decoupling. Skilj på faktiska Intervals-fält och härledda Trail Coach-signaler. Justera nästa vecka. Om roadmap_status visar att ingen 4-veckorsroadmap skapats ska du inte anta att vecka 2–4 finns. Skapa en CoachPlan.json enligt requested_coach_output_schema.";
+  const text="Analysera bifogad Trail Coach Snapshot. Bedöm mål/A-lopp, automatisk fas, Race Readiness, genomförande, CTL/ATL/Form, Trail Recovery, Trail Engine, Garmin VO₂max som separat referens, HRV, vilopuls, sömn, subjektiv check-in, löpvolym, höjdmeter, zonfördelning, långpass, yoga och styrka. Använd Garmin/Intervals post-workout feedback när den finns: icu_rpe, feel, validerat Garmin Execution Score, officiell Intervals-parning via paired_event_id och Trail Coach pairing candidates som separata mått, session_rpe och decoupling. Skilj på faktiska Intervals-fält och härledda Trail Coach-signaler. Justera nästa vecka. Om roadmap_status visar att ingen 4-veckorsroadmap skapats ska du inte anta att vecka 2–4 finns. För varje WeightTraining-pass ska strength_steps alltid fyllas i. Om både Gymstyrka A och B finns ska båda ha kompletta steg. Skapa en CoachPlan.json enligt requested_coach_output_schema.";
   try{
     await navigator.clipboard.writeText(text);
     snapshotMessage("Instruktionen är kopierad. Ladda upp snapshot-filen i ChatGPT och klistra in instruktionen.","ok");
@@ -5236,22 +5860,7 @@ function renderCoachImport(){
 
 
 function strengthStepsToDescription(name,steps){
-  if(!Array.isArray(steps)||!steps.length)return null;
-  const lines=[`${name} · Garmin-guidat`];
-  for(const st of steps){
-    if(!st||!st.exercise)continue;
-    const reps=Number(st.reps)||0;
-    const side=st.reps_per_side?" per sida":"";
-    const secs=Math.max(10,Number(st.seconds)||45);
-    const rest=Math.max(0,Number(st.rest_seconds)||0);
-    const note=String(st.notes||"").trim();
-    const repText=reps?`${reps}x `:"";
-    lines.push(`- ${repText}${st.exercise}${side}${note?` · ${note}`:""} ${secs}s press lap`);
-    if(rest)lines.push(`- Vila ${rest}s`);
-  }
-  lines.push("");
-  lines.push("Tryck LAP när arbetssteget är klart.");
-  return lines.join("\n");
+  return strengthStepsToGarminDescription(name,steps);
 }
 
 async function importCoachPlan(){
@@ -5307,23 +5916,29 @@ async function importCoachPlan(){
   const normalized=[];
   for(const w of obj.workouts){
     if(!w.date||!w.type||!w.name||!Number(w.minutes))continue;
-    normalized.push({
+    const isStrength=String(w.type).toLowerCase().includes("weight")||String(w.type).toLowerCase().includes("strength");
+    const mode=String(w.strength_mode||"") || (String(w.name).toLowerCase().includes("gym")?"gym":"home");
+    const skind=strengthKindFromName(w.name);
+    const suppliedSteps=Array.isArray(w.strength_steps)&&w.strength_steps.length?w.strength_steps:null;
+    const strengthSteps=isStrength ? (suppliedSteps || (skind?canonicalStrengthSteps(skind,mode,2):null)) : null;
+    const item={
       date:String(w.date).slice(0,10),
-      kind:"coach",
+      kind:skind||"coach",
       mins:Number(w.minutes),
       name:String(w.name),
       type:String(w.type),
       target:String(w.target||"Coach"),
       planned_load:n(w,["planned_load","icu_training_load","training_load"]),
-      strength_mode:String(w.strength_mode||"")||null,
-      description:(
-        String(w.type).toLowerCase().includes("weight")
-          ? (strengthStepsToDescription(String(w.name),w.strength_steps) || strengthDescriptionFromName(String(w.name),2,String(w.strength_mode||"")||null) || String(w.description||`${w.minutes} min ${w.name}`))
-          : String(w.description||`${w.minutes} min ${w.name}`)
-      ),
+      strength_mode:isStrength?mode:null,
+      strength_steps:strengthSteps,
+      description:isStrength
+        ? (strengthStepsToGarminDescription(String(w.name),strengthSteps) || strengthDescriptionFromName(String(w.name),2,mode) || String(w.description||`${w.minutes} min ${w.name}`))
+        : String(w.description||`${w.minutes} min ${w.name}`),
       week:1,source:"ChatGPT Coach",status:"READY",
       external_id:null,event_id:null
-    });
+    };
+    if(isStrength)ensureStrengthPlanStructure(item,2);
+    normalized.push(item);
   }
 
   if(!normalized.length){
@@ -5441,6 +6056,12 @@ $("autoRefresh").addEventListener("change",()=>{
 
 if($("appVersion"))$("appVersion").textContent=APP_VERSION;
 if($("appBuild"))$("appBuild").textContent=APP_BUILD;
+let trailEngineResizeTimer=null;
+window.addEventListener("resize",()=>{
+  clearTimeout(trailEngineResizeTimer);
+  trailEngineResizeTimer=setTimeout(()=>{renderTrailEngine();drawTrailEngineChart();},120);
+});
+
 restoreCoachLocalState();
 const nm=nextMonday();$("planStart").value=iso(nm);$("customDate").value=iso(nm);$("garminTestDate").value=iso(addDays(new Date(),1));
 $("goalDate").value="2027-08-28";
