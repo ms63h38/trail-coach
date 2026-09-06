@@ -1,48 +1,53 @@
-TRAIL COACH 2.4.0
+TRAIL COACH 2.5.0
 
-BUGFIX
-- Trail Engine chart on Trends no longer renders while its tab is display:none.
-- Hidden canvas width=0 was the cause of the blurred/streaked iPhone graph.
-- Trends canvases are redrawn after the tab becomes visible.
+FLEXIBLE WEEKLY TEMPLATE
+- Gym sessions/week: 0–3.
+- Gym A, B and C each have a selectable weekday.
+- Default: A Tuesday + B Friday.
+- Gym C is an optional complementary upper-body/core/stability session.
+- Yoga sessions/week: 0–3, each with selectable weekday.
+- Yoga is treated as recovery/stretch/mobility rather than primary strength work.
+- Preferences are stored locally on the device and exported in Coach Snapshot.
+- Existing taper/recovery logic can still reduce strength volume.
 
-WEEKLY PLAN
-- Normal target: 2 strength sessions/week.
-- Friday is fixed as Gym B.
-- Gym A is flexible Monday–Wednesday; Auto defaults to Tuesday.
-- New Plan setting lets the flexible day be selected.
-- Yoga target reduced from 3/week to 1–2/week.
-- Normal default: Monday + Saturday.
-- Taper/recovery: 1 yoga + 1 Friday strength session.
-- Coach prompt now explicitly preserves these rules.
+TEMPORARY REPRIORITISATION
+- Plan includes a visible temporary constraint card.
+- Modes: Normal / avoid technical trail / pause all running.
+- Avoid technical trail converts planned trail to flat/treadmill Run in the local draft.
+- Pause all running converts run drafts to Rowing or Indoor Cycling.
+- Primary + secondary low-impact alternatives, optional end date and Coach note.
+- Rowing long replacement is conservatively capped at 60 min; bike long replacement at 90 min.
+- Constraint changes only the local draft; publication to Intervals remains explicit.
+- Active constraints are applied to newly generated and imported CoachPlan drafts.
+- Coach Snapshot exports temporary_constraint and coach_rules.
+- Low-impact alternatives are never declared safe automatically; workout text says to use only pain-free options and stop/switch if pain increases.
 
-STRENGTH ANALYTICS
-- Intervals HR/Training Load remains visible as aerobic/internal load.
-- Trail Coach now also uses external strength load.
-- Reads Intervals kg_lifted.
-- Downloads Garmin original FIT from Intervals for strength activities.
-- Decodes FIT Set message #225:
-  duration field 0 /1000
-  repetitions field 3
-  weight field 4 /16 kg
-  set_type field 5
-  exercise category field 7
-  category_subtype field 8
-  message_index field 10
-  wkt_step_index field 11
-- Shows active sets, repetitions, weight, per-set volume and total external volume.
-- Includes common Garmin exercise-category labels and detailed mappings for common bench press/deadlift/leg curl/lunge variants.
-- Snapshot export hydrates recent strength FIT files before creating TC_Snap.
-- Snapshot includes strength_28d and per-activity strength_fit.
-- Coach instructions explicitly say not to assess strength load using HR alone.
+VO2
+- Garmin VO2max remains automatic and separate.
+- Settings allow an optional external VO2 reference: WHOOP / Lab / Other.
+- External value is stored in localStorage only and is not hardcoded in the public repository.
+- Trail Engine remains the primary Trail Coach indicator for long-term sustainable aerobic development.
+- A single Garmin point change is treated as possible estimator variability, not automatically as lost fitness.
+- Snapshot exports external_vo2_reference.
 
-LOAD MODEL
-No fake combined "TSS" is created for strength.
-Trail Coach keeps these separate:
-1. Intervals Load / HR load
-2. external volume (kg_lifted = reps × weight)
-3. sets and repetitions
-4. session-RPE load (duration × RPE) when RPE exists
-This avoids corrupting aerobic CTL while giving strength work proper influence in Coach Review.
+STRENGTH
+- Gym C structured workout added.
+- A/B/C support Garmin-guided strength_steps.
+- Garmin FIT strength analytics from v2.4 retained: sets, reps, weight, volume and session-RPE context.
+- Coach rules explicitly say not to judge strength load from HR-load alone.
 
-Version 2.4.0
-Build 2026-09-04
+BUGFIXES RETAINED
+- Hidden-canvas Trail Engine chart fix.
+- iPhone 2x2 KPI layout.
+- Verified Intervals publishing/read-back.
+
+RUNTIME MODULES
+- app-2.5.css
+- v25-core.js
+- v25-strength.js
+- v25-plan.js
+- v25-vo2.js
+- sw.js injects these modules into the existing PWA shell and uses cache trailcoach-2-v250.
+
+Version: 2.5.0
+Build: 2026-09-06
