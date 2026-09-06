@@ -5,30 +5,62 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#09090b">
 <title>Trail Coach 2.5</title>
-<style>html,body{margin:0;background:#09090b;color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif}#boot{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}.box{max-width:420px}.v{font-size:12px;color:#8b919b;margin-top:8px}</style>
+<style>
+html,body{margin:0;background:#09090b;color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",sans-serif}
+#boot{min-height:100vh;display:grid;place-items:center;padding:24px;text-align:center}.box{max-width:440px}.v{font-size:12px;color:#8b919b;margin-top:8px}
+</style>
 </head>
 <body>
 <div id="boot"><div class="box"><strong>Trail Coach</strong><div class="v">Laddar v2.5.0…</div></div></div>
 <script>
 (async()=>{
   try{
-    const r=await fetch('./base.html?tc=250',{cache:'no-store'});
-    if(!r.ok)throw new Error('HTTP '+r.status);
+    const r=await fetch('./base.html?tc=251',{cache:'no-store'});
+    if(!r.ok)throw new Error('Kunde inte läsa appskalet · HTTP '+r.status);
     let text=await r.text();
     text=text
       .replaceAll('Trail Coach 2.3.1','Trail Coach 2.5')
       .replaceAll('APP_VERSION="2.3.1"','APP_VERSION="2.5.0"')
-      .replaceAll('APP_BUILD="2026-09-03"','APP_BUILD="2026-09-06"')
+      .replaceAll('APP_BUILD="2026-09-04"','APP_BUILD="2026-09-06"')
       .replaceAll('>v2.3.1<','>v2.5<')
       .replaceAll('>2.3.1<','>2.5.0<');
-    if(!text.includes('app-2.5.css'))text=text.replace('</head>','<link rel="stylesheet" href="./app-2.5.css?v=250"></head>');
-    if(!text.includes('v25-core.js')){
-      const s='<script src="./v25-core.js?v=250"><\/script><script src="./v25-strength.js?v=250"><\/script><script src="./v25-plan.js?v=250"><\/script><script src="./v25-vo2.js?v=250"><\/script>';
-      text=text.replace('</body>',s+'</body>');
-    }
+
+    const bootstrap=`<script>
+(async()=>{
+  const loadStyle=(href)=>new Promise((resolve,reject)=>{
+    const l=document.createElement('link');l.rel='stylesheet';l.href=href;
+    l.onload=resolve;l.onerror=()=>reject(new Error('CSS kunde inte laddas: '+href));document.head.appendChild(l);
+  });
+  const loadScript=(src)=>new Promise((resolve,reject)=>{
+    const s=document.createElement('script');s.src=src;s.async=false;
+    s.onload=resolve;s.onerror=()=>reject(new Error('Modul kunde inte laddas: '+src));document.body.appendChild(s);
+  });
+  try{
+    await loadStyle('./app-2.5.css?v=251');
+    await loadScript('./v25-core.js?v=251');
+    await loadScript('./v25-strength.js?v=251');
+    await loadScript('./v25-plan.js?v=251');
+    await loadScript('./v25-vo2.js?v=251');
+    const required=['gymCount','gymDayA','gymDayB','gymDayC','yogaCount','runRestriction'];
+    const missing=required.filter(id=>!document.getElementById(id));
+    if(missing.length)throw new Error('Planeringsparametrar saknas: '+missing.join(', '));
+    document.documentElement.dataset.tc25='ready';
+    const about=document.querySelector('.about-card .notice');
+    if(about&&!about.textContent.includes('planeringsmodul verifierad'))about.textContent+=' · planeringsmodul verifierad';
+  }catch(e){
+    console.error('Trail Coach 2.5 bootstrap',e);
+    const target=document.querySelector('#advancedPlanner .advanced-body')||document.querySelector('#plan .grid')||document.body;
+    const n=document.createElement('div');n.className='notice';n.style.cssText='border-color:#8a3f45;color:#ff9ba2;margin:12px 0';
+    n.textContent='Trail Coach 2.5: planeringsmodulen kunde inte laddas. '+String(e.message||e);
+    target.prepend(n);
+  }
+})();
+<\/script>`;
+    text=text.replace('</body>',bootstrap+'</body>');
     document.open();document.write(text);document.close();
   }catch(e){
-    document.getElementById('boot').innerHTML='<div class="box"><strong>Kunde inte ladda Trail Coach 2.5</strong><div class="v">'+String(e.message||e)+'</div></div>';
+    const boot=document.getElementById('boot');
+    if(boot)boot.innerHTML='<div class="box"><strong>Kunde inte ladda Trail Coach 2.5</strong><div class="v">'+String(e.message||e)+'</div></div>';
   }
 })();
 </script>
