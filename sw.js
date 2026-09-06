@@ -1,5 +1,5 @@
-const CACHE="trailcoach-2-v251-planfix";
-const ASSETS=["./","./index.html","./base.html","./manifest.json","./icon-192.png","./icon-512.png","./app-2.5.css","./v25-core.js","./v25-strength.js","./v25-plan.js","./v25-vo2.js"];
+const CACHE="trailcoach-2-v252-snapshot-strengthfix";
+const ASSETS=["./","./index.html","./base.html","./manifest.json","./icon-192.png","./icon-512.png","./app-2.5.css","./v25-core.js","./v25-strength.js","./v25-plan.js","./v25-vo2.js","./v25-fix.js"];
 self.addEventListener("install",e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)))});
 self.addEventListener("activate",e=>e.waitUntil(Promise.all([
   caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))),
