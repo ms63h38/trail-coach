@@ -6,9 +6,17 @@
   "display": "standalone",
   "background_color": "#09090b",
   "theme_color": "#09090b",
-  "description": "Trail Coach 2.5 — flexible Gym A/B/C and yoga schedule, temporary run substitutions and VO2 references.",
+  "description": "Trail Coach 2.6.0 — stable snapshot and Intervals publishing, SVG Trail Engine, redesigned weekly Plan flow.",
   "icons": [
-    {"src":"icon-192.png","sizes":"192x192","type":"image/png"},
-    {"src":"icon-512.png","sizes":"512x512","type":"image/png"}
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
