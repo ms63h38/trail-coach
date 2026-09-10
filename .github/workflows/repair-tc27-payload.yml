@@ -1,0 +1,99 @@
+name: Repair Trail Coach 2.7 payload
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/repair-tc27-payload.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Repair and validate payload
+        shell: python
+        run: |
+          from pathlib import Path
+          import base64, gzip, re, sys
+
+          parts = sorted(Path('tc27').glob('index.part*'))
+          if len(parts) != 17:
+              raise SystemExit(f'Expected 17 payload parts, got {len(parts)}')
+
+          def clean(s):
+              return re.sub(r'[^A-Za-z0-9+/=]', '', s)
+
+          raw = [p.read_text(encoding='utf-8') for p in parts]
+          cleaned = [clean(x) for x in raw]
+          bad_lengths = [(i,len(x)) for i,x in enumerate(cleaned[:-1]) if len(x) != 7000]
+          print('Non-standard part lengths:', bad_lengths)
+
+          def build(cparts):
+              decoded=[]
+              for i,s in enumerate(cparts):
+                  if len(s)%4:
+                      raise ValueError(f'part {i:02d} length {len(s)} not divisible by 4')
+                  decoded.append(base64.b64decode(s, validate=True))
+              return b''.join(decoded)
+
+          # First see if payload is already valid.
+          try:
+              payload=build(cleaned)
+              html=gzip.decompress(payload)
+              if b'APP_VERSION="2.7.0"' in html:
+                  print('Payload already valid; no repair required.')
+                  sys.exit(0)
+          except Exception as e:
+              print('Current payload invalid:', repr(e))
+
+          target=6
+          s=cleaned[target]
+          if len(s) != 7001:
+              raise SystemExit(f'Expected tc27/index.part06 length 7001, got {len(s)}; refusing blind repair')
+
+          prefix=cleaned[:target]
+          suffix=cleaned[target+1:]
+          matches=[]
+          for pos in range(len(s)):
+              candidate=s[:pos]+s[pos+1:]
+              try:
+                  payload=build(prefix+[candidate]+suffix)
+                  html=gzip.decompress(payload)
+                  if b'APP_VERSION="2.7.0"' in html and b'<html' in html.lower():
+                      matches.append((pos,s[pos],candidate,len(html)))
+                      print('VALID deletion candidate:', pos, repr(s[pos]), 'html bytes', len(html))
+              except Exception:
+                  pass
+
+          if len(matches) != 1:
+              raise SystemExit(f'Expected exactly one repair candidate, found {len(matches)}')
+
+          pos,ch,candidate,html_len=matches[0]
+          parts[target].write_text(candidate, encoding='utf-8')
+          print(f'Repaired {parts[target]} by deleting character {repr(ch)} at offset {pos}; HTML bytes={html_len}')
+
+          # Final strict validation after writing.
+          repaired=[clean(p.read_text(encoding='utf-8')) for p in parts]
+          payload=build(repaired)
+          html=gzip.decompress(payload)
+          assert b'APP_VERSION="2.7.0"' in html
+          assert b'<html' in html.lower()
+          print('REPAIRED PAYLOAD VALID')
+      - name: Commit repaired payload
+        run: |
+          if git diff --quiet -- tc27/index.part06; then
+            echo 'No payload change to commit.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tc27/index.part06
+          git commit -m 'Repair Trail Coach 2.7 payload part 06'
+          git push origin HEAD:main
