@@ -1,37 +1,25 @@
-TRAIL COACH 2.6.0
+TRAIL COACH 2.7.0
 
-QUALITY RELEASE
-- Single self-contained runtime: index.html no longer depends on dynamic v25 module injection.
-- Snapshot export tested with browser download and schema validation.
-- Explicit selected-week publishing; only the selected week is written and mandatory server read-back is performed.
-- Strength workout duration is normalized so Intervals structured workout duration matches planned minutes.
-- Trail Engine uses SVG, eliminating the iOS canvas stretching/streaking defect.
-- Plan redesigned around one weekly workflow: select week, review, adjust rhythm/constraint, publish.
-- Secondary analysis/tools are collapsed by default.
-- Flexible Gym A/B/C and Yoga preferences retained.
-- Temporary no-trail/no-running substitution retained.
-- Garmin FIT strength analytics retained.
+Production release from tested RC1.
 
-REGRESSION QA PASSED
-- JavaScript syntax
-- service-worker syntax
-- duplicate static ID check
-- duplicate function declaration audit
-- mobile/desktop load smoke tests
-- five-tab navigation smoke test
-- CoachPlan import with 7 workouts
-- Snapshot contract: training_preferences, temporary_constraint, external_vo2_reference, strength_28d
-- selected-week mock Intervals publishing
-- Gym A/B duration normalization to 35 min
-- failed verification remains READY
-- flexible Gym A/B/C + Yoga schedule
-- no-running to Rowing substitution
-- Trail Engine SVG rendering
+Core fixes:
+- Native manual Rowing/Ride publishing through the same verified Intervals pipeline as planned workouts.
+- POST for new events, PUT for matched events, mandatory server read-back before PUBLISHED.
+- Only READY/dirty items are written.
+- Stable external_id for manual workouts.
+- Snapshot contract validation.
+- Trail Engine SVG and cross-training handling.
+- Strength A/B/C structured workout support.
+- Removed runtime hotfix architecture from 2.5/2.6.1.
 
-PRODUCTION CLEANUP
-- No runtime QA hook.
-- No dependency on base.html, app-2.5.css or v25-*.js.
-- Service worker precaches only production assets.
+QA before release:
+- 40/40 browser/mock-Intervals regression tests passed.
+- JavaScript/service-worker syntax passed.
+- 270/270 unique static IDs.
+- 316/316 unique function declarations.
 
-Version: 2.6.0
-Build: 2026-09-07
+Deployment note:
+The tested 2.7 application is stored as a gzip/base64 static payload split into .tc27/index.part* and reconstructed by index.html at startup. This avoids the previous service-worker code-patching architecture; no runtime hotfix script is injected.
+
+Version: 2.7.0
+Build: 2026-09-10
