@@ -1,11 +1,14 @@
-const CACHE="trailcoach-2-v260-rowing3";
-const ASSETS=["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png"];
+const CACHE="trailcoach-2-v261-manualpublish";
+const ASSETS=["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png","./manual-publish-2.6.1.js"];
 
 const CUSTOM_TYPE_FROM='<select id="customType"><option value="Run">Löpning</option><option value="TrailRun">Trail</option><option value="WeightTraining">Styrka</option><option value="NordicSki">Längdskidor</option><option value="Yoga">Yoga</option><option value="Hike">Vandring</option></select>';
-const CUSTOM_TYPE_TO='<select id="customType"><option value="Run">Löpning</option><option value="TrailRun">Trail</option><option value="WeightTraining">Styrka</option><option value="NordicSki">Längdskidor</option><option value="Yoga">Yoga</option><option value="Hike">Vandring</option><option value="Rowing">Roddmaskin</option></select>';
+const CUSTOM_TYPE_TO='<select id="customType"><option value="Run">Löpning</option><option value="TrailRun">Trail</option><option value="WeightTraining">Styrka</option><option value="NordicSki">Längdskidor</option><option value="Yoga">Yoga</option><option value="Hike">Vandring</option><option value="Rowing">Roddmaskin</option><option value="Ride">Inomhuscykel</option></select>';
+const HOTFIX='<script src="./manual-publish-2.6.1.js?v=261"><\/script>';
 
 function patchHtml(text){
-  return text.includes(CUSTOM_TYPE_FROM) ? text.replace(CUSTOM_TYPE_FROM,CUSTOM_TYPE_TO) : text;
+  let out=text.includes(CUSTOM_TYPE_FROM)?text.replace(CUSTOM_TYPE_FROM,CUSTOM_TYPE_TO):text;
+  if(!out.includes('manual-publish-2.6.1.js'))out=out.replace('</body>',HOTFIX+'</body>');
+  return out;
 }
 
 self.addEventListener("install",e=>{
@@ -21,8 +24,8 @@ self.addEventListener("activate",e=>e.waitUntil((async()=>{
   for(const client of clients){
     try{
       const u=new URL(client.url);
-      if(u.origin===self.location.origin && u.searchParams.get("tc_rowing")!=="3"){
-        u.searchParams.set("tc_rowing","3");
+      if(u.origin===self.location.origin&&u.searchParams.get("tc_manual")!=="261"){
+        u.searchParams.set("tc_manual","261");
         await client.navigate(u.href);
       }
     }catch{}
