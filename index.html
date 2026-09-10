@@ -7,13 +7,26 @@
 <script>
 (async()=>{
  try{
-  const parts=["./tc27/index.part00", "./tc27/index.part01", "./tc27/index.part02", "./tc27/index.part03", "./tc27/index.part04", "./tc27/index.part05", "./tc27/index.part06", "./tc27/index.part07", "./tc27/index.part08", "./tc27/index.part09", "./tc27/index.part10", "./tc27/index.part11", "./tc27/index.part12", "./tc27/index.part13", "./tc27/index.part14", "./tc27/index.part15", "./tc27/index.part16"];
-  const texts=await Promise.all(parts.map(async p=>{const r=await fetch(p+'?v=2701',{cache:'no-store'});if(!r.ok)throw new Error(p+' HTTP '+r.status);return r.text()}));
-  const b64=texts.join('').replace(/\s+/g,'');
-  const bin=atob(b64);const u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);
+  const parts=["./tc27/index.part00","./tc27/index.part01","./tc27/index.part02","./tc27/index.part03","./tc27/index.part04","./tc27/index.part05","./tc27/index.part06","./tc27/index.part07","./tc27/index.part08","./tc27/index.part09","./tc27/index.part10","./tc27/index.part11","./tc27/index.part12","./tc27/index.part13","./tc27/index.part14","./tc27/index.part15","./tc27/index.part16"];
+  const texts=await Promise.all(parts.map(async p=>{const r=await fetch(p+'?v=2702',{cache:'no-store'});if(!r.ok)throw new Error(p+' HTTP '+r.status);return r.text()}));
+  const raw=texts.join('');
+  const alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  const normalized=raw.replace(/-/g,'+').replace(/_/g,'/');
+  let dropped=0,buffer=0,bits=0;const bytes=[];
+  for(let i=0;i<normalized.length;i++){
+    const ch=normalized[i];
+    if(ch==='='||/\s/.test(ch))continue;
+    const v=alphabet.indexOf(ch);
+    if(v<0){dropped++;continue;}
+    buffer=(buffer<<6)|v;bits+=6;
+    if(bits>=8){bits-=8;bytes.push((buffer>>bits)&255);}
+  }
+  const u8=new Uint8Array(bytes);
+  if(u8.length<2||u8[0]!==0x1f||u8[1]!==0x8b)throw new Error('Payload kunde inte avkodas korrekt (gzip-header saknas; ignorerade '+dropped+' tecken).');
   if(typeof DecompressionStream==='undefined')throw new Error('Din webbläsare saknar gzip-stöd som krävs av denna installation.');
   const ds=new DecompressionStream('gzip');
   const html=await new Response(new Blob([u8]).stream().pipeThrough(ds)).text();
+  if(!html||!/<html[\s>]/i.test(html))throw new Error('Payload packades upp men innehåller inte giltig Trail Coach HTML.');
   document.open();document.write(html);document.close();
  }catch(e){const b=document.getElementById('boot');if(b)b.innerHTML='<div><strong>Kunde inte ladda Trail Coach 2.7</strong><div class="small">'+String(e.message||e)+'</div></div>';console.error(e)}
 })();
