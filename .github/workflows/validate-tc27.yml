@@ -1,0 +1,42 @@
+name: Validate Trail Coach 2.7 payload
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'index.html'
+      - 'tc27/**'
+      - '.github/workflows/validate-tc27.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate payload
+        shell: python
+        run: |
+          from pathlib import Path
+          import base64, gzip, hashlib, re
+          parts = sorted(Path('tc27').glob('index.part*'))
+          assert len(parts) == 17, f'expected 17 parts, got {len(parts)}'
+          chunks=[]
+          for p in parts:
+              raw=p.read_text(encoding='utf-8')
+              clean=re.sub(r'[^A-Za-z0-9+/=]', '', raw)
+              assert len(clean) % 4 == 0, f'{p}: invalid base64 length {len(clean)}'
+              try:
+                  b=base64.b64decode(clean, validate=True)
+              except Exception as e:
+                  raise AssertionError(f'{p}: base64 error {e}')
+              chunks.append(b)
+              print(p, len(raw), len(clean), len(b))
+          payload=b''.join(chunks)
+          print('gzip bytes', len(payload), 'sha256', hashlib.sha256(payload).hexdigest())
+          assert payload[:2] == b'\x1f\x8b', 'gzip header missing'
+          html=gzip.decompress(payload)
+          print('html bytes', len(html), 'sha256', hashlib.sha256(html).hexdigest())
+          assert b'<html' in html.lower(), 'decompressed payload is not HTML'
+          assert b'APP_VERSION="2.7.0"' in html, 'wrong app version'
+          print('VALID TRAIL COACH 2.7 PAYLOAD')
