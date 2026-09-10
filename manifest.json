@@ -6,7 +6,7 @@
   "display": "standalone",
   "background_color": "#09090b",
   "theme_color": "#09090b",
-  "description": "Trail Coach 2.6.0 — stable snapshot and Intervals publishing, SVG Trail Engine, redesigned weekly Plan flow.",
+  "description": "Trail Coach 2.7 — consolidated Intervals publishing and code-quality fixes.",
   "icons": [
     {
       "src": "icon-192.png",
