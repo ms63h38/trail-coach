@@ -1,12 +1,10 @@
-const CACHE="trailcoach-2-v260-rowing2";
+const CACHE="trailcoach-2-v260-rowing3";
 const ASSETS=["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png"];
 
 const CUSTOM_TYPE_FROM='<select id="customType"><option value="Run">Löpning</option><option value="TrailRun">Trail</option><option value="WeightTraining">Styrka</option><option value="NordicSki">Längdskidor</option><option value="Yoga">Yoga</option><option value="Hike">Vandring</option></select>';
 const CUSTOM_TYPE_TO='<select id="customType"><option value="Run">Löpning</option><option value="TrailRun">Trail</option><option value="WeightTraining">Styrka</option><option value="NordicSki">Längdskidor</option><option value="Yoga">Yoga</option><option value="Hike">Vandring</option><option value="Rowing">Roddmaskin</option></select>';
 
 function patchHtml(text){
-  // Patch only the manual workout type selector. Do not use a global Rowing check,
-  // because Rowing already exists elsewhere in the Plan UI as a replacement activity.
   return text.includes(CUSTOM_TYPE_FROM) ? text.replace(CUSTOM_TYPE_FROM,CUSTOM_TYPE_TO) : text;
 }
 
@@ -15,10 +13,21 @@ self.addEventListener("install",e=>{
   e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)));
 });
 
-self.addEventListener("activate",e=>e.waitUntil(Promise.all([
-  caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))),
-  self.clients.claim()
-])));
+self.addEventListener("activate",e=>e.waitUntil((async()=>{
+  const keys=await caches.keys();
+  await Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)));
+  await self.clients.claim();
+  const clients=await self.clients.matchAll({type:"window",includeUncontrolled:true});
+  for(const client of clients){
+    try{
+      const u=new URL(client.url);
+      if(u.origin===self.location.origin && u.searchParams.get("tc_rowing")!=="3"){
+        u.searchParams.set("tc_rowing","3");
+        await client.navigate(u.href);
+      }
+    }catch{}
+  }
+})()));
 
 self.addEventListener("fetch",e=>{
   if(e.request.method!=="GET")return;
@@ -46,9 +55,7 @@ self.addEventListener("fetch",e=>{
     return;
   }
 
-  e.respondWith(fetch(e.request).then(r=>{
-    const copy=r.clone();
-    caches.open(CACHE).then(c=>c.put(e.request,copy));
-    return r;
+  e.respondWith(fetch(e.request,{cache:"no-store"}).then(r=>{
+    const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return r;
   }).catch(()=>caches.match(e.request)));
 });
